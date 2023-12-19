@@ -11,10 +11,13 @@
 #include "fluid_dynamics/Scheme.h"
 #include "fluid_dynamics/Bound.h"
 #include "structures/Primitive.h"
+#include "fluid_dynamics/NACA.h"
 
 int main() {
     std::cout << "Dobry DEN!!!!" << std::endl;
 
+    //GAMM CHANNEL GEOMETRY
+    /*
     std::vector<double> x_vector(Def::xCells);
     std::vector<double> bot(Def::xCells, Def::yLowerBound);
     std::vector<double> top(Def::xCells, Def::yUpperBound);
@@ -23,8 +26,10 @@ int main() {
 
     Lines::arc(x_vector, bot, 1, 2, 0.1);
 
-//    std::vector<Point> points = Point::createPoints(bot, top);
+    std::vector<Point> points = Point::createPoints(bot, top);
+     */
 
+    //NACA 0012 GEOMETRY
     /*
     std::vector<Point> points{};
     std::ifstream input("mesh.dat");
@@ -138,8 +143,6 @@ int main() {
         }
     }
 
-    std::cout << points.size() << "\n";
-    for (const auto &item: points) item.toString();
     std::unordered_map<std::pair<int, int>, Interface, pair_hash> faces = Interface::createInnerFaces(points);
     std::unordered_map<int, Cell> cells = Cell::createCells(points);
 
@@ -148,12 +151,12 @@ int main() {
     int reps = 0;
     double rezi = 1;
 //    while (reps < 8000 && !Def::error) {
-    while (rezi > Def::EPSILON && !Def::error) {
+    while (rezi > Def::EPSILON && !Def::error && reps < 8000) {
         reps++;
         double dt = Scheme::computeDT(cells, 0.5);
         t += dt;
 
-        Bound::updateBounds(cells, faces);
+        NACA::updateBounds(cells, faces);
         Scheme::computeHLLC(cells, faces, dt);
         rezi = Scheme::computeRezi(cells, dt);
         Scheme::updateCells(cells);
@@ -166,7 +169,7 @@ int main() {
 
 
     // Write data
-    std::ofstream outputFile(Def::defaultPath + "\\" + "airflow_data_8000_M_150x50.dat");
+    std::ofstream outputFile(Def::defaultPath + "\\" + "NACA0012_8000.dat");
     for (int i = 0; i < Def::inner; ++i) {
         int k = Def::innerIndex(i);
         Primitive pv = Primitive::computePV(cells.at(k).w);
