@@ -7,7 +7,7 @@
 #include "../structures/Primitive.h"
 #include "Def.h"
 
-double Scheme::computeDT(const std::unordered_map<int, Cell>& cells, double CFL) {
+double Scheme::computeDT(const std::unordered_map<int, Cell> &cells, double CFL) {
     double res = 1e9;
     for (const auto &cell: cells) {
         Primitive pv = Primitive::computePV(cell.second.w);
@@ -100,26 +100,36 @@ Conservative Scheme::HLLC(const std::unordered_map<int, Cell> &cells, const Inte
     return res;
 }
 
-void Scheme::computeHLLC(std::unordered_map<int, Cell>& cells,
-                         const std::unordered_map<std::pair<int, int>, Interface, pair_hash>& faces, double dt) {
+void Scheme::computeHLLC(std::unordered_map<int, Cell> &cells,
+                         const std::unordered_map<std::pair<int, int>, Interface, pair_hash> &faces, double dt) {
     for (const auto &face: faces) {
         Conservative flux = HLLC(cells, face.second);
-
-//        cells.at(face.second.left).toString();
-//        std::cout << dt << " " << cells.at(face.second.left).area << "\n";
-//        std::cout << dt / cells.at(face.second.left).area << "\n";
-//        flux.toString();
-//        (flux * face.second.length).toString();
-//        (dt / cells.at(face.second.right).area * flux * face.second.length).toString();
-//        std::cout << std::endl;
 
         cells.at(face.second.left).rezi -= dt / cells.at(face.second.left).area * flux * face.second.length;
         cells.at(face.second.right).rezi += dt / cells.at(face.second.right).area * flux * face.second.length;
     }
 
+//    for (int i = 0; i < Def::inner; ++i) {
+//        int k = Def::innerIndex(i);
+//        cells.at(k).w += cells.at(k).rezi;
+//        cells.at(k).rezi = 0;
+//    } // přesunuls do samostatný funkce
+}
+
+double Scheme::computeRezi(std::unordered_map<int, Cell> &cells, double dt) {
+    double res = 0;
     for (int i = 0; i < Def::inner; ++i) {
         int k = Def::innerIndex(i);
-        cells.at(k).w += cells.at(k).rezi; // TODO Dotaz
+        res += pow(cells.at(k).rezi.r1 / dt, 2) * cells.at(k).area;
+    }
+    res = log(sqrt(res)); //log(n<1) > 1, ne?
+    return res;
+}
+
+void Scheme::updateCells(std::unordered_map<int, Cell> &cells) {
+    for (int i = 0; i < Def::inner; ++i) {
+        int k = Def::innerIndex(i);
+        cells.at(k).w += cells.at(k).rezi;
         cells.at(k).rezi = 0;
     }
 }

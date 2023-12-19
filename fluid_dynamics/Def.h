@@ -19,7 +19,7 @@ public:
     static const int yCells;
     static const int cells;
 
-    static const int gl;
+    static constexpr int gl = 2;
     static const int firstInner;
     static const double dx;
 
@@ -33,6 +33,12 @@ public:
     static const double P2;
     static const double RHO;
     static const double ALPHA_INFINITY;
+    static const double EPSILON;
+
+    static constexpr int NACA_X_INNER = 261; //points, not cells (260x60 inner cells)
+    static constexpr int NACA_Y_INNER = 61;
+    static constexpr int NACA_X = NACA_X_INNER + 2 * gl;
+    static constexpr int NACA_Y = NACA_Y_INNER + 2 * gl;
 
     static const double rhoInitial;
     static const double uInitial;

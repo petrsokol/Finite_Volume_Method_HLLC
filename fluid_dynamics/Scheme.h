@@ -23,6 +23,9 @@ public:
 
     static double computeDT(const std::unordered_map<int, Cell>& cells, double CFL);
 
+    static double computeRezi(std::unordered_map<int, Cell> &cells, double dt);
+
+    static void updateCells(std::unordered_map<int, Cell> &cells);
 };
 
 
