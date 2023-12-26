@@ -20,8 +20,48 @@ double Scheme::computeDT(const std::unordered_map<int, Cell> &cells, double CFL)
 
         double candidate = CFL / (d_xi + d_eta);
         res = fmin(res, candidate);
+        std::cout << "candidate no." << cell.first << ": " << candidate << std::endl;
     }
+    std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << std::endl;
     return res;
+}
+
+std::unordered_map<int, double> Scheme::LocalTimeStep(const std::unordered_map<int, Cell> &cells, double CFL) {
+    std::unordered_map<int, double> timeVector{};
+    for (const auto &cell: cells) {
+        Primitive pv = Primitive::computePV(cell.second.w);
+
+        double u_xi = fabs(pv.u * cell.second.xi.ux + pv.v * cell.second.xi.uy);
+        double u_eta = fabs(pv.u * cell.second.eta.ux + pv.v * cell.second.eta.uy);
+
+        double d_xi = (u_xi + pv.c) / cell.second.xi.length;
+        double d_eta = (u_eta + pv.c) / cell.second.eta.length;
+
+        timeVector[cell.first] = CFL / (d_xi + d_eta);
+    }
+    return timeVector;
+
+}
+
+void Scheme::updateCellDT(std::unordered_map<int, Cell> &cells, double CFL) {
+    for (auto &cell: cells) {
+        Primitive pv = Primitive::computePV(cell.second.w);
+
+        double u_xi = fabs(pv.u * cell.second.xi.ux + pv.v * cell.second.xi.uy);
+        double u_eta = fabs(pv.u * cell.second.eta.ux + pv.v * cell.second.eta.uy);
+
+        double d_xi = (u_xi + pv.c) / cell.second.xi.length;
+        double d_eta = (u_eta + pv.c) / cell.second.eta.length;
+
+        double res = CFL / (d_xi + d_eta);
+        if (res > 1 || res < 0.00001) {
+            std::cout << "dt at cell " << cell.first << " is " << res << std::endl;
+        }
+
+       cell.second.dt = res;
+    }
 }
 
 Conservative Scheme::HLLC(const std::unordered_map<int, Cell> &cells, const Interface &face) {
@@ -102,6 +142,7 @@ Conservative Scheme::HLLC(const std::unordered_map<int, Cell> &cells, const Inte
 
 void Scheme::computeHLLC(std::unordered_map<int, Cell> &cells,
                          const std::unordered_map<std::pair<int, int>, Interface, pair_hash> &faces, double dt) {
+    //TODO #pragma parallel for()
     for (const auto &face: faces) {
         Conservative flux = HLLC(cells, face.second);
 
@@ -116,11 +157,31 @@ void Scheme::computeHLLC(std::unordered_map<int, Cell> &cells,
 //    } // přesunuls do samostatný funkce
 }
 
+void Scheme::computeHLLC_localTimeStep(std::unordered_map<int, Cell> &cells,
+                                       const std::unordered_map<std::pair<int, int>, Interface, pair_hash> &faces) {
+    for (const auto &face: faces) {
+        Conservative flux = HLLC(cells, face.second);
+
+        cells.at(face.second.left).rezi -= cells.at(face.second.left).dt / cells.at(face.second.left).area * flux * face.second.length;
+        cells.at(face.second.right).rezi += cells.at(face.second.right).dt / cells.at(face.second.right).area * flux * face.second.length;
+    }
+}
+
 double Scheme::computeRezi(std::unordered_map<int, Cell> &cells, double dt) {
     double res = 0;
     for (int i = 0; i < Def::inner; ++i) {
         int k = Def::innerIndex(i);
         res += pow(cells.at(k).rezi.r1 / dt, 2) * cells.at(k).area;
+    }
+    res = log(sqrt(res)); //log(n<1) > 1, ne?
+    return res;
+}
+
+double Scheme::computeRezi_localTimeStep(const std::unordered_map<int, Cell> &cells) {
+    double res = 0;
+    for (int i = 0; i < Def::inner; ++i) {
+        int k = Def::innerIndex(i);
+        res += pow(cells.at(k).rezi.r1 / cells.at(k).dt, 2) * cells.at(k).area;
     }
     res = log(sqrt(res)); //log(n<1) > 1, ne?
     return res;

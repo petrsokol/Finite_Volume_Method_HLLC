@@ -85,12 +85,15 @@ void NACA::updatePeriodicity(std::unordered_map<int, Cell> &cells) {
     //start
     for (int i = 0; i < NACA::wingStart; ++i) {
         int k = Def::firstInner + i;
-        cells.at(k - Def::xCells).w = cells.at(k).w;
+        int l = Def::firstInner - Def::xCells + Def::xInner - 1 - i; //o řadu níž, poslední index - jede v protisměru
+        // l viz BP, p. 13
+        cells.at(l).w = cells.at(k).w;
     }
     //finish
-    for (int i = 0; i < NACA::wingStart; ++i) {
-        int k = Def::firstInner + Def::xInner - NACA::wingStart + i;
-        cells.at(k - Def::xCells).w = cells.at(k).w;
+    for (int i = 0; i < NACA::wingStart; ++i) { // podle mě by nemělo dělat 261. buňku
+        int k = Def::firstInner + NACA::wingStart + NACA::wingLength + i;
+        int l = Def::firstInner - Def::xCells + NACA::wingStart - 1 - i; // -1 = těsně před koncem
+        cells.at(l).w = cells.at(k).w;
     }
 }
 

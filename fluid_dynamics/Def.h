@@ -11,8 +11,8 @@
 class Def {
 
 public:
-    static const int xInner;
-    static const int yInner;
+    static constexpr int xInner = 260;
+    static constexpr int yInner = 60;
     static const int inner;
 
     static const int xCells;

@@ -10,10 +10,10 @@ const std::string Def::defaultExtension = ".dat";
 
 const double Def::KAPPA = 1.4;
 const double Def::P0 = 1;
-const double Def::P2 = 0.737;
+const double Def::P2 = 0.656;
 const double Def::RHO = 1;
-const double Def::ALPHA_INFINITY = 0;
-const double Def::EPSILON = -2;
+const double Def::ALPHA_INFINITY = M_PI * 1.25 / 180;
+const double Def::EPSILON = -8;
 
 const double Def::rhoInitial = 1;
 const double Def::uInitial = 0.65;
@@ -24,8 +24,6 @@ const Conservative Def::wInitial = Conservative(rhoInitial, rhoInitial * uInitia
 
 //const int Def::gl = 2;
 
-const int Def::xInner = 260;
-const int Def::yInner = 60;
 const int Def::inner = xInner * yInner;
 
 const double Def::yLowerBound = 0;

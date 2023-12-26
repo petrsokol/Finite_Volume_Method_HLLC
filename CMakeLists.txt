@@ -26,4 +26,5 @@ add_executable(GAMM main.cpp
         fluid_dynamics/Bound.h
         fluid_dynamics/NACA.cpp
         fluid_dynamics/NACA.h
+        utilities/DataIO.cpp
 )

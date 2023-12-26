@@ -15,7 +15,7 @@ class Cell {
 
 public:
     Conservative w, wn, rezi;
-    double area, tx, ty;
+    double area, tx, ty, dt;
     Vector xi{}, eta{};
     int index;
 

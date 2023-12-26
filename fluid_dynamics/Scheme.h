@@ -21,9 +21,18 @@ public:
     static void computeHLLC(std::unordered_map<int, Cell>& cells,
                             const std::unordered_map<std::pair<int, int>, Interface, pair_hash>& faces, double dt);
 
+    static void computeHLLC_localTimeStep(std::unordered_map<int, Cell>& cells,
+                                          const std::unordered_map<std::pair<int, int>, Interface, pair_hash>& faces);
+
     static double computeDT(const std::unordered_map<int, Cell>& cells, double CFL);
 
+    static std::unordered_map<int, double> LocalTimeStep(const std::unordered_map<int, Cell>& cells, double CFL);
+
+    static void updateCellDT(std::unordered_map<int, Cell> &cells, double CFL);
+
     static double computeRezi(std::unordered_map<int, Cell> &cells, double dt);
+
+    static double computeRezi_localTimeStep(const std::unordered_map<int, Cell>& cells);
 
     static void updateCells(std::unordered_map<int, Cell> &cells);
 };

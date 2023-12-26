@@ -150,26 +150,42 @@ int main() {
     double t = 0;
     int reps = 0;
     double rezi = 1;
-//    while (reps < 8000 && !Def::error) {
-    while (rezi > Def::EPSILON && !Def::error && reps < 8000) {
+    std::string NAME = "231226_naca";
+    while (rezi > Def::EPSILON && !Def::error && reps < 30000) {
         reps++;
-        double dt = Scheme::computeDT(cells, 0.5);
-        t += dt;
+//        double dt = Scheme::computeDT(cells, 0.5);
+//        std::unordered_map<int, double> deltaT = Scheme::LocalTimeStep(cells, 0.5);
+//        t += dt;
+        Scheme::updateCellDT(cells, 0.5);
 
         NACA::updateBounds(cells, faces);
-        Scheme::computeHLLC(cells, faces, dt);
-        rezi = Scheme::computeRezi(cells, dt);
+//        Scheme::computeHLLC(cells, faces, dt);
+        Scheme::computeHLLC_localTimeStep(cells, faces);
+
+        rezi = Scheme::computeRezi_localTimeStep(cells);
         Scheme::updateCells(cells);
 
         if (reps % 100 == 0) {
-            std::cout << "reps: " << reps << ", rezi: " << rezi << "\n";
+            std::cout << "reps: " << reps << ", rezi: " << rezi << /*", dt: " << dt <<*/ "\n";
+        }
+
+        if (reps % 1000 == 0) {
+            std::ofstream outputFile(Def::defaultPath + "\\" + NAME + std::to_string(reps) + ".csv");
+            outputFile << "\"X\", \"Y\", \"Z\", \"MACH_NUMBER\"\n";
+            for (int i = 0; i < Def::inner; ++i) {
+                int k = Def::innerIndex(i);
+                Primitive pv = Primitive::computePV(cells.at(k).w);
+                double mach = pv.U / pv.c;
+                outputFile << cells.at(k).tx << ", " << cells.at(k).ty << ", 1, " << mach << "\n";
+            } outputFile.close();
+            std::cout << "timestep " << reps << " recorded successfully" << std::endl;
         }
     }
 
 
 
     // Write data
-    std::ofstream outputFile(Def::defaultPath + "\\" + "NACA0012_8000.dat");
+    std::ofstream outputFile(Def::defaultPath + "\\" + NAME + ".dat");
     for (int i = 0; i < Def::inner; ++i) {
         int k = Def::innerIndex(i);
         Primitive pv = Primitive::computePV(cells.at(k).w);
@@ -178,13 +194,13 @@ int main() {
         outputFile << cells.at(k).tx << " " << cells.at(k).ty << " " << mach << "\n";
     } outputFile.close();
 
-    std::ofstream outputVec(Def::defaultPath + "\\" + "mach_along_bot_8000_150x50.dat");
-    for (int i = 0; i < Def::xInner; ++i) {
-        int k = Def::firstInner + i;
-        Primitive pv = Primitive::computePV(cells.at(k).w);
-        double mach = pv.U / pv.c;
-        outputVec << cells.at(k).tx << " " << mach << "\n";
-    } outputVec.close();
+//    std::ofstream outputVec(Def::defaultPath + "\\" + "mach_along_bot_8000_150x50.dat");
+//    for (int i = 0; i < Def::xInner; ++i) {
+//        int k = Def::firstInner + i;
+//        Primitive pv = Primitive::computePV(cells.at(k).w);
+//        double mach = pv.U / pv.c;
+//        outputVec << cells.at(k).tx << " " << mach << "\n";
+//    } outputVec.close();
 
     if(Def::error) {
         std::cout << "error at rep " << reps << std::endl;
