@@ -78,9 +78,7 @@ int main() {
         naca_points << point.x << " " << point.y << std::endl;
     }
     naca_points.close();
-     */
 
-    /*
     //LR
     std::vector<Point> lr{};
     for (int j = 0; j < Def::NACA_Y; ++j) {
