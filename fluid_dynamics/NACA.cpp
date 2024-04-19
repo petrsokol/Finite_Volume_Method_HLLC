@@ -7,6 +7,9 @@
 #include "Def.h"
 #include "../structures/Primitive.h"
 
+const int NACA::wingStart = 30;
+const int NACA::wingLength = 200;
+
 void NACA::updateInlet(std::unordered_map<int, Cell> &cells) {
     for (int i  = 0; i < Def::xInner; ++i) { //celá horní stěna
         int k = Def::firstInner + (Def::yInner - 1) * Def::xCells + i; //check -1;
