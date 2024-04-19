@@ -2,6 +2,7 @@
 #include <vector>
 #include <unordered_map>
 #include <fstream>
+#include <ctime>
 #include "structures/Conservative.h"
 #include "fluid_dynamics/Def.h"
 #include "utilities/Lines.h"
@@ -12,9 +13,12 @@
 #include "fluid_dynamics/Bound.h"
 #include "structures/Primitive.h"
 #include "fluid_dynamics/NACA.h"
+#include "utilities/DataIO.h"
 
 int main() {
     std::cout << "Dobry DEN!!!!" << std::endl;
+    std::string outputDir = R"(C:\Users\petrs\Documents\CTU\BP\FVM_Data)";
+    std::string inputDir = R"(C:\Users\petrs\Documents\CTU\BP\FVM_Geometry)";
 
     std::vector<Point> points{};
     std::ifstream input("ghostMesh.dat");
@@ -32,21 +36,14 @@ int main() {
     std::unordered_map<int, Cell> cells = Cell::createCells(points);
 
 
-    double t = 0;
     int reps = 0;
     double rezi = 1;
     std::string NAME = "240419_naca";
     while (rezi > Def::EPSILON && !Def::error && reps < 30000) {
         reps++;
-//        double dt = Scheme::computeDT(cells, 0.5);
-//        std::unordered_map<int, double> deltaT = Scheme::LocalTimeStep(cells, 0.5);
-//        t += dt;
         Scheme::updateCellDT(cells, 0.5);
-
         NACA::updateBounds(cells, faces);
-//        Scheme::computeHLLC(cells, faces, dt);
         Scheme::computeHLLC_localTimeStep(cells, faces);
-
         rezi = Scheme::computeRezi_localTimeStep(cells);
         Scheme::updateCells(cells);
 
@@ -55,15 +52,7 @@ int main() {
         }
 
         if (reps % 1000 == 0) {
-            std::ofstream outputFile(Def::defaultPath + "\\" + NAME + std::to_string(reps) + ".csv");
-            outputFile << "\"X\", \"Y\", \"Z\", \"MACH_NUMBER\"\n";
-            for (int i = 0; i < Def::inner; ++i) {
-                int k = Def::innerIndex(i);
-                Primitive pv = Primitive::computePV(cells.at(k).w);
-                double mach = pv.U / pv.c;
-                outputFile << cells.at(k).tx << ", " << cells.at(k).ty << ", 1, " << mach << "\n";
-            } outputFile.close();
-            std::cout << "timestep " << reps << " recorded successfully" << std::endl;
+            DataIO::exportToCSV(cells, outputDir, "naca_flow", reps);
         }
     }
 
