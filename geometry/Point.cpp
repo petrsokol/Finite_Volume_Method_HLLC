@@ -2,6 +2,7 @@
 // Created by petrs on 01.12.2023.
 //
 
+#include <fstream>
 #include "Point.h"
 #include "../fluid_dynamics/Def.h"
 
@@ -46,4 +47,19 @@ Point Point::operator/(double scalar) const {
         exit(EXIT_FAILURE);
     }
     return {Point::x / scalar, Point::y / scalar, -1};
+}
+
+std::vector<Point> Point::loadPointsFromFile(const std::string &dir, const std::string &file) {
+    std::vector<Point> res;
+    std::ifstream input(dir + "\\" + file);
+    for (int j = 0; j < Def::yCells; ++j) {
+        for (int i = 0; i < Def::xCells; ++i) {
+            double x;
+            double y;
+            input >> x;
+            input >> y;
+            res.emplace_back(x, y, j * Def::xCells + i);
+        }
+    }
+    return res;
 }

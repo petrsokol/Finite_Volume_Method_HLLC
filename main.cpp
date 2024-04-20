@@ -12,80 +12,64 @@
 #include "fluid_dynamics/Bound.h"
 #include "structures/Primitive.h"
 #include "fluid_dynamics/NACA.h"
+#include "utilities/DataIO.h"
 
 int main() {
     std::cout << "Dobry DEN!!!!" << std::endl;
+    std::string inputDir = R"(C:\Users\petrs\Documents\CTU\BP\FVM_Geometry)";
+    std::string outputDir = R"(C:\Users\petrs\Documents\CTU\BP\FVM_Data)";
 
-    std::vector<Point> points{};
-    std::ifstream input("ghostMesh.dat");
-    for (int j = 0; j < Def::NACA_Y; ++j) {
-        for (int i = 0; i < Def::NACA_X; ++i) {
-            double x;
-            double y;
-            input >> x;
-            input >> y;
-            points.emplace_back(x, y, j * Def::NACA_X + i);
-        }
-    }
-
+    std::vector<Point> points = Point::loadPointsFromFile(inputDir, "nacaMesh.dat");
     std::unordered_map<std::pair<int, int>, Interface, pair_hash> faces = Interface::createInnerFaces(points);
     std::unordered_map<int, Cell> cells = Cell::createCells(points);
 
+    std::cout << DataIO::getDate();
 
-    double t = 0;
     int reps = 0;
     double rezi = 1;
-    std::string NAME = "240419_naca";
     while (rezi > Def::EPSILON && !Def::error && reps < 30000) {
         reps++;
-//        double dt = Scheme::computeDT(cells, 0.5);
-//        std::unordered_map<int, double> deltaT = Scheme::LocalTimeStep(cells, 0.5);
-//        t += dt;
+
         Scheme::updateCellDT(cells, 0.5);
-
         NACA::updateBounds(cells, faces);
-//        Scheme::computeHLLC(cells, faces, dt);
         Scheme::computeHLLC_localTimeStep(cells, faces);
-
         rezi = Scheme::computeRezi_localTimeStep(cells);
         Scheme::updateCells(cells);
 
         if (reps % 100 == 0) {
-            std::cout << "reps: " << reps << ", rezi: " << rezi << /*", dt: " << dt <<*/ "\n";
+            std::cout << "reps: " << reps << ", rezi: " << rezi << std::endl;
         }
 
         if (reps % 1000 == 0) {
-            std::ofstream outputFile(Def::defaultPath + "\\" + NAME + std::to_string(reps) + ".csv");
-            outputFile << "\"X\", \"Y\", \"Z\", \"MACH_NUMBER\"\n";
-            for (int i = 0; i < Def::inner; ++i) {
-                int k = Def::innerIndex(i);
-                Primitive pv = Primitive::computePV(cells.at(k).w);
-                double mach = pv.U / pv.c;
-                outputFile << cells.at(k).tx << ", " << cells.at(k).ty << ", 1, " << mach << "\n";
-            } outputFile.close();
-            std::cout << "timestep " << reps << " recorded successfully" << std::endl;
+            DataIO::exportToCSV(cells, outputDir, "naca_mesh", reps);
+            DataIO::exportToDAT(cells, outputDir, "mach_along_wall", reps);
         }
     }
 
+//    double t = 0;
+//    reps = 0;
+//    while (rezi > Def::EPSILON && !Def::error && reps < 30000) {
+//        reps++;
+//        double dt = Scheme::computeDT(cells, 0.5);
+//        std::unordered_map<int, double> deltaT = Scheme::LocalTimeStep(cells, 0.5);
+//        t += dt;
+//
+//        NACA::updateBounds(cells, faces);
+//        Scheme::computeHLLC(cells, faces, dt);
+//        rezi = Scheme::computeRezi(cells, dt);
+//        Scheme::updateCells(cells);
+//
+//        if (reps % 100 == 0) {
+//            std::cout << "reps: " << reps << ", rezi: " << rezi << ", dt: " << dt << std::endl;
+//        }
+//
+//        if (reps % 1000 == 0) {
+//            DataIO::exportToCSV(cells, outputDir, "naca_mesh_global", reps);
+//            DataIO::exportToDAT(cells, outputDir, "mach_along_wall_global", reps);
+//        }
+//    }
 
 
-    // Write data
-    std::ofstream outputFile(Def::defaultPath + "\\" + NAME + ".dat");
-    for (int i = 0; i < Def::inner; ++i) {
-        int k = Def::innerIndex(i);
-        Primitive pv = Primitive::computePV(cells.at(k).w);
-        double mach = pv.U / pv.c;
-//        outputFile << cells.at(k).tx << " " << cells.at(k).ty << " " << cells.at(k).w.r1 << "\n";
-        outputFile << cells.at(k).tx << " " << cells.at(k).ty << " " << mach << "\n";
-    } outputFile.close();
-
-//    std::ofstream outputVec(Def::defaultPath + "\\" + "mach_along_bot_8000_150x50.dat");
-//    for (int i = 0; i < Def::xInner; ++i) {
-//        int k = Def::firstInner + i;
-//        Primitive pv = Primitive::computePV(cells.at(k).w);
-//        double mach = pv.U / pv.c;
-//        outputVec << cells.at(k).tx << " " << mach << "\n";
-//    } outputVec.close();
 
     if(Def::error) {
         std::cout << "error at rep " << reps << std::endl;
@@ -206,4 +190,24 @@ std::ofstream out("ghostMesh.dat");
 for (const auto &point: allpoints) {
     out << point.x << " " << point.y << "\n";
 } out.close();
+ */
+
+// obscure output
+/*
+ *     // Write data
+    std::ofstream outputFile(Def::defaultPath + "\\" + "naca" + ".dat");
+    for (int i = 0; i < Def::inner; ++i) {
+        int k = Def::innerIndex(i);
+        Primitive pv = Primitive::computePV(cells.at(k).w);
+        double mach = pv.U / pv.c;
+        outputFile << cells.at(k).tx << " " << cells.at(k).ty << " " << mach << "\n";
+    } outputFile.close();
+
+    std::ofstream outputVec(Def::defaultPath + "\\" + "mach_along_bot_8000_150x50.dat");
+    for (int i = 0; i < Def::xInner; ++i) {
+        int k = Def::firstInner + i;
+        Primitive pv = Primitive::computePV(cells.at(k).w);
+        double mach = pv.U / pv.c;
+        outputVec << cells.at(k).tx << " " << mach << "\n";
+    } outputVec.close();
  */
