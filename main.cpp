@@ -15,7 +15,7 @@
 #include "utilities/DataIO.h"
 
 int main() {
-    std::cout << "Dobry DEN!!!!" << std::endl;
+    std::cout << "Dobry DEN!!!!!" << std::endl;
     std::string inputDir = R"(C:\Users\petrs\Documents\CTU\BP\FVM_Geometry)";
     std::string outputDir = R"(C:\Users\petrs\Documents\CTU\BP\FVM_Data)";
 
