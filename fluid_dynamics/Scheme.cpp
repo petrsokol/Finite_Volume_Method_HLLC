@@ -19,12 +19,12 @@ double Scheme::computeDT(const std::unordered_map<int, Cell> &cells, double CFL)
         double d_eta = (u_eta + pv.c) / cell.second.eta.length;
 
         double candidate = CFL / (d_xi + d_eta);
+        if (candidate < res) {
+            std::cout << "candidate cell: " << std::endl;
+            cell.second.toString();
+        }
         res = fmin(res, candidate);
-        std::cout << "candidate no." << cell.first << ": " << candidate << std::endl;
     }
-    std::cout << std::endl;
-    std::cout << std::endl;
-    std::cout << std::endl;
     return res;
 }
 

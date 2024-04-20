@@ -7,6 +7,7 @@
 
 
 #include <vector>
+#include <string>
 
 class Point {
 
@@ -27,6 +28,8 @@ public:
     Point operator-(Point other) const;
     Point operator*(double scalar) const;
     Point operator/(double scalar) const;
+
+    static std::vector<Point> loadPointsFromFile(const std::string &dir, const std::string &file);
 };
 
 

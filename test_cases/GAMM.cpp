@@ -94,7 +94,7 @@ void GAMM::solveHLLC(std::string name, std::string exportDestination,
             reps++;
             Scheme::updateCellDT(cells, 0.5);
             GAMM::updateBounds(cells, faces, boundaryCondition);
-            useHLLC ? Scheme::computeHLLC_localTimeStep(cells, faces) : Scheme::computeHLL_localTimeStep(cells, faces);
+//            useHLLC ? Scheme::computeHLLC_localTimeStep(cells, faces) : Scheme::computeHLL_localTimeStep(cells, faces);
             rezi = Scheme::computeRezi_localTimeStep(cells);
             Scheme::updateCells(cells);
             if (reps % 100 == 0) {
@@ -113,7 +113,7 @@ void GAMM::solveHLLC(std::string name, std::string exportDestination,
             t += dt;
 
             GAMM::updateBounds(cells, faces, boundaryCondition);
-            useHLLC ? Scheme::computeHLLC(cells, faces, dt) : Scheme::computeHLL(cells, faces, dt);
+//            useHLLC ? Scheme::computeHLLC(cells, faces, dt) : Scheme::computeHLL(cells, faces, dt);
             rezi = Scheme::computeRezi_localTimeStep(cells);
             Scheme::updateCells(cells);
             if (reps % 100 == 0) {
