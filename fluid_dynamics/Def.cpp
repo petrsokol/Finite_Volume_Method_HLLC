@@ -8,8 +8,8 @@
 const std::string Def::defaultPath = R"(C:\Users\petrs\Documents\CTU\BP\Charts\Data)";
 const std::string Def::defaultExtension = ".dat";
 
-const int Def::xInner = 260;
-const int Def::yInner = 60;
+const int Def::xInner = 150;
+const int Def::yInner = 50;
 const int Def::inner = xInner * yInner;
 
 const int Def::gl = 2;

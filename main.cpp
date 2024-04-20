@@ -19,7 +19,7 @@ int main() {
     std::string inputDir = R"(C:\Users\petrs\Documents\CTU\BP\FVM_Geometry)";
     std::string outputDir = R"(C:\Users\petrs\Documents\CTU\BP\FVM_Data)";
 
-    std::vector<Point> points = Point::loadPointsFromFile(inputDir, "nacaMesh.dat");
+    std::vector<Point> points = Point::loadPointsFromFile(inputDir, "gammMesh.dat");
     std::unordered_map<std::pair<int, int>, Interface, pair_hash> faces = Interface::createInnerFaces(points);
     std::unordered_map<int, Cell> cells = Cell::createCells(points);
 
