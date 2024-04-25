@@ -46,6 +46,24 @@ std::unordered_map<int, double> Scheme::LocalTimeStep(const std::unordered_map<i
 }
 
 void Scheme::updateCellDT(std::unordered_map<int, Cell> &cells, double CFL) {
+//    for (int i = 0; i < Def::inner; ++i) {
+//        int k = Def::innerIndex(i);
+//        Cell cell = cells.at(k);
+//        Primitive pv = Primitive::computePV(cell.w);
+//
+//        double u_xi = fabs(pv.u * cell.xi.ux + pv.v * cell.xi.uy);
+//        double u_eta = fabs(pv.u * cell.eta.ux + pv.v * cell.eta.uy);
+//
+//        double d_xi = (u_xi + pv.c) / cell.xi.length;
+//        double d_eta = (u_eta + pv.c) / cell.eta.length;
+//
+//        double res = CFL / (d_xi + d_eta);
+//        if (res > 1 || res < 0.00001) {
+//            std::cout << "dt at cell " << k << " is " << res << std::endl;
+//        }
+//
+//        cell.dt = res;
+//    }
     for (auto &cell: cells) {
         Primitive pv = Primitive::computePV(cell.second.w);
 
@@ -72,7 +90,7 @@ Conservative Scheme::HLLC(const std::unordered_map<int, Cell> &cells, const Inte
     Primitive pvr = Primitive::computePV(wr);
 
     double ql = pvl.u * face.nx + pvl.v * face.ny; // normálová rychlost
-    double qr = pvr.u * face.nx + pvr.v * face.ny; // DP - u_wave
+    double qr = pvr.u * face.nx + pvr.v * face.ny; // DP - \tilde u
 
     double q_bar = (sqrt(pvl.rho) * ql + sqrt(pvr.rho) * qr) / (sqrt(pvl.rho) + sqrt(pvr.rho));
     double h_bar = (sqrt(pvl.rho) * pvl.h + sqrt(pvr.rho) * pvr.h) / (sqrt(pvl.rho) + sqrt(pvr.rho));

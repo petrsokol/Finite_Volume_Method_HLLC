@@ -13,13 +13,16 @@ class Point {
 
 public:
     double x, y;
-    int index;
+    std::vector<double> values;
+    int index, contributors;
 
     // Constructor
     Point(double x, double y, int index);
 
     // Methods
     static std::vector<Point> createPoints(std::vector<double> bot, std::vector<double> top);
+
+
 
     void toString() const;
 

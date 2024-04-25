@@ -15,12 +15,12 @@ void NACA::updateInlet(std::unordered_map<int, Cell> &cells) {
         int k = Def::firstInner + (Def::yInner - 1) * Def::xCells + i; //check -1;
         Primitive innerPV = Primitive::computePV(cells.at(k).w);
         double p = innerPV.p;
-        double rho = Def::RHO * pow(p / Def::P0, 1 / Def::KAPPA);
+        double rho = Def::rho_inlet * pow(p / Def::p_inlet, 1 / Def::KAPPA);
         double c = sqrt(Def::KAPPA * p / rho);
-        double M = sqrt(2 / (Def::KAPPA - 1) * (pow(Def::P0 / p, (Def::KAPPA - 1) / Def::KAPPA) - 1));
+        double M = sqrt(2 / (Def::KAPPA - 1) * (pow(Def::p_inlet / p, (Def::KAPPA - 1) / Def::KAPPA) - 1));
         double U = M * c;
-        double u = U * cos(Def::ALPHA_INFINITY);
-        double v = U * sin(Def::ALPHA_INFINITY);
+        double u = U * cos(Def::alpha_inlet);
+        double v = U * sin(Def::alpha_inlet);
         double rhoE = p / (Def::KAPPA - 1) + 0.5 * rho * pow(U, 2);
 
         Conservative outer;
@@ -38,7 +38,7 @@ void NACA::updateOutlet(std::unordered_map<int, Cell> &cells) {
         int k = Def::firstInner + j * Def::xCells;
         Primitive innerPV = Primitive::computePV(cells.at(k).w);
 
-        double rhoE = Def::P2 / (Def::KAPPA - 1) + 0.5 * innerPV.rho * pow(innerPV.U, 2);
+        double rhoE = Def::p_outlet / (Def::KAPPA - 1) + 0.5 * innerPV.rho * pow(innerPV.U, 2);
 
         Conservative outer;
         outer.r1 = innerPV.rho;
@@ -52,7 +52,7 @@ void NACA::updateOutlet(std::unordered_map<int, Cell> &cells) {
         int k = Def::firstInner + Def::xInner - 1 + j * Def::xCells;
         Primitive innerPV = Primitive::computePV(cells.at(k).w);
 
-        double rhoE = Def::P2 / (Def::KAPPA - 1) + 0.5 * innerPV.rho * pow(innerPV.U, 2);
+        double rhoE = Def::p_outlet / (Def::KAPPA - 1) + 0.5 * innerPV.rho * pow(innerPV.U, 2);
 
         Conservative outer;
         outer.r1 = innerPV.rho;

@@ -8,8 +8,10 @@
 const std::string Def::defaultPath = R"(C:\Users\petrs\Documents\CTU\BP\Charts\Data)";
 const std::string Def::defaultExtension = ".dat";
 
-const int Def::xInner = 150;
-const int Def::yInner = 50;
+const bool Def::isNaca = true;
+
+const int Def::xInner = isNaca ? 260 : 150;
+const int Def::yInner = isNaca ? 60 : 50;
 const int Def::inner = xInner * yInner;
 
 const int Def::gl = 2;
@@ -27,10 +29,10 @@ const double Def::xUpperBound = 3;
 const double Def::dx = (xUpperBound - xLowerBound) / xInner;
 
 const double Def::KAPPA = 1.4;
-const double Def::P0 = 1;
-const double Def::P2 = 0.656;
-const double Def::RHO = 1;
-const double Def::ALPHA_INFINITY = M_PI * 1.25 / 180;
+double Def::p_inlet = 1;
+double Def::p_outlet = 0.656;
+double Def::rho_inlet = 1;
+double Def::alpha_inlet = M_PI * 1.25 / 180;
 const double Def::EPSILON = -13;
 
 const double Def::rhoInitial = 1;
@@ -45,5 +47,20 @@ const Conservative Def::wInitial = Conservative(rhoInitial, rhoInitial * uInitia
 bool Def::error = false;
 
 int Def::innerIndex(int i) {
-    return firstInner + i%xInner + (i/xInner)*xCells;
+    return firstInner + i % xInner + (i / xInner) * xCells;
+}
+
+int Def::innerPointIndex(int i) {
+    return firstInner + i % (xInner + 1) + (i / (xInner + 1)) * xCells;
+}
+
+void Def::setConditions(double p_inlet, double rho_inlet, double alpha_inlet, double p_outlet) {
+    Def::p_inlet = p_inlet;
+    Def::rho_inlet = rho_inlet;
+    Def::alpha_inlet = alpha_inlet;
+    Def::p_outlet = p_outlet;
+}
+
+void Def::setConditions(double mach_infinity, double alpha_inlet) {
+
 }

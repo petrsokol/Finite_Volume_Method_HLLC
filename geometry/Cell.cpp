@@ -27,7 +27,6 @@ Cell::Cell(std::vector<Point> vec) {
     Cell::ty = (A1*y1 + A2*y2)/(A1 + A2); //ChatGPT
 
     Cell::w = Def::wInitial;
-    Cell::wn = Def::wInitial;
     Cell::rezi = 0;
 
     Cell::xi = Vector((a + d) / 2, (b + c) / 2);
