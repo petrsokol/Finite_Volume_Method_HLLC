@@ -16,14 +16,19 @@
 
 int main() {
     std::cout << "Dobry DEN!!!!" << std::endl;
+    std::cout << "program started at " << DataIO::getDate() << "_" << DataIO::getTime() << std::endl;
+
     std::string inputDir = R"(C:\Users\petrs\Documents\CTU\BP\FVM_Geometry)";
     std::string outputDir = R"(C:\Users\petrs\Documents\CTU\BP\FVM_Data)";
+    std::string name = Def::isNaca ? "naca-mesh-vertices" : "gamm-mesh-vertices";
+    std::string time = DataIO::getDate() + "_" + DataIO::getTime();
 
-    std::vector<Point> points = Point::loadPointsFromFile(inputDir, "gammMesh.dat");
+    Def::setConditions(1, 1, 0, 0.737);
+
+    std::vector<Point> points = Point::loadPointsFromFile(inputDir, Def::isNaca ? "nacaMesh.dat" : "gammMesh.dat");
     std::unordered_map<std::pair<int, int>, Interface, pair_hash> faces = Interface::createInnerFaces(points);
     std::unordered_map<int, Cell> cells = Cell::createCells(points);
-
-    std::cout << DataIO::getDate();
+    std::vector<double> reziVec{};
 
     int reps = 0;
     double rezi = 1;
@@ -31,50 +36,31 @@ int main() {
         reps++;
 
         Scheme::updateCellDT(cells, 0.5);
-        NACA::updateBounds(cells, faces);
+        Def::isNaca ? NACA::updateBounds(cells, faces) : Bound::updateBounds(cells, faces);
         Scheme::computeHLLC_localTimeStep(cells, faces);
         rezi = Scheme::computeRezi_localTimeStep(cells);
         Scheme::updateCells(cells);
+
+        reziVec.push_back(rezi);
 
         if (reps % 100 == 0) {
             std::cout << "reps: " << reps << ", rezi: " << rezi << std::endl;
         }
 
-        if (reps % 1000 == 0) {
-            DataIO::exportToCSV(cells, outputDir, "naca_mesh", reps);
-            DataIO::exportToDAT(cells, outputDir, "mach_along_wall", reps);
+        if (reps % 2000 == 0) {
+            DataIO::exportPointsToCSV(cells, points, outputDir, Def::isNaca ? "naca-mesh-vertices" : "gamm-mesh-vertices", reps, time);
+            DataIO::exportPointsToDat(cells, points, outputDir, Def::isNaca ? "naca-wall-vertices" : "gamm-wall-vertices", time, reps);
+            std::cout << "data written hopefully. " << std::endl;
         }
     }
 
-//    double t = 0;
-//    reps = 0;
-//    while (rezi > Def::EPSILON && !Def::error && reps < 30000) {
-//        reps++;
-//        double dt = Scheme::computeDT(cells, 0.5);
-//        std::unordered_map<int, double> deltaT = Scheme::LocalTimeStep(cells, 0.5);
-//        t += dt;
-//
-//        NACA::updateBounds(cells, faces);
-//        Scheme::computeHLLC(cells, faces, dt);
-//        rezi = Scheme::computeRezi(cells, dt);
-//        Scheme::updateCells(cells);
-//
-//        if (reps % 100 == 0) {
-//            std::cout << "reps: " << reps << ", rezi: " << rezi << ", dt: " << dt << std::endl;
-//        }
-//
-//        if (reps % 1000 == 0) {
-//            DataIO::exportToCSV(cells, outputDir, "naca_mesh_global", reps);
-//            DataIO::exportToDAT(cells, outputDir, "mach_along_wall_global", reps);
-//        }
-//    }
+    DataIO::exportPointsToCSV(cells, points, outputDir, Def::isNaca ? "naca-mesh-vertices" : "gamm-mesh-vertices", reps, time);
+    DataIO::exportPointsToDat(cells, points, outputDir, Def::isNaca ? "naca-wall-vertices" : "gamm-wall-vertices", time, reps);
+    DataIO::exportVectorToDat(reziVec, outputDir, Def::isNaca ? "naca-rezi-vertices" : "gamm-rezi-vertices", time);
 
+    if(Def::error) {std::cout << "error at rep " << reps << std::endl;}
 
-
-    if(Def::error) {
-        std::cout << "error at rep " << reps << std::endl;
-    }
-
+    std::cout << "program ended at " << DataIO::getTime() << std::endl;
     std::cout << "nashledanou" << std::endl;
     return 0;
 }
@@ -211,3 +197,27 @@ for (const auto &point: allpoints) {
         outputVec << cells.at(k).tx << " " << mach << "\n";
     } outputVec.close();
  */
+
+// // GLOBAL TIME STEP
+//    double t = 0;
+//    reps = 0;
+//    while (rezi > Def::EPSILON && !Def::error && reps < 30000) {
+//        reps++;
+//        double dt = Scheme::computeDT(cells, 0.5);
+//        std::unordered_map<int, double> deltaT = Scheme::LocalTimeStep(cells, 0.5);
+//        t += dt;
+//
+//        NACA::updateBounds(cells, faces);
+//        Scheme::computeHLLC(cells, faces, dt);
+//        rezi = Scheme::computeRezi(cells, dt);
+//        Scheme::updateCells(cells);
+//
+//        if (reps % 100 == 0) {
+//            std::cout << "reps: " << reps << ", rezi: " << rezi << ", dt: " << dt << std::endl;
+//        }
+//
+//        if (reps % 1000 == 0) {
+//            DataIO::exportToCSV(cells, outputDir, "naca_mesh_global", reps);
+//            DataIO::exportToDAT(cells, outputDir, "mach_along_wall_global", reps);
+//        }
+//    }

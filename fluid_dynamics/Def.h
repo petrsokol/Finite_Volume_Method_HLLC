@@ -14,6 +14,8 @@ public:
     static const std::string defaultPath;
     static const std::string defaultExtension;
 
+    static const bool isNaca;
+
     static const int xInner;
     static const int yInner;
     static const int inner;
@@ -33,10 +35,10 @@ public:
     static const double dx;
 
     static const double KAPPA;
-    static const double P0;
-    static const double P2;
-    static const double RHO;
-    static const double ALPHA_INFINITY;
+    static double p_inlet;
+    static double p_outlet;
+    static double rho_inlet;
+    static double alpha_inlet;
     static const double EPSILON;
 
     static const double rhoInitial;
@@ -51,6 +53,12 @@ public:
     static bool error;
 
     static int innerIndex(int i);
+
+    static int innerPointIndex(int i);
+
+    static void setConditions(double mach_infinity, double alpha_inlet);
+
+    static void setConditions(double p_inlet, double rho_inlet, double alpha_inlet, double p_outlet);
 };
 
 

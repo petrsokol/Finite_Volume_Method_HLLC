@@ -5,8 +5,9 @@
 #include <fstream>
 #include "Point.h"
 #include "../fluid_dynamics/Def.h"
+#include "../structures/Primitive.h"
 
-Point::Point(double x, double y, int index) : x(x), y(y), index(index) {}
+Point::Point(double x, double y, int index) : x(x), y(y), index(index), values(2), contributors(0) {}
 
 std::vector<Point> Point::createPoints(std::vector<double> bot, std::vector<double> top) {
     std::vector<Point> res{};
