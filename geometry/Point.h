@@ -12,6 +12,7 @@
 class Point {
 
 public:
+    static const int valueCount;
     double x, y;
     std::vector<double> values;
     int index, contributors;

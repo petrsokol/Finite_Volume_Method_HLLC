@@ -1,32 +1,20 @@
 //
-// Created by petrs on 19.12.2023.
+// Created by petrs on 27.04.2024.
 //
 
-#ifndef GAMM_NACA_H
-#define GAMM_NACA_H
+#ifndef GAMM_GAMM_H
+#define GAMM_GAMM_H
 
 
-#include <unordered_map>
-#include "../geometry/Cell.h"
-#include "../geometry/Interface.h"
-
-class NACA {
+class GAMM {
 
 public:
-    static const int wingStart;
-    static const int wingLength;
-
     static void updateInlet(std::unordered_map<int, Cell>& cells);
-
     static void updateOutlet(std::unordered_map<int, Cell>& cells);
-
     static void updateWalls(std::unordered_map<int, Cell>& cells, const std::unordered_map<std::pair<int, int>, Interface, pair_hash>& faces);
-
-    static void updatePeriodicity(std::unordered_map<int, Cell>& cells);
-
     static void updateBounds(std::unordered_map<int, Cell>& cells, const std::unordered_map<std::pair<int, int>, Interface, pair_hash>& faces);
 
 };
 
 
-#endif //GAMM_NACA_H
+#endif //GAMM_GAMM_H

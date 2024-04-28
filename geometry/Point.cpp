@@ -7,7 +7,9 @@
 #include "../fluid_dynamics/Def.h"
 #include "../structures/Primitive.h"
 
-Point::Point(double x, double y, int index) : x(x), y(y), index(index), values(2), contributors(0) {}
+const int Point::valueCount = 2;
+
+Point::Point(double x, double y, int index) : x(x), y(y), index(index), values(valueCount, 0), contributors(0) {}
 
 std::vector<Point> Point::createPoints(std::vector<double> bot, std::vector<double> top) {
     std::vector<Point> res{};

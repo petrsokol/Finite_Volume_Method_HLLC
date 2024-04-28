@@ -13,14 +13,9 @@
 class Bound {
 
 public:
-    static void updateInlet(std::unordered_map<int, Cell>& cells);
-
-    static void updateOutlet(std::unordered_map<int, Cell>& cells);
-
-    static void updateWalls(std::unordered_map<int, Cell>& cells, const std::unordered_map<std::pair<int, int>, Interface, pair_hash>& faces);
-
-    static void updateBounds(std::unordered_map<int, Cell>& cells, const std::unordered_map<std::pair<int, int>, Interface, pair_hash>& faces);
-
+    static Conservative updateInletCell(const Conservative &innerW);
+    static Conservative updateOutletCell(const Conservative &innerW);
+    static Conservative updateWallCell(const Conservative &innerW, const Interface &face);
 };
 
 

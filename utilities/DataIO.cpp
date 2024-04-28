@@ -76,10 +76,10 @@ void DataIO::exportToDAT(const std::unordered_map<int, Cell> &cells, const std::
     stream.close();
 }
 
-void DataIO::exportPointsToCSV(const std::unordered_map<int, Cell> &cells, std::vector<Point> &points,
+void DataIO::exportPointsToCSV(const std::unordered_map<int, Cell> &cells, std::vector<Point> points,
                                const std::string &dir, const std::string &name, int reps,
                                const std::string &time) {
-    DataIO::updatePointValues(cells, points);
+    std::vector<Point> newPoints = DataIO::updatePointValues(cells, points);
     std::ofstream stream(dir + "\\" + name + "_" + time + "_" + std::to_string(reps) + ".csv");
 
     stream << "\"X\", \"Y\", \"Z\", \"MACH_NUMBER\", \"PRESSURE\"\n";
@@ -87,10 +87,10 @@ void DataIO::exportPointsToCSV(const std::unordered_map<int, Cell> &cells, std::
     int innerVertices = (Def::xInner + 1) * (Def::yInner + 1);
     for (int i = 0; i < innerVertices; ++i) {
         int k = Def::innerPointIndex(i);
-        stream << points[k].x << ", " << points[k].y << ", 1";
+        stream << newPoints[k].x << ", " << newPoints[k].y << ", 1";
 
-        for (int j = 0; j < points[k].values.size(); ++j) {
-            stream << ", " << points[k].values[j];
+        for (int j = 0; j < newPoints[k].values.size(); ++j) {
+            stream << ", " << newPoints[k].values[j];
         }
 
         stream << std::endl;
@@ -102,7 +102,7 @@ void
 DataIO::exportPointsToDat(const std::unordered_map<int, Cell> &cells, std::vector<Point> &points,
                           const std::string &dir,
                           const std::string &name, const std::string &time, int reps) {
-    DataIO::updatePointValues(cells, points);
+    std::vector<Point> newPoints = DataIO::updatePointValues(cells, points);
     std::ofstream stream(dir + "\\" + name + "_" + time + "_" + std::to_string(reps) + ".dat");
 
     int upperBound = Def::isNaca ? NACA::wingLength + 1 : Def::xInner + 1; // +1 -> vertices in row = cells in row + 1
@@ -110,19 +110,17 @@ DataIO::exportPointsToDat(const std::unordered_map<int, Cell> &cells, std::vecto
 
     for (int i = 0; i < upperBound; ++i) {
         int k = offset + i;
-        stream << points[k].x << " " << points[k].y << " 1";
+        stream << newPoints[k].x << " " << newPoints[k].y << " 1";
 
-        for (int j = 0; j < points[k].values.size(); ++j) {
-            stream << " " << points[k].values[j];
+        for (int j = 0; j < newPoints[k].values.size(); ++j) {
+            stream << " " << newPoints[k].values[j];
         }
-
         stream << std::endl;
     }
-
     stream.close();
 }
 
-void DataIO::exportVectorToDat(const std::vector<double> vector, const std::string &dir, const std::string &name,
+void DataIO::exportVectorToDat(const std::vector<double>& vector, const std::string &dir, const std::string &name,
                                const std::string &time) {
     std::ofstream stream(dir + "\\" + name + "_" + time + "_" + ".dat");
 
@@ -132,45 +130,51 @@ void DataIO::exportVectorToDat(const std::vector<double> vector, const std::stri
     } stream.close();
 }
 
-void DataIO::updatePointValues(const std::unordered_map<int, Cell> &cells, std::vector<Point> &points) {
+std::vector<Point>
+DataIO::updatePointValues(const std::unordered_map<int, Cell> &cells, const std::vector<Point> &points) {
+    std::vector<Point> res = points;
     // loop over all inner Cells
-    for (int i = 0; i < Def::inner; ++i) {
-        int k = Def::innerIndex(i);
+    bool test = true;
+    int bound = test ? (Def::xInner + 2) * (Def::yInner + 2) : Def::inner;
+    for (int i = 0; i < bound; ++i) {
+        int k = test ? Def::innerGhostIndex(i) : Def::innerIndex(i);
         Primitive pv = Primitive::computePV(cells.at(k).w);
         double mach = pv.U / pv.c;
+        double cp = pv.p;
 
         // bottom left corner
-        points.at(k).values[0] += mach;
-        points.at(k).values[1] += pv.p;
-        points.at(k).contributors++;
+        res.at(k).values[0] += mach;
+        res.at(k).values[1] += cp;
+        res.at(k).contributors++;
 
         // bottom right corner
-        points.at(k + 1).values[0] += mach;
-        points.at(k + 1).values[1] += pv.p;
-        points.at(k + 1).contributors++;
+        res.at(k + 1).values[0] += mach;
+        res.at(k + 1).values[1] += cp;
+        res.at(k + 1).contributors++;
 
         // top left corner
-        points.at(k + Def::xCells).values[0] += mach;
-        points.at(k + Def::xCells).values[1] += pv.p;
-        points.at(k + Def::xCells).contributors++;
+        res.at(k + Def::xCells).values[0] += mach;
+        res.at(k + Def::xCells).values[1] += cp;
+        res.at(k + Def::xCells).contributors++;
 
         // top right corner
-        points.at(k + Def::xCells + 1).values[0] += mach;
-        points.at(k + Def::xCells + 1).values[1] += pv.p;
-        points.at(k + Def::xCells + 1).contributors++;
+        res.at(k + Def::xCells + 1).values[0] += mach;
+        res.at(k + Def::xCells + 1).values[1] += cp;
+        res.at(k + Def::xCells + 1).contributors++;
     }
 
     // averaging values based on number of contributors
-    int pointCount = points.size();
+    int pointCount = res.size();
     for (int i = 0; i < pointCount; ++i) {
-        if (points[i].contributors == 0) {
+        if (res[i].contributors == 0) {
             continue;
         } else {
-            // prepared for any number of values
-            for (int j = 0; j < points[i].values.size(); ++j) {
-                points[i].values[j] /= points[i].contributors;
+            for (int j = 0; j < res[i].values.size(); ++j) { // for loop prepared for any number of values
+                res[i].values[j] /= res[i].contributors;
             }
+            std::cout << res[i].contributors << " ";
         }
     }
+    return res;
 }
 

@@ -1,18 +1,16 @@
 #include <iostream>
 #include <vector>
 #include <unordered_map>
-#include <fstream>
+#include <cmath>
 #include "structures/Conservative.h"
 #include "fluid_dynamics/Def.h"
-#include "utilities/Lines.h"
 #include "geometry/Point.h"
 #include "geometry/Interface.h"
 #include "geometry/Cell.h"
 #include "fluid_dynamics/Scheme.h"
-#include "fluid_dynamics/Bound.h"
-#include "structures/Primitive.h"
 #include "fluid_dynamics/NACA.h"
 #include "utilities/DataIO.h"
+#include "fluid_dynamics/GAMM.h"
 
 int main() {
     std::cout << "Dobry DEN!!!!" << std::endl;
@@ -23,40 +21,46 @@ int main() {
     std::string name = Def::isNaca ? "naca-mesh-vertices" : "gamm-mesh-vertices";
     std::string time = DataIO::getDate() + "_" + DataIO::getTime();
 
-    Def::setConditions(1, 1, 0, 0.737);
+//    Def::setConditions(1, 1, 1.25 * M_PI / 180, 0.656);
+    Def::setConditions(1, 1, 0, 0.84);
+//    Def::setConditions(0.5, 0);
 
     std::vector<Point> points = Point::loadPointsFromFile(inputDir, Def::isNaca ? "nacaMesh.dat" : "gammMesh.dat");
     std::unordered_map<std::pair<int, int>, Interface, pair_hash> faces = Interface::createInnerFaces(points);
     std::unordered_map<int, Cell> cells = Cell::createCells(points);
     std::vector<double> reziVec{};
 
+    std::cout << "lesgou" << std::endl;
     int reps = 0;
     double rezi = 1;
     while (rezi > Def::EPSILON && !Def::error && reps < 30000) {
         reps++;
 
         Scheme::updateCellDT(cells, 0.5);
-        Def::isNaca ? NACA::updateBounds(cells, faces) : Bound::updateBounds(cells, faces);
+        Def::isNaca ? NACA::updateBounds(cells, faces) : GAMM::updateBounds(cells, faces);
         Scheme::computeHLLC_localTimeStep(cells, faces);
         rezi = Scheme::computeRezi_localTimeStep(cells);
         Scheme::updateCells(cells);
 
         reziVec.push_back(rezi);
 
+        //TODO p_inlet = isHypersonic ? p1 : p2;
+
         if (reps % 100 == 0) {
             std::cout << "reps: " << reps << ", rezi: " << rezi << std::endl;
         }
 
-        if (reps % 2000 == 0) {
+        if (reps % 5000 == 0) {
             DataIO::exportPointsToCSV(cells, points, outputDir, Def::isNaca ? "naca-mesh-vertices" : "gamm-mesh-vertices", reps, time);
             DataIO::exportPointsToDat(cells, points, outputDir, Def::isNaca ? "naca-wall-vertices" : "gamm-wall-vertices", time, reps);
             std::cout << "data written hopefully. " << std::endl;
         }
     }
 
-    DataIO::exportPointsToCSV(cells, points, outputDir, Def::isNaca ? "naca-mesh-vertices" : "gamm-mesh-vertices", reps, time);
-    DataIO::exportPointsToDat(cells, points, outputDir, Def::isNaca ? "naca-wall-vertices" : "gamm-wall-vertices", time, reps);
-    DataIO::exportVectorToDat(reziVec, outputDir, Def::isNaca ? "naca-rezi-vertices" : "gamm-rezi-vertices", time);
+    DataIO::exportPointsToCSV(cells, points, outputDir, Def::isNaca ? "naca-mesh-vertices-DONE" : "gamm-mesh-vertices-DONE", reps, time);
+    DataIO::exportToCSV(cells, outputDir, Def::isNaca ? "naca-mesh-DONE" : "gamm-mesh-DONE", reps);
+    DataIO::exportPointsToDat(cells, points, outputDir, Def::isNaca ? "naca-wall-vertices-DONE" : "gamm-wall-vertices-DONE", time, reps);
+    DataIO::exportVectorToDat(reziVec, outputDir, Def::isNaca ? "naca-rezi-vertices-DONE" : "gamm-rezi-vertices-DONE", time);
 
     if(Def::error) {std::cout << "error at rep " << reps << std::endl;}
 
@@ -198,26 +202,53 @@ for (const auto &point: allpoints) {
     } outputVec.close();
  */
 
-// // GLOBAL TIME STEP
-//    double t = 0;
-//    reps = 0;
-//    while (rezi > Def::EPSILON && !Def::error && reps < 30000) {
-//        reps++;
-//        double dt = Scheme::computeDT(cells, 0.5);
-//        std::unordered_map<int, double> deltaT = Scheme::LocalTimeStep(cells, 0.5);
-//        t += dt;
-//
-//        NACA::updateBounds(cells, faces);
-//        Scheme::computeHLLC(cells, faces, dt);
-//        rezi = Scheme::computeRezi(cells, dt);
-//        Scheme::updateCells(cells);
-//
-//        if (reps % 100 == 0) {
-//            std::cout << "reps: " << reps << ", rezi: " << rezi << ", dt: " << dt << std::endl;
-//        }
-//
-//        if (reps % 1000 == 0) {
-//            DataIO::exportToCSV(cells, outputDir, "naca_mesh_global", reps);
-//            DataIO::exportToDAT(cells, outputDir, "mach_along_wall_global", reps);
-//        }
-//    }
+// GLOBAL TIME STEP
+/*
+    double t = 0;
+    reps = 0;
+    while (rezi > Def::EPSILON && !Def::error && reps < 30000) {
+        reps++;
+        double dt = Scheme::computeDT(cells, 0.5);
+        std::unordered_map<int, double> deltaT = Scheme::LocalTimeStep(cells, 0.5);
+        t += dt;
+
+        NACA::updateBounds(cells, faces);
+        Scheme::computeHLLC(cells, faces, dt);
+        rezi = Scheme::computeRezi(cells, dt);
+        Scheme::updateCells(cells);
+
+        if (reps % 100 == 0) {
+            std::cout << "reps: " << reps << ", rezi: " << rezi << ", dt: " << dt << std::endl;
+        }
+
+        if (reps % 1000 == 0) {
+            DataIO::exportToCSV(cells, outputDir, "naca_mesh_global", reps);
+            DataIO::exportToDAT(cells, outputDir, "mach_along_wall_global", reps);
+        }
+    }
+    */
+
+// create a profile overlay
+/*
+    std::string fileName = Def::isNaca ? "\\only-naca.csv" : "\\only-gamm.csv";
+    std::ofstream stream(outputDir + "\\" + fileName);
+    int upperBound = Def::isNaca ? NACA::wingLength : 50;
+    int offset = Def::isNaca ? Def::firstInner + NACA::wingStart : Def::firstInner + 50;
+
+    stream << "\"X\", \"Y\", \"Z\", \"Z_MACH_NUMBER\", \"Z_PRESSURE\"\n";
+    for (int i = 0; i < upperBound; ++i) {
+        int k = offset + i;
+        Primitive pv = Primitive::computePV(cells.at(k).w);
+        double mach = pv.U / pv.c;
+        stream << points.at(k).x << ", " << points.at(k).y << ", 1.1, " << mach << ", " << pv.p << "\n";
+    }
+    if (!Def::isNaca) {
+        for (int i = upperBound; i > 0; --i) {
+            int k = offset + i;
+            Primitive pv = Primitive::computePV(cells.at(k).w);
+            double mach = pv.U / pv.c;
+            stream << points.at(k).x << ", " << 0 << ", 1.1, " << mach << ", " << pv.p << "\n";
+        }
+    }
+    stream.close();
+    */
