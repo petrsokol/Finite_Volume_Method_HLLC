@@ -7,86 +7,63 @@
 #include "Def.h"
 #include "../structures/Primitive.h"
 
-void Bound::updateInlet(std::unordered_map<int, Cell> &cells) {
-    for (int j  = 0; j < Def::yInner; ++j) {
-        int k = Def::firstInner + j * Def::xCells;
-        Primitive innerPV = Primitive::computePV(cells.at(k).w);
-        double p = innerPV.p;
-        double rho = Def::rho_inlet * pow(p / Def::p_inlet, 1 / Def::KAPPA);
-        double c = sqrt(Def::KAPPA * p / rho);
-        double M = sqrt(2 / (Def::KAPPA - 1) * (pow(Def::p_inlet / p, (Def::KAPPA - 1) / Def::KAPPA) - 1));
-        double U = M * c;
-        double u = U * cos(Def::alpha_inlet);
-        double v = U * sin(Def::alpha_inlet);
-        double rhoE = p / (Def::KAPPA - 1) + 0.5 * rho * pow(U, 2);
+Conservative Bound::updateInletCell(const Conservative &innerW) {
+    Primitive innerPV = Primitive::computePV(innerW);
 
-        Conservative outer;
-        outer.r1 = rho;
-        outer.r2 = rho * u;
-        outer.r3 = rho * v;
-        outer.r4 = rhoE;
+    double p_infty = innerPV.p; // p_0
+    double p_0, mach_infty;
 
-        cells.at(k - 1).w = outer;
+    if (!Def::isSetByMach) { // set by p_inlet
+        p_0 = Def::p_inlet;
+        mach_infty = sqrt(2 / (Def::KAPPA - 1) * (pow(p_0 / p_infty, (Def::KAPPA - 1) / Def::KAPPA) - 1));
     }
+    else { // set by mach_inlet - nekonverguje
+        mach_infty = Def::mach_inlet;
+        p_0 = p_infty * pow(1 + (Def::KAPPA - 1) / 2 * pow(Def::mach_inlet, 2), (Def::KAPPA / (Def::KAPPA - 1)));
+    }
+    double rho_infty = Def::rho_inlet * pow(p_infty / p_0, 1 / Def::KAPPA);
+    double c = sqrt(Def::KAPPA * p_infty / rho_infty); // c_infty
+    double U = mach_infty * c; // | \vec u_infty |
+    double u = U * cos(Def::alpha_inlet); // u_infty
+    double v = U * sin(Def::alpha_inlet); // v_infty
+    double rhoE = p_infty / (Def::KAPPA - 1) + 0.5 * rho_infty * pow(U, 2); // rho_infty E_infty
+
+
+    Conservative outerW;
+    outerW.r1 = rho_infty;
+    outerW.r2 = rho_infty * u;
+    outerW.r3 = rho_infty * v;
+    outerW.r4 = rhoE;
+
+    return outerW;
 }
 
-void Bound::updateOutlet(std::unordered_map<int, Cell> &cells) {
-    for (int j = 0; j < Def::yInner; ++j) {
-        int k = Def::firstInner + Def::xInner - 1 + j * Def::xCells;
-        Primitive innerPV = Primitive::computePV(cells.at(k).w);
+Conservative Bound::updateOutletCell(const Conservative &innerW) {
+    Primitive innerPV = Primitive::computePV(innerW);
 
-        double rhoE = Def::p_outlet / (Def::KAPPA - 1) + 0.5 * innerPV.rho * pow(innerPV.U, 2);
+    double rhoE = Def::p_outlet / (Def::KAPPA - 1) + 0.5 * innerPV.rho * pow(innerPV.U, 2);
 
-        Conservative outer;
-        outer.r1 = innerPV.rho;
-        outer.r2 = innerPV.rhoU;
-        outer.r3 = innerPV.rhoV;
-        outer.r4 = rhoE;
+    Conservative outerW;
+    outerW.r1 = innerPV.rho;
+    outerW.r2 = innerPV.rhoU;
+    outerW.r3 = innerPV.rhoV;
+    outerW.r4 = rhoE;
 
-        cells.at(k + 1).w = outer;
-    }
+    return outerW;
 }
 
-void Bound::updateWalls(std::unordered_map<int, Cell> &cells, const std::unordered_map<std::pair<int, int>, Interface, pair_hash> &faces) {
-    for (int i = 0; i < Def::xInner; ++i) {
-        int k = Def::firstInner + i;
-        Conservative inner = cells.at(k).w;
+Conservative Bound::updateWallCell(const Conservative &innerW, const Interface &face) {
 
-        double u = inner.r2 / inner.r1;
-        double v = inner.r3 / inner.r1;
-        double nx = faces.at(std::make_pair(k, k + 1)).nx;
-        double ny = faces.at(std::make_pair(k, k + 1)).ny;
+    double u = innerW.r2 / innerW.r1;
+    double v = innerW.r3 / innerW.r1;
+    double nx = face.nx;
+    double ny = face.ny;
 
-        Conservative outer;
-        outer.r1 = inner.r1;
-        outer.r2 = inner.r1 * (u - 2 * (u * nx + v * ny) * nx);
-        outer.r3 = inner.r1 * (v - 2 * (u * nx + v * ny) * ny);
-        outer.r4 = inner.r4;
+    Conservative outerW;
+    outerW.r1 = innerW.r1;
+    outerW.r2 = innerW.r1 * (u - 2 * (u * nx + v * ny) * nx);
+    outerW.r3 = innerW.r1 * (v - 2 * (u * nx + v * ny) * ny);
+    outerW.r4 = innerW.r4;
 
-        cells.at(k - Def::xCells).w = outer;
-    }
-
-    for (int i = 0; i < Def::xInner; ++i) {
-        int k = Def::firstInner + (Def::yInner) * Def::xCells + i;
-        Conservative inner = cells.at(k - Def::xCells).w;
-
-        double u = inner.r2 / inner.r1;
-        double v = inner.r3 / inner.r1;
-        double nx = faces.at(std::make_pair(k, k + 1)).nx;
-        double ny = faces.at(std::make_pair(k, k + 1)).ny;
-
-        Conservative outer;
-        outer.r1 = inner.r1;
-        outer.r2 = inner.r1 * (u - 2 * (u * nx + v * ny) * nx);
-        outer.r3 = inner.r1 * (v - 2 * (u * nx + v * ny) * ny);
-        outer.r4 = inner.r4;
-
-        cells.at(k).w = outer;
-    }
-}
-
-void Bound::updateBounds(std::unordered_map<int, Cell> &cells, const std::unordered_map<std::pair<int, int>, Interface, pair_hash> &faces) {
-    updateInlet(cells);
-    updateOutlet(cells);
-    updateWalls(cells, faces);
+    return outerW;
 }

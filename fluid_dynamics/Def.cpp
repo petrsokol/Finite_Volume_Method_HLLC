@@ -9,6 +9,8 @@ const std::string Def::defaultPath = R"(C:\Users\petrs\Documents\CTU\BP\Charts\D
 const std::string Def::defaultExtension = ".dat";
 
 const bool Def::isNaca = true;
+const bool Def::isHLLC = true;
+bool Def::isSetByMach = false;
 
 const int Def::xInner = isNaca ? 260 : 150;
 const int Def::yInner = isNaca ? 60 : 50;
@@ -33,7 +35,9 @@ double Def::p_inlet = 1;
 double Def::p_outlet = 0.656;
 double Def::rho_inlet = 1;
 double Def::alpha_inlet = M_PI * 1.25 / 180;
-const double Def::EPSILON = -13;
+double Def::mach_inlet = 1;
+
+const double Def::EPSILON = -15;
 
 const double Def::rhoInitial = 1;
 const double Def::uInitial = 0.65;
@@ -54,7 +58,12 @@ int Def::innerPointIndex(int i) {
     return firstInner + i % (xInner + 1) + (i / (xInner + 1)) * xCells;
 }
 
+int Def::innerGhostIndex(int i) {
+    return (firstInner - xCells - 1) + i % (xInner + 3) + (i / (xInner + 3) * xCells);
+}
+
 void Def::setConditions(double p_inlet, double rho_inlet, double alpha_inlet, double p_outlet) {
+    Def::isSetByMach = false;
     Def::p_inlet = p_inlet;
     Def::rho_inlet = rho_inlet;
     Def::alpha_inlet = alpha_inlet;
@@ -62,5 +71,9 @@ void Def::setConditions(double p_inlet, double rho_inlet, double alpha_inlet, do
 }
 
 void Def::setConditions(double mach_infinity, double alpha_inlet) {
-
+    Def::isSetByMach = true;
+    Def::p_inlet = 1;
+    Def::rho_inlet = 1;
+    Def::alpha_inlet = alpha_inlet;
+    Def::mach_inlet = mach_infinity;
 }

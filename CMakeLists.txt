@@ -29,6 +29,7 @@ add_executable(GAMM main.cpp
         utilities/DataIO.cpp
         utilities/DataIO.h
         test_cases/Case.h
-        test_cases/GAMM.cpp
         test_cases/Case.cpp
+        fluid_dynamics/GAMM.cpp
+        fluid_dynamics/GAMM.h
 )

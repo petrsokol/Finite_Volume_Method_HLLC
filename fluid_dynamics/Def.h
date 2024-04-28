@@ -15,6 +15,8 @@ public:
     static const std::string defaultExtension;
 
     static const bool isNaca;
+    static const bool isHLLC;
+    static bool isSetByMach;
 
     static const int xInner;
     static const int yInner;
@@ -39,6 +41,8 @@ public:
     static double p_outlet;
     static double rho_inlet;
     static double alpha_inlet;
+    static double mach_inlet;
+
     static const double EPSILON;
 
     static const double rhoInitial;
@@ -56,9 +60,13 @@ public:
 
     static int innerPointIndex(int i);
 
+    static int innerGhostIndex(int i);
+
     static void setConditions(double mach_infinity, double alpha_inlet);
 
     static void setConditions(double p_inlet, double rho_inlet, double alpha_inlet, double p_outlet);
+
+
 };
 
 
