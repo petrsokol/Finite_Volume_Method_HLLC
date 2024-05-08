@@ -11,56 +11,80 @@
 #include "fluid_dynamics/NACA.h"
 #include "utilities/DataIO.h"
 #include "fluid_dynamics/GAMM.h"
+#include "utilities/Instructions.h"
 
 int main() {
     std::cout << "Dobry DEN!!!!" << std::endl;
     std::cout << "program started at " << DataIO::getDate() << "_" << DataIO::getTime() << std::endl;
+    std::cout << "Check file names!" << std::endl;
 
-    std::string inputDir = R"(C:\Users\petrs\Documents\CTU\BP\FVM_Geometry)";
-    std::string outputDir = R"(C:\Users\petrs\Documents\CTU\BP\FVM_Data)";
-    std::string name = Def::isNaca ? "naca-mesh-vertices" : "gamm-mesh-vertices";
-    std::string time = DataIO::getDate() + "_" + DataIO::getTime();
+    std::string name = Def::isNaca ? "naca" : "gamm";
+    name += "_" + DataIO::getDate() + "_" + DataIO::getTime();
 
-//    Def::setConditions(1, 1, 1.25 * M_PI / 180, 0.656);
-    Def::setConditions(1, 1, 0, 0.84);
-//    Def::setConditions(0.5, 0);
+    Instructions::verticesName = name + "_vertices.csv";
+    Instructions::wallName = name + "_wall.dat";
+    Instructions::reziName = name + "_rezi.dat";
+    Instructions::overlayName = "only-naca.csv";
 
-    std::vector<Point> points = Point::loadPointsFromFile(inputDir, Def::isNaca ? "nacaMesh.dat" : "gammMesh.dat");
+    Def::setConditions(1, 1, 0, 0.737);
+//    Def::setConditions(5, 0); // change starting conditions accordingly
+
+    std::vector<Point> points = Point::loadPointsFromFile(Instructions::geometryInput, Def::isNaca ? "nacaMesh.dat" : "gammMesh.dat");
     std::unordered_map<std::pair<int, int>, Interface, pair_hash> faces = Interface::createInnerFaces(points);
     std::unordered_map<int, Cell> cells = Cell::createCells(points);
     std::vector<double> reziVec{};
 
     std::cout << "lesgou" << std::endl;
     int reps = 0;
+    double t = 0;
+    double dt;
     double rezi = 1;
-    while (rezi > Def::EPSILON && !Def::error && reps < 30000) {
+    while (rezi > Def::EPSILON && !Def::error && reps < 7000) {
         reps++;
 
-        Scheme::updateCellDT(cells, 0.5);
-        Def::isNaca ? NACA::updateBounds(cells, faces) : GAMM::updateBounds(cells, faces);
-        Scheme::computeHLLC_localTimeStep(cells, faces);
-        rezi = Scheme::computeRezi_localTimeStep(cells);
-        Scheme::updateCells(cells);
-
+        if (Def::localTimeStep) {
+            Scheme::updateCellDT(cells, Def::CFL);
+            Def::isNaca ? NACA::updateBounds(cells, faces) : GAMM::updateBounds(cells, faces);
+            if (Def::isHLLC) {
+                Scheme::computeHLLC_localTimeStep(cells, faces);
+            } else {
+                Scheme::computeHLL_localTimeStep(cells, faces);
+            }
+            rezi = Scheme::computeRezi_localTimeStep(cells);
+            Scheme::updateCells(cells);
+        } else {
+            dt = Scheme::computeDT(cells, Def::CFL);
+            t += dt;
+            Def::isNaca ? NACA::updateBounds(cells, faces) : GAMM::updateBounds(cells, faces);
+            Scheme::computeHLLC(cells, faces, dt);
+            rezi = Scheme::computeRezi(cells, dt);
+            Scheme::updateCells(cells);
+        }
         reziVec.push_back(rezi);
 
         //TODO p_inlet = isHypersonic ? p1 : p2;
 
-        if (reps % 100 == 0) {
-            std::cout << "reps: " << reps << ", rezi: " << rezi << std::endl;
+        if (reps % 1000 == 0) {
+            std::cout << "reps: " << reps << ", rezi: " << rezi << ", dt: " << dt << std::endl;
         }
-
-        if (reps % 5000 == 0) {
-            DataIO::exportPointsToCSV(cells, points, outputDir, Def::isNaca ? "naca-mesh-vertices" : "gamm-mesh-vertices", reps, time);
-            DataIO::exportPointsToDat(cells, points, outputDir, Def::isNaca ? "naca-wall-vertices" : "gamm-wall-vertices", time, reps);
-            std::cout << "data written hopefully. " << std::endl;
-        }
+//        if (reps % 1000 == 0) {
+//            std::cout << "reps: " << reps << ", rezi: " << rezi << ", dt: " << dt << std::endl;
+//            DataIO::exportPointsToCSV(cells, points, Instructions::dataInput, Instructions::verticesName);
+//
+//        }
     }
 
-    DataIO::exportPointsToCSV(cells, points, outputDir, Def::isNaca ? "naca-mesh-vertices-DONE" : "gamm-mesh-vertices-DONE", reps, time);
-    DataIO::exportToCSV(cells, outputDir, Def::isNaca ? "naca-mesh-DONE" : "gamm-mesh-DONE", reps);
-    DataIO::exportPointsToDat(cells, points, outputDir, Def::isNaca ? "naca-wall-vertices-DONE" : "gamm-wall-vertices-DONE", time, reps);
-    DataIO::exportVectorToDat(reziVec, outputDir, Def::isNaca ? "naca-rezi-vertices-DONE" : "gamm-rezi-vertices-DONE", time);
+    //TODO správný contour hodnoty v paraViewScript - při zápisu sleduj nejmenší a největší Mach a CP - pak sestav data pro kontury
+
+    DataIO::exportPointsToCSV(cells, points, Instructions::dataInput, Instructions::verticesName);
+    DataIO::exportToCSV(cells, Instructions::dataInput, "naca_" + DataIO::getTime(), reps);
+    DataIO::exportPointsToDat(cells, points, Instructions::dataInput, Instructions::wallName);
+    DataIO::exportVectorToDat(reziVec, Instructions::dataInput, Instructions::reziName);
+    Instructions::generateInstructions();
+    Instructions::generateBackup();
+
+    std::system(R"(python C:\Users\petrs\Documents\CTU\BP\PYTHON-scripts\mach-cp-charts.py)");
+    std::system(R"(python C:\Users\petrs\Documents\CTU\BP\PYTHON-scripts\rezi-chart.py)");
 
     if(Def::error) {std::cout << "error at rep " << reps << std::endl;}
 
@@ -222,8 +246,8 @@ for (const auto &point: allpoints) {
         }
 
         if (reps % 1000 == 0) {
-            DataIO::exportToCSV(cells, outputDir, "naca_mesh_global", reps);
-            DataIO::exportToDAT(cells, outputDir, "mach_along_wall_global", reps);
+            DataIO::exportToCSV(cells, Instructions::outputDir, "naca_mesh_global", reps);
+            DataIO::exportToDAT(cells, Instructions::outputDir, "mach_along_wall_global", reps);
         }
     }
     */
@@ -231,7 +255,7 @@ for (const auto &point: allpoints) {
 // create a profile overlay
 /*
     std::string fileName = Def::isNaca ? "\\only-naca.csv" : "\\only-gamm.csv";
-    std::ofstream stream(outputDir + "\\" + fileName);
+    std::ofstream stream(Instructions::outputDir + "\\" + fileName);
     int upperBound = Def::isNaca ? NACA::wingLength : 50;
     int offset = Def::isNaca ? Def::firstInner + NACA::wingStart : Def::firstInner + 50;
 

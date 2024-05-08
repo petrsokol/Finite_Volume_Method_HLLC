@@ -34,7 +34,12 @@ public:
 
     static double computeRezi_localTimeStep(const std::unordered_map<int, Cell>& cells);
 
+    static double computeCP(double p_inner);
+
     static void updateCells(std::unordered_map<int, Cell> &cells);
+
+    static void compute(std::unordered_map<int, Cell>& cells,
+                        const std::unordered_map<std::pair<int, int>, Interface, pair_hash>& faces,const bool HLLC,const bool globalTimeStep);
 };
 
 
