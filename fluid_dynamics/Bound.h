@@ -13,6 +13,7 @@
 class Bound {
 
 public:
+    static double p_infty, rho_infty, u_infty, v_infty;
     static Conservative updateInletCell(const Conservative &innerW);
     static Conservative updateOutletCell(const Conservative &innerW);
     static Conservative updateWallCell(const Conservative &innerW, const Interface &face);

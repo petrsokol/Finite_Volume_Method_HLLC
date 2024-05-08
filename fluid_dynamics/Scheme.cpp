@@ -6,23 +6,34 @@
 #include "Scheme.h"
 #include "../structures/Primitive.h"
 #include "Def.h"
+#include "Bound.h"
 
 double Scheme::computeDT(const std::unordered_map<int, Cell> &cells, double CFL) {
     double res = 1e9;
-    for (const auto &cell: cells) {
-        Primitive pv = Primitive::computePV(cell.second.w);
+//    for (const auto &cell: cells) {
+//        Primitive pv = Primitive::computePV(cell.second.w);
+//
+//        double u_xi = fabs(pv.u * cell.second.xi.ux + pv.v * cell.second.xi.uy);
+//        double u_eta = fabs(pv.u * cell.second.eta.ux + pv.v * cell.second.eta.uy);
+//
+//        double d_xi = (u_xi + pv.c) / cell.second.xi.length;
+//        double d_eta = (u_eta + pv.c) / cell.second.eta.length;
+//
+//        double candidate = CFL / (d_xi + d_eta);
+//        res = fmin(res, candidate);
+//    }
+    for (int i = 0; i < Def::inner; ++i) {
+        int k = Def::innerIndex(i);
+        Cell cell = cells.at(k);
+        Primitive pv = Primitive::computePV(cell.w);
 
-        double u_xi = fabs(pv.u * cell.second.xi.ux + pv.v * cell.second.xi.uy);
-        double u_eta = fabs(pv.u * cell.second.eta.ux + pv.v * cell.second.eta.uy);
+        double u_xi = fabs(pv.u * cell.xi.ux + pv.v * cell.xi.uy);
+        double u_eta = fabs(pv.u * cell.eta.ux + pv.v * cell.eta.uy);
 
-        double d_xi = (u_xi + pv.c) / cell.second.xi.length;
-        double d_eta = (u_eta + pv.c) / cell.second.eta.length;
+        double d_xi = (u_xi + pv.c) / cell.xi.length;
+        double d_eta = (u_eta + pv.c) / cell.eta.length;
 
         double candidate = CFL / (d_xi + d_eta);
-        if (candidate < res) {
-            std::cout << "candidate cell: " << std::endl;
-            cell.second.toString();
-        }
         res = fmin(res, candidate);
     }
     return res;
@@ -211,4 +222,14 @@ void Scheme::updateCells(std::unordered_map<int, Cell> &cells) {
         cells.at(k).w += cells.at(k).rezi;
         cells.at(k).rezi = 0;
     }
+}
+
+double Scheme::computeCP(double p_inner) {
+    return (p_inner - Bound::p_infty) / (0.5 * Bound::rho_infty * pow(Bound::u_infty, 2) + pow(Bound::v_infty, 2));
+}
+
+void Scheme::compute(std::unordered_map<int, Cell> &cells,
+                     const std::unordered_map<std::pair<int, int>, Interface, pair_hash> &faces, const bool HLLC,
+                     const bool globalTimeStep) {
+
 }

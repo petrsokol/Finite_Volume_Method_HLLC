@@ -7,32 +7,34 @@
 #include "Def.h"
 #include "../structures/Primitive.h"
 
+double Bound::v_infty = 0;
+double Bound::u_infty = 1;
+double Bound::rho_infty = 1;
+double Bound::p_infty = 1;
+
 Conservative Bound::updateInletCell(const Conservative &innerW) {
     Primitive innerPV = Primitive::computePV(innerW);
 
-    double p_infty = innerPV.p; // p_0
-    double p_0, mach_infty;
+    Bound::p_infty = innerPV.p; // p_0
+    double p_0 = Def::p_inlet;
+    double mach_infty;
+    if (Def::mach_infty < 1) {
+         mach_infty = sqrt(2 / (Def::KAPPA - 1) * (pow(p_0 / Bound::p_infty, (Def::KAPPA - 1) / Def::KAPPA) - 1));
+    } else {
+         mach_infty = Def::mach_infty;
+    }
 
-    if (!Def::isSetByMach) { // set by p_inlet
-        p_0 = Def::p_inlet;
-        mach_infty = sqrt(2 / (Def::KAPPA - 1) * (pow(p_0 / p_infty, (Def::KAPPA - 1) / Def::KAPPA) - 1));
-    }
-    else { // set by mach_inlet - nekonverguje
-        mach_infty = Def::mach_inlet;
-        p_0 = p_infty * pow(1 + (Def::KAPPA - 1) / 2 * pow(Def::mach_inlet, 2), (Def::KAPPA / (Def::KAPPA - 1)));
-    }
-    double rho_infty = Def::rho_inlet * pow(p_infty / p_0, 1 / Def::KAPPA);
-    double c = sqrt(Def::KAPPA * p_infty / rho_infty); // c_infty
+    Bound::rho_infty = Def::rho_inlet * pow(Bound::p_infty / p_0, 1 / Def::KAPPA);
+    double c = sqrt(Def::KAPPA * Bound::p_infty / Bound::rho_infty); // c_infty
     double U = mach_infty * c; // | \vec u_infty |
-    double u = U * cos(Def::alpha_inlet); // u_infty
-    double v = U * sin(Def::alpha_inlet); // v_infty
-    double rhoE = p_infty / (Def::KAPPA - 1) + 0.5 * rho_infty * pow(U, 2); // rho_infty E_infty
-
+    Bound::u_infty = U * cos(Def::alpha_inlet); // u_infty
+    Bound::v_infty = U * sin(Def::alpha_inlet); // v_infty
+    double rhoE = Bound::p_infty / (Def::KAPPA - 1) + 0.5 * Bound::rho_infty * pow(U, 2); // rho_infty E_infty
 
     Conservative outerW;
     outerW.r1 = rho_infty;
-    outerW.r2 = rho_infty * u;
-    outerW.r3 = rho_infty * v;
+    outerW.r2 = rho_infty * Bound::u_infty;
+    outerW.r3 = rho_infty * Bound::v_infty;
     outerW.r4 = rhoE;
 
     return outerW;
@@ -40,14 +42,24 @@ Conservative Bound::updateInletCell(const Conservative &innerW) {
 
 Conservative Bound::updateOutletCell(const Conservative &innerW) {
     Primitive innerPV = Primitive::computePV(innerW);
-
-    double rhoE = Def::p_outlet / (Def::KAPPA - 1) + 0.5 * innerPV.rho * pow(innerPV.U, 2);
-
     Conservative outerW;
-    outerW.r1 = innerPV.rho;
-    outerW.r2 = innerPV.rhoU;
-    outerW.r3 = innerPV.rhoV;
-    outerW.r4 = rhoE;
+
+    if (Def::mach_infty < 1) {
+        double p_2;
+        if (!Def::isSetByMach) {// set by p_outlet
+            p_2 = Def::p_outlet;
+        } else {                // set by mach_infty
+            p_2 = Def::p_inlet * pow(1 + (Def::KAPPA - 1) / 2 * pow(Def::mach_infty, 2), -1 * (Def::KAPPA / (Def::KAPPA - 1)));
+        }
+        double rhoE = p_2 / (Def::KAPPA - 1) + 0.5 * innerPV.rho * pow(innerPV.U, 2);
+
+        outerW.r1 = innerPV.rho;
+        outerW.r2 = innerPV.rhoU;
+        outerW.r3 = innerPV.rhoV;
+        outerW.r4 = rhoE;
+    } else {
+        outerW = innerW;
+    }
 
     return outerW;
 }

@@ -12,6 +12,9 @@
 
 class DataIO {
 
+private:
+    static const std::string CSV_HEADER;
+
 public:
     static std::string getDate();
 
@@ -23,16 +26,14 @@ public:
     updatePointValues(const std::unordered_map<int, Cell>& cells, const std::vector<Point> &points);
 
     static void
-    exportPointsToCSV(const std::unordered_map<int, Cell> &cells, std::vector<Point> points,
-                      const std::string &dir, const std::string &name, int reps,
-                      const std::string &time);
+    exportPointsToCSV(const std::unordered_map<int, Cell> &cells, std::vector<Point> points, const std::string &dir,
+                      const std::string &name);
 
     static void
     exportPointsToDat(const std::unordered_map<int, Cell> &cells, std::vector<Point> &points, const std::string &dir,
-                      const std::string &name, const std::string &time, int reps);
+                      const std::string &name);
 
-    static void exportVectorToDat(const std::vector<double>& vector, const std::string &dir, const std::string &name,
-                                  const std::string &time);
+    static void exportVectorToDat(const std::vector<double> &vector, const std::string &dir, const std::string &name);
 
     static std::string getTime();
 };

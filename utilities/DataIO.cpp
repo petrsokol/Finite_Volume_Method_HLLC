@@ -5,10 +5,15 @@
 #include <ctime>
 #include <fstream>
 #include <chrono>
+#include <cmath>
 #include "DataIO.h"
 #include "../fluid_dynamics/Def.h"
 #include "../structures/Primitive.h"
 #include "../fluid_dynamics/NACA.h"
+#include "../fluid_dynamics/Scheme.h"
+#include "Instructions.h"
+
+const std::string DataIO::CSV_HEADER = "\"X\", \"Y\", \"Z\", \"M\", \"c_p\"\n";
 
 std::string DataIO::getDate() {
     // Get the current time
@@ -49,7 +54,7 @@ std::string DataIO::getTime() {
 
 void DataIO::exportToCSV(const std::unordered_map<int, Cell> &cells, const std::string& dir, const std::string& name, int reps) {
     std::ofstream stream(dir + "\\" + name + "_" + getTime() + "_" + std::to_string(reps) + ".csv");
-    stream << "\"X\", \"Y\", \"Z\", \"MACH_NUMBER\", \"PRESSURE\"\n";
+    stream << DataIO::CSV_HEADER;
 
     for (int i = 0; i < Def::inner; ++i) {
         int k = Def::innerIndex(i);
@@ -58,7 +63,6 @@ void DataIO::exportToCSV(const std::unordered_map<int, Cell> &cells, const std::
         stream << cells.at(k).tx << ", " << cells.at(k).ty << ", 1, " << mach << ", " << pv.p << "\n";
     } stream.close();
 }
-
 
 void DataIO::exportToDAT(const std::unordered_map<int, Cell> &cells, const std::string &dir, const std::string &name, int reps) {
     std::ofstream stream(dir + "\\" + name + "_" + getTime() + "_" + std::to_string(reps) + ".dat");
@@ -76,13 +80,11 @@ void DataIO::exportToDAT(const std::unordered_map<int, Cell> &cells, const std::
     stream.close();
 }
 
-void DataIO::exportPointsToCSV(const std::unordered_map<int, Cell> &cells, std::vector<Point> points,
-                               const std::string &dir, const std::string &name, int reps,
-                               const std::string &time) {
+void DataIO::exportPointsToCSV(const std::unordered_map<int, Cell> &cells, std::vector<Point> points, const std::string &dir, const std::string &name) {
     std::vector<Point> newPoints = DataIO::updatePointValues(cells, points);
-    std::ofstream stream(dir + "\\" + name + "_" + time + "_" + std::to_string(reps) + ".csv");
+    std::ofstream stream(dir + "\\" + name);
 
-    stream << "\"X\", \"Y\", \"Z\", \"MACH_NUMBER\", \"PRESSURE\"\n";
+    stream << DataIO::CSV_HEADER;
     // values to cell vertices
     int innerVertices = (Def::xInner + 1) * (Def::yInner + 1);
     for (int i = 0; i < innerVertices; ++i) {
@@ -101,9 +103,9 @@ void DataIO::exportPointsToCSV(const std::unordered_map<int, Cell> &cells, std::
 void
 DataIO::exportPointsToDat(const std::unordered_map<int, Cell> &cells, std::vector<Point> &points,
                           const std::string &dir,
-                          const std::string &name, const std::string &time, int reps) {
+                          const std::string &name) {
     std::vector<Point> newPoints = DataIO::updatePointValues(cells, points);
-    std::ofstream stream(dir + "\\" + name + "_" + time + "_" + std::to_string(reps) + ".dat");
+    std::ofstream stream(dir + "\\" + name);
 
     int upperBound = Def::isNaca ? NACA::wingLength + 1 : Def::xInner + 1; // +1 -> vertices in row = cells in row + 1
     int offset = Def::isNaca ? Def::firstInner + NACA::wingStart : Def::firstInner;
@@ -112,6 +114,7 @@ DataIO::exportPointsToDat(const std::unordered_map<int, Cell> &cells, std::vecto
         int k = offset + i;
         stream << newPoints[k].x << " " << newPoints[k].y << " 1";
 
+        // first: mach, second: cp
         for (int j = 0; j < newPoints[k].values.size(); ++j) {
             stream << " " << newPoints[k].values[j];
         }
@@ -120,9 +123,8 @@ DataIO::exportPointsToDat(const std::unordered_map<int, Cell> &cells, std::vecto
     stream.close();
 }
 
-void DataIO::exportVectorToDat(const std::vector<double>& vector, const std::string &dir, const std::string &name,
-                               const std::string &time) {
-    std::ofstream stream(dir + "\\" + name + "_" + time + "_" + ".dat");
+void DataIO::exportVectorToDat(const std::vector<double> &vector, const std::string &dir, const std::string &name) {
+    std::ofstream stream(dir + "\\" + name);
 
     int vectorSize = vector.size();
     for (int i = 0; i < vectorSize; ++i) {
@@ -133,14 +135,30 @@ void DataIO::exportVectorToDat(const std::vector<double>& vector, const std::str
 std::vector<Point>
 DataIO::updatePointValues(const std::unordered_map<int, Cell> &cells, const std::vector<Point> &points) {
     std::vector<Point> res = points;
+
+    // reference cp and mach values
+    Primitive pv = Primitive::computePV(cells.at(Def::firstInner).w);
+    Instructions::machLB = pv.U / pv.c;
+    Instructions::machUB = pv.U / pv.c;
+    Instructions::cpLB = Scheme::computeCP(pv.p);
+    Instructions::cpUB = Scheme::computeCP(pv.p);
+
     // loop over all inner Cells
-    bool test = true;
-    int bound = test ? (Def::xInner + 2) * (Def::yInner + 2) : Def::inner;
+    // periodicity boundary condition needs special care - more contributors on the 'edge'
+    bool test = false;
+    int bound = Def::inner;
     for (int i = 0; i < bound; ++i) {
-        int k = test ? Def::innerGhostIndex(i) : Def::innerIndex(i);
+        int k = Def::innerIndex(i);
+
         Primitive pv = Primitive::computePV(cells.at(k).w);
         double mach = pv.U / pv.c;
-        double cp = pv.p;
+        double cp = Scheme::computeCP(pv.p);
+
+        // for paraview charts
+        Instructions::machUB = fmax(Instructions::machUB, mach);
+        Instructions::machLB = fmin(Instructions::machLB, mach);
+        Instructions::cpUB = fmax(Instructions::cpUB, cp);
+        Instructions::cpLB = fmin(Instructions::cpLB, cp);
 
         // bottom left corner
         res.at(k).values[0] += mach;
@@ -163,6 +181,66 @@ DataIO::updatePointValues(const std::unordered_map<int, Cell> &cells, const std:
         res.at(k + Def::xCells + 1).contributors++;
     }
 
+    if (Def::isNaca) {
+        // taken from NACA::updatePeriodicity(...)
+        // periodicity - start
+        for (int i = 0; i < NACA::wingStart; ++i) {
+            int l = Def::firstInner - Def::xCells + Def::xInner - 1 - i; //o řadu níž, poslední index - jede v protisměru // l viz BP, p. 13
+
+            Primitive pv = Primitive::computePV(cells.at(l).w);
+            double mach = pv.U / pv.c;
+            double cp = Scheme::computeCP(pv.p);
+
+            // bottom left corner
+            res.at(l).values[0] += mach;
+            res.at(l).values[1] += cp;
+            res.at(l).contributors++;
+
+            // bottom right corner
+            res.at(l + 1).values[0] += mach;
+            res.at(l + 1).values[1] += cp;
+            res.at(l + 1).contributors++;
+
+            // top left corner
+            res.at(l + Def::xCells).values[0] += mach;
+            res.at(l + Def::xCells).values[1] += cp;
+            res.at(l + Def::xCells).contributors++;
+
+            // top right corner
+            res.at(l + Def::xCells + 1).values[0] += mach;
+            res.at(l + Def::xCells + 1).values[1] += cp;
+            res.at(l + Def::xCells + 1).contributors++;
+        }
+        // periodicity - finish
+        for (int i = 0; i < NACA::wingStart; ++i) {
+            int l = Def::firstInner - Def::xCells + NACA::wingStart - 1 - i; // -1 = těsně před koncem
+
+            Primitive pv = Primitive::computePV(cells.at(l).w);
+            double mach = pv.U / pv.c;
+            double cp = Scheme::computeCP(pv.p);
+
+            // bottom left corner
+            res.at(l).values[0] += mach;
+            res.at(l).values[1] += cp;
+            res.at(l).contributors++;
+
+            // bottom right corner
+            res.at(l + 1).values[0] += mach;
+            res.at(l + 1).values[1] += cp;
+            res.at(l + 1).contributors++;
+
+            // top left corner
+            res.at(l + Def::xCells).values[0] += mach;
+            res.at(l + Def::xCells).values[1] += cp;
+            res.at(l + Def::xCells).contributors++;
+
+            // top right corner
+            res.at(l + Def::xCells + 1).values[0] += mach;
+            res.at(l + Def::xCells + 1).values[1] += cp;
+            res.at(l + Def::xCells + 1).contributors++;
+        }
+    }
+
     // averaging values based on number of contributors
     int pointCount = res.size();
     for (int i = 0; i < pointCount; ++i) {
@@ -172,7 +250,6 @@ DataIO::updatePointValues(const std::unordered_map<int, Cell> &cells, const std:
             for (int j = 0; j < res[i].values.size(); ++j) { // for loop prepared for any number of values
                 res[i].values[j] /= res[i].contributors;
             }
-            std::cout << res[i].contributors << " ";
         }
     }
     return res;

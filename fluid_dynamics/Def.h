@@ -16,6 +16,7 @@ public:
 
     static const bool isNaca;
     static const bool isHLLC;
+    static const bool localTimeStep;
     static bool isSetByMach;
 
     static const int xInner;
@@ -37,13 +38,15 @@ public:
     static const double dx;
 
     static const double KAPPA;
+
     static double p_inlet;
     static double p_outlet;
     static double rho_inlet;
     static double alpha_inlet;
-    static double mach_inlet;
+    static double mach_infty;
 
     static const double EPSILON;
+    static const double CFL;
 
     static const double rhoInitial;
     static const double uInitial;
