@@ -16,7 +16,6 @@ public:
 
     static const bool isNaca;
     static const bool isHLLC;
-    static const bool localTimeStep;
     static bool isSetByMach;
 
     static const int xInner;
@@ -55,6 +54,8 @@ public:
     static const double rhoEInitial;
     static const Conservative wInitial;
 
+    static int errorCount;
+
 
 
     static bool error;
@@ -62,6 +63,8 @@ public:
     static int innerIndex(int i);
 
     static int innerPointIndex(int i);
+
+    static void coordsToString(int i);
 
     static int innerGhostIndex(int i);
 

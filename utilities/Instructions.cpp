@@ -21,10 +21,10 @@ std::string Instructions::wallName = "";
 std::string Instructions::reziName = "";
 std::string Instructions::overlayName = "";
 
-std::string Instructions::outputParaView1 = DataIO::getTime() + "_1";
-std::string Instructions::outputParaView2 = DataIO::getTime() + "_2";
-std::string Instructions::outputRezi = DataIO::getTime() + "_rezi";
-std::string Instructions::outputWall = DataIO::getTime() + "_wall";
+std::string Instructions::outputParaView1 = DataIO::getDate() + "_" + DataIO::getTime() + "_1";
+std::string Instructions::outputParaView2 = DataIO::getDate() + "_" + DataIO::getTime() + "_2";
+std::string Instructions::outputRezi = DataIO::getDate() + "_" + DataIO::getTime() + "_rezi";
+std::string Instructions::outputWall = DataIO::getDate() + "_" + DataIO::getTime() + "_wall";
 
 void Instructions::generateInstructions() {
     // creates a file in a folder with the rest of the data

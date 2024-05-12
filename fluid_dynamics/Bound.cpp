@@ -17,9 +17,12 @@ Conservative Bound::updateInletCell(const Conservative &innerW) {
 
     Bound::p_infty = innerPV.p; // p_0
     double p_0 = Def::p_inlet;
-    double mach_infty;
+    double mach_infty = 5;
     if (Def::mach_infty < 1) {
          mach_infty = sqrt(2 / (Def::KAPPA - 1) * (pow(p_0 / Bound::p_infty, (Def::KAPPA - 1) / Def::KAPPA) - 1));
+         if (_isnan(mach_infty)) {
+             std::cout << "Bound::updateInletCell, mach_infty je náááán" << 2 / (Def::KAPPA - 1) * (pow(p_0 / Bound::p_infty, (Def::KAPPA - 1) / Def::KAPPA) - 1);
+         }
     } else {
          mach_infty = Def::mach_infty;
     }
@@ -36,6 +39,27 @@ Conservative Bound::updateInletCell(const Conservative &innerW) {
     outerW.r2 = rho_infty * Bound::u_infty;
     outerW.r3 = rho_infty * Bound::v_infty;
     outerW.r4 = rhoE;
+
+    if (_isnan(outerW.r1)) {
+        std::cout << "Bound::updateInletCell, error at r1, vstup: \n";
+        innerW.toString();
+        outerW.toString();
+    }
+    if (_isnan(outerW.r2)) {
+        std::cout << "Bound::updateInletCell, error at r2, vstup: \n";
+        innerW.toString();
+        outerW.toString();
+    }
+    if (_isnan(outerW.r3)) {
+        std::cout << "Bound::updateInletCell, error at r3, vstup: \n";
+        innerW.toString();
+        outerW.toString();
+    }
+    if (_isnan(outerW.r4)) {
+        std::cout << "Bound::updateInletCell, error at r4, vstup: \n";
+        innerW.toString();
+        outerW.toString();
+    }
 
     return outerW;
 }

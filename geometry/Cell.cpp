@@ -31,6 +31,8 @@ Cell::Cell(std::vector<Point> vec) {
 
     Cell::xi = Vector((a + d) / 2, (b + c) / 2);
     Cell::eta = Vector((c + d) / 2, (a + b) / 2);
+
+    Cell::isInner = false;
 }
 
 std::vector<Point> Cell::getVertices(const std::vector<Point>& points, int i) {
@@ -49,6 +51,11 @@ std::unordered_map<int, Cell> Cell::createCells(const std::vector<Point>& points
             int k = i + j * Def::xCells;
             res[k] = Cell(getVertices(points, k));
         }
+    }
+
+    for (int i = 0; i < Def::inner; ++i) {
+        int k = Def::innerIndex(i);
+        res.at(k).isInner = true;
     }
     return res;
 }

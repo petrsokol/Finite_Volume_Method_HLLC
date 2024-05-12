@@ -19,6 +19,8 @@ public:
     Vector xi{}, eta{};
     int index;
 
+    bool isInner;
+
     // Constructor
     Cell() = default;
 
