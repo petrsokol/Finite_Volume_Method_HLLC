@@ -8,10 +8,9 @@
 const std::string Def::defaultPath = R"(C:\Users\petrs\Documents\CTU\BP\Charts\Data)";
 const std::string Def::defaultExtension = ".dat";
 
-const bool Def::isNaca = false;
-const bool Def::isHLLC = true;
-const bool Def::localTimeStep = true;
-bool Def::isSetByMach = false;
+const bool Def::isNaca = true;
+const bool Def::isHLLC = false;
+bool Def::isSetByMach = true;
 
 const int Def::xInner = isNaca ? 260 : 150;
 const int Def::yInner = isNaca ? 60 : 50;
@@ -39,15 +38,17 @@ double Def::rho_inlet = 1;
 double Def::alpha_inlet = M_PI * 1.25 / 180;
 double Def::mach_infty = 0.5; // keep < 1 by default
 
-const double Def::EPSILON = -12;
+const double Def::EPSILON = -13;
 const double Def::CFL = 0.5;
 
 const double Def::rhoInitial = 1;
 const double Def::uInitial = 0.65;
 const double Def::vInitial = 0;
-const double Def::pInitial = 1;
+const double Def::pInitial = 0.9; // pro pInitial >= 1 NACA HLL nefunguje
 const double Def::rhoEInitial = pInitial / (KAPPA - 1) + 0.5 * rhoInitial * (pow(uInitial, 2) + pow(vInitial, 2));
 const Conservative Def::wInitial = Conservative(rhoInitial, rhoInitial * uInitial, rhoInitial * vInitial, rhoEInitial);
+
+int Def::errorCount;
 
 
 
@@ -79,4 +80,8 @@ void Def::setConditions(double mach_infinity, double alpha_inlet) {
     Def::rho_inlet = 1;
     Def::alpha_inlet = alpha_inlet;
     Def::mach_infty = mach_infinity;
+}
+
+void Def::coordsToString(int i) {
+    std::cout << "[" << i % Def::xCells << ", " << i / Def::xCells << "]" << std::endl;
 }

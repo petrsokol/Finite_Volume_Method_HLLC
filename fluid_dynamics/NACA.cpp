@@ -57,6 +57,9 @@ void NACA::updatePeriodicity(std::unordered_map<int, Cell> &cells) {
         // ghost cells - l
         int l = Def::firstInner - Def::xCells + Def::xInner - 1 - i; //o řadu níž, poslední index - jede v protisměru // l viz BP, p. 13
         cells.at(l).w = cells.at(k).w;
+        if (_isnan(cells.at(l).w.r1)) {
+            std::cout << "Naca::periodicity: mame problem";
+        }
     }
     //finish
     for (int i = 0; i < NACA::wingStart; ++i) { // podle mě by nemělo dělat 261. buňku

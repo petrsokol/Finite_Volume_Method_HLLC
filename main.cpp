@@ -16,78 +16,67 @@
 int main() {
     std::cout << "Dobry DEN!!!!" << std::endl;
     std::cout << "program started at " << DataIO::getDate() << "_" << DataIO::getTime() << std::endl;
-    std::cout << "Check file names!" << std::endl;
 
     std::string name = Def::isNaca ? "naca" : "gamm";
-    name += "_" + DataIO::getDate() + "_" + DataIO::getTime();
+    std::string scheme = Def::isHLLC ? "hllc" : "hll";
+    name += "_" + scheme + "_" + DataIO::getDate() + "_" + DataIO::getTime();
 
     Instructions::verticesName = name + "_vertices.csv";
     Instructions::wallName = name + "_wall.dat";
     Instructions::reziName = name + "_rezi.dat";
-    Instructions::overlayName = "only-naca.csv";
+    Instructions::overlayName = Def::isNaca ? "only-naca.csv" : "only-gamm.csv";
 
-    Def::setConditions(1, 1, 0, 0.737);
-//    Def::setConditions(5, 0); // change starting conditions accordingly
+//    Def::setConditions(1, 1, 0, 0.737);
+    Def::setConditions(0.85, 0); // change starting conditions accordingly
 
     std::vector<Point> points = Point::loadPointsFromFile(Instructions::geometryInput, Def::isNaca ? "nacaMesh.dat" : "gammMesh.dat");
     std::unordered_map<std::pair<int, int>, Interface, pair_hash> faces = Interface::createInnerFaces(points);
     std::unordered_map<int, Cell> cells = Cell::createCells(points);
     std::vector<double> reziVec{};
 
-    std::cout << "lesgou" << std::endl;
     int reps = 0;
-    double t = 0;
-    double dt;
     double rezi = 1;
-    while (rezi > Def::EPSILON && !Def::error && reps < 7000) {
+    while (rezi > Def::EPSILON && !Def::error && reps < 30000) {
         reps++;
 
-        if (Def::localTimeStep) {
-            Scheme::updateCellDT(cells, Def::CFL);
-            Def::isNaca ? NACA::updateBounds(cells, faces) : GAMM::updateBounds(cells, faces);
-            if (Def::isHLLC) {
-                Scheme::computeHLLC_localTimeStep(cells, faces);
-            } else {
-                Scheme::computeHLL_localTimeStep(cells, faces);
-            }
-            rezi = Scheme::computeRezi_localTimeStep(cells);
-            Scheme::updateCells(cells);
-        } else {
-            dt = Scheme::computeDT(cells, Def::CFL);
-            t += dt;
-            Def::isNaca ? NACA::updateBounds(cells, faces) : GAMM::updateBounds(cells, faces);
-            Scheme::computeHLLC(cells, faces, dt);
-            rezi = Scheme::computeRezi(cells, dt);
-            Scheme::updateCells(cells);
-        }
+        Scheme::updateCellDT(cells, Def::CFL, false);
+        Def::isNaca ? NACA::updateBounds(cells, faces) : GAMM::updateBounds(cells, faces);
+        Def::isHLLC ? Scheme::computeHLLC(cells, faces) : Scheme::computeHLL(cells, faces);
+
+        rezi = Scheme::computeRezi(cells);
         reziVec.push_back(rezi);
+        Scheme::updateCells(cells);
 
-        //TODO p_inlet = isHypersonic ? p1 : p2;
-
-        if (reps % 1000 == 0) {
-            std::cout << "reps: " << reps << ", rezi: " << rezi << ", dt: " << dt << std::endl;
+        if (reps % 100 == 0) {
+            std::cout << "reps: " << reps << ", rezi: " << rezi << std::endl;
         }
-//        if (reps % 1000 == 0) {
-//            std::cout << "reps: " << reps << ", rezi: " << rezi << ", dt: " << dt << std::endl;
-//            DataIO::exportPointsToCSV(cells, points, Instructions::dataInput, Instructions::verticesName);
-//
-//        }
+
+        for (const auto &cell: cells) {
+            if (_isnan(cell.second.w.r1 || _isnan(cell.second.w.r2) || _isnan(cell.second.w.r3) || _isnan(cell.second.w.r4))) {
+                std::cout << "!!!";
+                cell.second.toString();
+            }
+        }
     }
 
-    //TODO správný contour hodnoty v paraViewScript - při zápisu sleduj nejmenší a největší Mach a CP - pak sestav data pro kontury
 
-    DataIO::exportPointsToCSV(cells, points, Instructions::dataInput, Instructions::verticesName);
-    DataIO::exportToCSV(cells, Instructions::dataInput, "naca_" + DataIO::getTime(), reps);
-    DataIO::exportPointsToDat(cells, points, Instructions::dataInput, Instructions::wallName);
-    DataIO::exportVectorToDat(reziVec, Instructions::dataInput, Instructions::reziName);
-    Instructions::generateInstructions();
-    Instructions::generateBackup();
 
-    std::system(R"(python C:\Users\petrs\Documents\CTU\BP\PYTHON-scripts\mach-cp-charts.py)");
-    std::system(R"(python C:\Users\petrs\Documents\CTU\BP\PYTHON-scripts\rezi-chart.py)");
+    if (!Def::error) {
+        DataIO::exportPointsToCSV(cells, points, Instructions::dataInput, Instructions::verticesName);
+//        DataIO::exportToCSV(cells, Instructions::dataInput, "naca_" + DataIO::getTime(), reps);
+        DataIO::exportPointsToDat(cells, points, Instructions::dataInput, Instructions::wallName);
+        DataIO::exportVectorToDat(reziVec, Instructions::dataInput, Instructions::reziName);
+        Instructions::generateInstructions();
+        Instructions::generateBackup();
+
+
+        std::system(R"(python C:\Users\petrs\Documents\CTU\BP\PYTHON-scripts\mach-cp-charts.py)");
+        std::system(R"(python C:\Users\petrs\Documents\CTU\BP\PYTHON-scripts\rezi-chart.py)");
+    }
 
     if(Def::error) {std::cout << "error at rep " << reps << std::endl;}
 
+    std::cout << "error count: " << Def::errorCount << std::endl;
     std::cout << "program ended at " << DataIO::getTime() << std::endl;
     std::cout << "nashledanou" << std::endl;
     return 0;
