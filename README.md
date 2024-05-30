@@ -1,2 +1,2 @@
 # GAMM
- FEM - HLLC algorithm
+ FEM - oldHLLC algorithm

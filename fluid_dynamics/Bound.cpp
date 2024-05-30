@@ -90,15 +90,15 @@ Conservative Bound::updateOutletCell(const Conservative &innerW) {
 
 Conservative Bound::updateWallCell(const Conservative &innerW, const Interface &face) {
 
-    double u = innerW.r2 / innerW.r1;
-    double v = innerW.r3 / innerW.r1;
+    double uInner = innerW.r2 / innerW.r1;
+    double vInner = innerW.r3 / innerW.r1;
     double nx = face.nx;
     double ny = face.ny;
 
     Conservative outerW;
     outerW.r1 = innerW.r1;
-    outerW.r2 = innerW.r1 * (u - 2 * (u * nx + v * ny) * nx);
-    outerW.r3 = innerW.r1 * (v - 2 * (u * nx + v * ny) * ny);
+    outerW.r2 = innerW.r1 * (uInner - 2 * (uInner * nx + vInner * ny) * nx);
+    outerW.r3 = innerW.r1 * (vInner - 2 * (uInner * nx + vInner * ny) * ny);
     outerW.r4 = innerW.r4;
 
     return outerW;

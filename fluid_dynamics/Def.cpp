@@ -42,9 +42,9 @@ const double Def::EPSILON = -13;
 const double Def::CFL = 0.5;
 
 const double Def::rhoInitial = 1;
-const double Def::uInitial = 0.65;
+const double Def::uInitial = 2.2;
 const double Def::vInitial = 0;
-const double Def::pInitial = 0.9; // pro pInitial >= 1 NACA HLL nefunguje
+const double Def::pInitial = 0.8; // pro pInitial >= 1 NACA HLL nefunguje
 const double Def::rhoEInitial = pInitial / (KAPPA - 1) + 0.5 * rhoInitial * (pow(uInitial, 2) + pow(vInitial, 2));
 const Conservative Def::wInitial = Conservative(rhoInitial, rhoInitial * uInitial, rhoInitial * vInitial, rhoEInitial);
 
@@ -80,6 +80,8 @@ void Def::setConditions(double mach_infinity, double alpha_inlet) {
     Def::rho_inlet = 1;
     Def::alpha_inlet = alpha_inlet;
     Def::mach_infty = mach_infinity;
+    double p_2 = Def::p_inlet * pow(1 + (Def::KAPPA - 1) / 2 * pow(Def::mach_infty, 2), -1 * (Def::KAPPA / (Def::KAPPA - 1)));
+    std::cout << "vystupni tlak p_2 = " << p_2 << std::endl;
 }
 
 void Def::coordsToString(int i) {
