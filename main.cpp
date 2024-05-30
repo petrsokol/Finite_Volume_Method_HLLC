@@ -27,12 +27,15 @@ int main() {
     Instructions::overlayName = Def::isNaca ? "only-naca.csv" : "only-gamm.csv";
 
 //    Def::setConditions(1, 1, 0, 0.737);
-    Def::setConditions(0.85, 0); // change starting conditions accordingly
-
+    Def::setConditions(2, 0); // change starting conditions accordingly
+    // subsonic p2 = 0.843019
+    // transonic p2 = 0.623512
     std::vector<Point> points = Point::loadPointsFromFile(Instructions::geometryInput, Def::isNaca ? "nacaMesh.dat" : "gammMesh.dat");
     std::unordered_map<std::pair<int, int>, Interface, pair_hash> faces = Interface::createInnerFaces(points);
     std::unordered_map<int, Cell> cells = Cell::createCells(points);
     std::vector<double> reziVec{};
+
+    Def::wInitial.toString();
 
     int reps = 0;
     double rezi = 1;
@@ -41,7 +44,7 @@ int main() {
 
         Scheme::updateCellDT(cells, Def::CFL, false);
         Def::isNaca ? NACA::updateBounds(cells, faces) : GAMM::updateBounds(cells, faces);
-        Def::isHLLC ? Scheme::computeHLLC(cells, faces) : Scheme::computeHLL(cells, faces);
+        Scheme::computeScheme(cells, faces);
 
         rezi = Scheme::computeRezi(cells);
         reziVec.push_back(rezi);
@@ -60,7 +63,6 @@ int main() {
     }
 
 
-
     if (!Def::error) {
         DataIO::exportPointsToCSV(cells, points, Instructions::dataInput, Instructions::verticesName);
 //        DataIO::exportToCSV(cells, Instructions::dataInput, "naca_" + DataIO::getTime(), reps);
@@ -68,7 +70,6 @@ int main() {
         DataIO::exportVectorToDat(reziVec, Instructions::dataInput, Instructions::reziName);
         Instructions::generateInstructions();
         Instructions::generateBackup();
-
 
         std::system(R"(python C:\Users\petrs\Documents\CTU\BP\PYTHON-scripts\mach-cp-charts.py)");
         std::system(R"(python C:\Users\petrs\Documents\CTU\BP\PYTHON-scripts\rezi-chart.py)");
@@ -226,7 +227,7 @@ for (const auto &point: allpoints) {
         t += dt;
 
         NACA::updateBounds(cells, faces);
-        Scheme::computeHLLC(cells, faces, dt);
+        Scheme::computeScheme(cells, faces, dt);
         rezi = Scheme::computeRezi(cells, dt);
         Scheme::updateCells(cells);
 
