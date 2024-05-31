@@ -9,7 +9,7 @@ const std::string Def::defaultPath = R"(C:\Users\petrs\Documents\CTU\BP\Charts\D
 const std::string Def::defaultExtension = ".dat";
 
 const bool Def::isNaca = true;
-const bool Def::isHLLC = false;
+const bool Def::isHLLC = true;
 bool Def::isSetByMach = true;
 
 const int Def::xInner = isNaca ? 260 : 150;
@@ -42,9 +42,9 @@ const double Def::EPSILON = -13;
 const double Def::CFL = 0.5;
 
 const double Def::rhoInitial = 1;
-const double Def::uInitial = 2.2;
+const double Def::uInitial = 0.65;
 const double Def::vInitial = 0;
-const double Def::pInitial = 0.8; // pro pInitial >= 1 NACA HLL nefunguje
+const double Def::pInitial = 0.9; // pro pInitial >= 1 NACA HLL nefunguje
 const double Def::rhoEInitial = pInitial / (KAPPA - 1) + 0.5 * rhoInitial * (pow(uInitial, 2) + pow(vInitial, 2));
 const Conservative Def::wInitial = Conservative(rhoInitial, rhoInitial * uInitial, rhoInitial * vInitial, rhoEInitial);
 

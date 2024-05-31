@@ -7,6 +7,7 @@
 #include "../structures/Primitive.h"
 #include "Def.h"
 #include "Bound.h"
+#include "NACA.h"
 
 void Scheme::updateCellDT(std::unordered_map<int, Cell> &cells, double CFL, bool useGlobalTimeStep) {
 
@@ -93,6 +94,27 @@ void Scheme::computeScheme(std::unordered_map<int, Cell> &cells,
 
         cells.at(face.second.left).rezi -= cells.at(face.second.left).dt / cells.at(face.second.left).area * flux * face.second.length;
         cells.at(face.second.right).rezi += cells.at(face.second.right).dt / cells.at(face.second.right).area * flux * face.second.length;
+    }
+
+    bool test = true;
+    if (test && Def::isNaca) {
+        for (int i = 0; i < NACA::wingLength; ++i) {
+            int k = Def::firstInner + NACA::wingStart + i;
+            // face is defined by two end points, not the neighbouring cells
+            Interface face = faces.at(std::make_pair(k, k + 1));
+
+            // subtract original flux
+            Conservative flux = Def::isHLLC ? HLLC(cells, face) : HLL(cells, face);
+            cells.at(face.right).rezi -= cells.at(face.right).dt / cells.at(face.right).area * flux * face.length;
+
+            // create new flux
+            Conservative updatedFlux = Conservative(0, face.nx, face.ny, 0);
+            double p_1 = Primitive::computePV(cells.at(k).w).p;
+            double p_2 = Primitive::computePV(cells.at(k + Def::xCells).w).p;
+            double p_w = 1.5 * p_1 - 0.5 * p_2;
+            updatedFlux = updatedFlux * p_w;
+            cells.at(face.right).rezi += cells.at(face.right).dt / cells.at(face.right).area * updatedFlux * face.length;
+        }
     }
 }
 

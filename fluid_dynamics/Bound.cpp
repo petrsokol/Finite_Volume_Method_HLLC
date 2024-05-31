@@ -20,46 +20,22 @@ Conservative Bound::updateInletCell(const Conservative &innerW) {
     double mach_infty = 5;
     if (Def::mach_infty < 1) {
          mach_infty = sqrt(2 / (Def::KAPPA - 1) * (pow(p_0 / Bound::p_infty, (Def::KAPPA - 1) / Def::KAPPA) - 1));
-         if (_isnan(mach_infty)) {
-             std::cout << "Bound::updateInletCell, mach_infty je náááán" << 2 / (Def::KAPPA - 1) * (pow(p_0 / Bound::p_infty, (Def::KAPPA - 1) / Def::KAPPA) - 1);
-         }
     } else {
          mach_infty = Def::mach_infty;
     }
 
     Bound::rho_infty = Def::rho_inlet * pow(Bound::p_infty / p_0, 1 / Def::KAPPA);
-    double c = sqrt(Def::KAPPA * Bound::p_infty / Bound::rho_infty); // c_infty
-    double U = mach_infty * c; // | \vec u_infty |
-    Bound::u_infty = U * cos(Def::alpha_inlet); // u_infty
-    Bound::v_infty = U * sin(Def::alpha_inlet); // v_infty
-    double rhoE = Bound::p_infty / (Def::KAPPA - 1) + 0.5 * Bound::rho_infty * pow(U, 2); // rho_infty E_infty
+    double c = sqrt(Def::KAPPA * Bound::p_infty / Bound::rho_infty);
+    double U = mach_infty * c;
+    Bound::u_infty = U * cos(Def::alpha_inlet);
+    Bound::v_infty = U * sin(Def::alpha_inlet);
+    double rhoE = Bound::p_infty / (Def::KAPPA - 1) + 0.5 * Bound::rho_infty * pow(U, 2);
 
     Conservative outerW;
     outerW.r1 = rho_infty;
     outerW.r2 = rho_infty * Bound::u_infty;
     outerW.r3 = rho_infty * Bound::v_infty;
     outerW.r4 = rhoE;
-
-    if (_isnan(outerW.r1)) {
-        std::cout << "Bound::updateInletCell, error at r1, vstup: \n";
-        innerW.toString();
-        outerW.toString();
-    }
-    if (_isnan(outerW.r2)) {
-        std::cout << "Bound::updateInletCell, error at r2, vstup: \n";
-        innerW.toString();
-        outerW.toString();
-    }
-    if (_isnan(outerW.r3)) {
-        std::cout << "Bound::updateInletCell, error at r3, vstup: \n";
-        innerW.toString();
-        outerW.toString();
-    }
-    if (_isnan(outerW.r4)) {
-        std::cout << "Bound::updateInletCell, error at r4, vstup: \n";
-        innerW.toString();
-        outerW.toString();
-    }
 
     return outerW;
 }
