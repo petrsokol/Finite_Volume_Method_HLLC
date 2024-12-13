@@ -24,11 +24,11 @@ public:
 
     static const int gl;
 
-    static const int xCells;
-    static const int yCells;
-    static const int cells;
+    static const int xPoints;
+    static const int yPoints;
+    static const int points;
 
-    static const int firstInner;
+    static const int firstInnerPoint;
 
     static const double yLowerBound;
     static const double yUpperBound;

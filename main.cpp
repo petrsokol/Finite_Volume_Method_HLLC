@@ -32,8 +32,7 @@ int main() {
     Def::setConditions(1,1,0,0.737); // change starting conditions accordingly
     // subsonic p2 = 0.843019
     // transonic p2 = 0.623512
-    std::vector<Point> points = Point::loadPointsFromFile(
-            Instructions::geometryInput, Def::isNaca ? "nacaMesh.dat" : "gammMesh.dat");
+    std::vector<Point> points = Point::loadPointsFromFile(Instructions::geometryInput, Def::isNaca ? "nacaMesh.dat" : "gammMesh.dat");
     std::unordered_map<std::pair<int, int>, Interface, pair_hash> faces = Interface::createInnerFaces(points);
     std::unordered_map<int, Cell> cells = Cell::createCells(points);
     std::vector<double> reziVec{};
