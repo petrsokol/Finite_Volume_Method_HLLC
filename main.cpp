@@ -21,6 +21,9 @@ int main() {
     std::string scheme = Def::isHLLC ? "hllc" : "hll";
     name += "_" + scheme + "_" + DataIO::getDate() + "_" + DataIO::getTime();
 
+    //DEBUG
+    name = "gamm_test";
+
     Instructions::verticesName = name + "_vertices.csv";
     Instructions::wallName = name + "_wall.dat";
     Instructions::reziName = name + "_rezi.dat";
@@ -54,6 +57,14 @@ int main() {
             std::cout << "reps: " << reps << ", rezi: " << rezi << std::endl;
         }
     }
+
+  std::string command = "python \"C:\\Users\\petrs\\Documents\\CTU\\BP\\PYTHON-scripts\\compareCSV.py\" \"C:\\Users\\petrs\\Documents\\CTU\\BP\\FVM_REF\\gamm_hll_vert_REF.csv\" \"C:\\Users\\petrs\\Documents\\CTU\\BP\\FVM_Data\\gamm_test_vertices.csv\" 1e-6";
+  int result = std::system(command.c_str());
+  if (result == 0) {
+    std::cout << "Files match within tolerance!" << std::endl;
+  } else {
+    std::cout << "Files do not match!" << std::endl;
+  }
 
 
     if (!Def::error) {
