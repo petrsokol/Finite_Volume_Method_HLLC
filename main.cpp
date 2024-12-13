@@ -26,7 +26,7 @@ int main() {
     Instructions::reziName = name + "_rezi.dat";
     Instructions::overlayName = Def::isNaca ? "only-naca.csv" : "only-gamm.csv";
 
-    Def::setConditions(0.5, 0); // change starting conditions accordingly
+    Def::setConditions(1,1,0,0.737); // change starting conditions accordingly
     // subsonic p2 = 0.843019
     // transonic p2 = 0.623512
     std::vector<Point> points = Point::loadPointsFromFile(
