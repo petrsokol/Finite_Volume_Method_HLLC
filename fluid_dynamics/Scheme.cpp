@@ -142,7 +142,7 @@ void Scheme::updateCells(std::unordered_map<int, Cell> &cells) {
 }
 
 double Scheme::computeCP(double p_inner) {
-    return (p_inner - Bound::p_infty) / (0.5 * Bound::rho_infty * pow(Bound::u_infty, 2) + pow(Bound::v_infty, 2));
+    return (p_inner - Bound::p_infty) / (0.5 * Bound::rho_infty * (pow(Bound::u_infty, 2) + pow(Bound::v_infty, 2)));
 }
 
 Conservative Scheme::HLLC(const std::unordered_map<int, Cell> &cells, const Interface &face) {
