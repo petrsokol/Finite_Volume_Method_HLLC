@@ -39,16 +39,16 @@ std::vector<Point> Cell::getVertices(const std::vector<Point>& points, int i) {
     std::vector<Point> res{};
     res.push_back(points[i]); // a
     res.push_back(points[i + 1]); // b
-    res.push_back(points[i + 1 + Def::xCells]); // c
-    res.push_back(points[i + Def::xCells]); // d
+    res.push_back(points[i + 1 + Def::xPoints]); // c
+    res.push_back(points[i + Def::xPoints]); // d
     return res;
 }
 
 std::unordered_map<int, Cell> Cell::createCells(const std::vector<Point>& points) {
     std::unordered_map<int, Cell> res{};
-    for (int j = 0; j < Def::yCells - 1; ++j) {
-        for (int i = 0; i < Def::xCells - 1; ++i) {
-            int k = i + j * Def::xCells;
+    for (int j = 0; j < Def::yPoints - 1; ++j) {
+        for (int i = 0; i < Def::xPoints - 1; ++i) {
+            int k = i + j * Def::xPoints;
             res[k] = Cell(getVertices(points, k));
         }
     }

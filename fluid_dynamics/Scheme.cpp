@@ -67,7 +67,7 @@ Conservative Scheme::HLL(const std::unordered_map<int, Cell> &cells, const Inter
         wl.toString();
     }
     if (_isnan(FR.r1)) {
-//        std::cout << "error at right side " << face.right << ", is inner: " << cells.at(face.right).isInner << std::endl;
+//        std::cout << "error at right side " << face.right << ", is inner: " << points.at(face.right).isInner << std::endl;
         Def::coordsToString(face.right);
 //        wr.toString();
         Def::errorCount++;
@@ -99,8 +99,8 @@ void Scheme::computeScheme(std::unordered_map<int, Cell> &cells,
     bool test = true;
     if (test && Def::isNaca) {
         for (int i = 0; i < NACA::wingLength; ++i) {
-            int k = Def::firstInner + NACA::wingStart + i;
-            // face is defined by two end points, not the neighbouring cells
+            int k = Def::firstInnerPoint + NACA::wingStart + i;
+            // face is defined by two end points, not the neighbouring points
             Interface face = faces.at(std::make_pair(k, k + 1));
 
             // subtract original flux
@@ -110,7 +110,7 @@ void Scheme::computeScheme(std::unordered_map<int, Cell> &cells,
             // create new flux
             Conservative updatedFlux = Conservative(0, face.nx, face.ny, 0);
             double p_1 = Primitive::computePV(cells.at(k).w).p;
-            double p_2 = Primitive::computePV(cells.at(k + Def::xCells).w).p;
+            double p_2 = Primitive::computePV(cells.at(k + Def::xPoints).w).p;
             double p_w = 1.5 * p_1 - 0.5 * p_2;
             updatedFlux = updatedFlux * p_w;
             cells.at(face.right).rezi += cells.at(face.right).dt / cells.at(face.right).area * updatedFlux * face.length;

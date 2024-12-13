@@ -68,7 +68,7 @@ void DataIO::exportToDAT(const std::unordered_map<int, Cell> &cells, const std::
     std::ofstream stream(dir + "\\" + name + "_" + getTime() + "_" + std::to_string(reps) + ".dat");
 
     int upperBound = Def::isNaca ? NACA::wingLength : Def::xInner;
-    int offset = Def::isNaca ? Def::firstInner + NACA::wingStart : Def::firstInner;
+    int offset = Def::isNaca ? Def::firstInnerPoint + NACA::wingStart : Def::firstInnerPoint;
 
     for (int i = 0; i < upperBound; ++i) {
         int k = offset + i;
@@ -107,8 +107,8 @@ DataIO::exportPointsToDat(const std::unordered_map<int, Cell> &cells, std::vecto
     std::vector<Point> newPoints = DataIO::updatePointValues(cells, points);
     std::ofstream stream(dir + "\\" + name);
 
-    int upperBound = Def::isNaca ? NACA::wingLength + 1 : Def::xInner + 1; // +1 -> vertices in row = cells in row + 1
-    int offset = Def::isNaca ? Def::firstInner + NACA::wingStart : Def::firstInner;
+    int upperBound = Def::isNaca ? NACA::wingLength + 1 : Def::xInner + 1; // +1 -> vertices in row = points in row + 1
+    int offset = Def::isNaca ? Def::firstInnerPoint + NACA::wingStart : Def::firstInnerPoint;
 
     for (int i = 0; i < upperBound; ++i) {
         int k = offset + i;
@@ -137,7 +137,7 @@ DataIO::updatePointValues(const std::unordered_map<int, Cell> &cells, const std:
     std::vector<Point> res = points;
 
     // reference cp and mach values
-    Primitive pv = Primitive::computePV(cells.at(Def::firstInner).w);
+    Primitive pv = Primitive::computePV(cells.at(Def::firstInnerPoint).w);
     Instructions::machLB = pv.U / pv.c;
     Instructions::machUB = pv.U / pv.c;
     Instructions::cpLB = Scheme::computeCP(pv.p);
@@ -171,21 +171,21 @@ DataIO::updatePointValues(const std::unordered_map<int, Cell> &cells, const std:
         res.at(k + 1).contributors++;
 
         // top left corner
-        res.at(k + Def::xCells).values[0] += mach;
-        res.at(k + Def::xCells).values[1] += cp;
-        res.at(k + Def::xCells).contributors++;
+        res.at(k + Def::xPoints).values[0] += mach;
+        res.at(k + Def::xPoints).values[1] += cp;
+        res.at(k + Def::xPoints).contributors++;
 
         // top right corner
-        res.at(k + Def::xCells + 1).values[0] += mach;
-        res.at(k + Def::xCells + 1).values[1] += cp;
-        res.at(k + Def::xCells + 1).contributors++;
+        res.at(k + Def::xPoints + 1).values[0] += mach;
+        res.at(k + Def::xPoints + 1).values[1] += cp;
+        res.at(k + Def::xPoints + 1).contributors++;
     }
 
     if (Def::isNaca) {
         // taken from NACA::updatePeriodicity(...)
         // periodicity - start
         for (int i = 0; i < NACA::wingStart; ++i) {
-            int l = Def::firstInner - Def::xCells + Def::xInner - 1 - i; //o řadu níž, poslední index - jede v protisměru // l viz BP, p. 13
+            int l = Def::firstInnerPoint - Def::xPoints + Def::xInner - 1 - i; //o řadu níž, poslední index - jede v protisměru // l viz BP, p. 13
 
             Primitive pv = Primitive::computePV(cells.at(l).w);
             double mach = pv.U / pv.c;
@@ -202,18 +202,18 @@ DataIO::updatePointValues(const std::unordered_map<int, Cell> &cells, const std:
             res.at(l + 1).contributors++;
 
             // top left corner
-            res.at(l + Def::xCells).values[0] += mach;
-            res.at(l + Def::xCells).values[1] += cp;
-            res.at(l + Def::xCells).contributors++;
+            res.at(l + Def::xPoints).values[0] += mach;
+            res.at(l + Def::xPoints).values[1] += cp;
+            res.at(l + Def::xPoints).contributors++;
 
             // top right corner
-            res.at(l + Def::xCells + 1).values[0] += mach;
-            res.at(l + Def::xCells + 1).values[1] += cp;
-            res.at(l + Def::xCells + 1).contributors++;
+            res.at(l + Def::xPoints + 1).values[0] += mach;
+            res.at(l + Def::xPoints + 1).values[1] += cp;
+            res.at(l + Def::xPoints + 1).contributors++;
         }
         // periodicity - finish
         for (int i = 0; i < NACA::wingStart; ++i) {
-            int l = Def::firstInner - Def::xCells + NACA::wingStart - 1 - i; // -1 = těsně před koncem
+            int l = Def::firstInnerPoint - Def::xPoints + NACA::wingStart - 1 - i; // -1 = těsně před koncem
 
             Primitive pv = Primitive::computePV(cells.at(l).w);
             double mach = pv.U / pv.c;
@@ -230,14 +230,14 @@ DataIO::updatePointValues(const std::unordered_map<int, Cell> &cells, const std:
             res.at(l + 1).contributors++;
 
             // top left corner
-            res.at(l + Def::xCells).values[0] += mach;
-            res.at(l + Def::xCells).values[1] += cp;
-            res.at(l + Def::xCells).contributors++;
+            res.at(l + Def::xPoints).values[0] += mach;
+            res.at(l + Def::xPoints).values[1] += cp;
+            res.at(l + Def::xPoints).contributors++;
 
             // top right corner
-            res.at(l + Def::xCells + 1).values[0] += mach;
-            res.at(l + Def::xCells + 1).values[1] += cp;
-            res.at(l + Def::xCells + 1).contributors++;
+            res.at(l + Def::xPoints + 1).values[0] += mach;
+            res.at(l + Def::xPoints + 1).values[1] += cp;
+            res.at(l + Def::xPoints + 1).contributors++;
         }
     }
 

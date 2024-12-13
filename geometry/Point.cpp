@@ -15,13 +15,13 @@ std::vector<Point> Point::createPoints(std::vector<double> bot, std::vector<doub
     std::vector<Point> res{};
     std::vector<double> dy{};
 
-    for (int i = 0; i < Def::xCells; ++i) {
+    for (int i = 0; i < Def::xPoints; ++i) {
         dy.push_back((top[i] - bot[i]) / Def::yInner);
     }
 
-    for (int i = 0; i < Def::cells; ++i) {
-        double xx = (i % Def::xCells - Def::gl) * Def::dx;
-        double yy = bot[i % Def::xCells] + (int(i / Def::xCells) - Def::gl) * dy[i % Def::xCells];
+    for (int i = 0; i < Def::points; ++i) {
+        double xx = (i % Def::xPoints - Def::gl) * Def::dx;
+        double yy = bot[i % Def::xPoints] + (int(i / Def::xPoints) - Def::gl) * dy[i % Def::xPoints];
         res.emplace_back(xx, yy, i);
     }
 
@@ -55,13 +55,13 @@ Point Point::operator/(double scalar) const {
 std::vector<Point> Point::loadPointsFromFile(const std::string &dir, const std::string &file) {
     std::vector<Point> res;
     std::ifstream input(dir + "\\" + file);
-    for (int j = 0; j < Def::yCells; ++j) {
-        for (int i = 0; i < Def::xCells; ++i) {
+    for (int j = 0; j < Def::yPoints; ++j) {
+        for (int i = 0; i < Def::xPoints; ++i) {
             double x;
             double y;
             input >> x;
             input >> y;
-            res.emplace_back(x, y, j * Def::xCells + i);
+            res.emplace_back(x, y, j * Def::xPoints + i);
         }
     }
     return res;

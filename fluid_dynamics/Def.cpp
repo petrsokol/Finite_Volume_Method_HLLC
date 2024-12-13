@@ -18,11 +18,11 @@ const int Def::inner = xInner * yInner;
 
 const int Def::gl = 2;
 
-const int Def::xCells = xInner + 2 * gl + 1;
-const int Def::yCells = yInner + 2 * gl + 1;
-const int Def::cells = xCells * yCells;
+const int Def::xPoints = xInner + 2 * gl + 1;
+const int Def::yPoints = yInner + 2 * gl + 1;
+const int Def::points = xPoints * yPoints;
 
-const int Def::firstInner = xCells*gl + gl;
+const int Def::firstInnerPoint = xPoints * gl + gl;
 
 const double Def::yLowerBound = 0;
 const double Def::yUpperBound = 1;
@@ -55,15 +55,15 @@ int Def::errorCount;
 bool Def::error = false;
 
 int Def::innerIndex(int i) {
-    return firstInner + i % xInner + (i / xInner) * xCells;
+    return firstInnerPoint + i % xInner + (i / xInner) * xPoints;
 }
 
 int Def::innerPointIndex(int i) {
-    return firstInner + i % (xInner + 1) + (i / (xInner + 1)) * xCells;
+    return firstInnerPoint + i % (xInner + 1) + (i / (xInner + 1)) * xPoints;
 }
 
 int Def::innerGhostIndex(int i) {
-    return (firstInner - xCells - 1) + i % (xInner + 3) + (i / (xInner + 3) * xCells);
+    return (firstInnerPoint - xPoints - 1) + i % (xInner + 3) + (i / (xInner + 3) * xPoints);
 }
 
 void Def::setConditions(double p_inlet, double rho_inlet, double alpha_inlet, double p_outlet) {
@@ -85,5 +85,5 @@ void Def::setConditions(double mach_infinity, double alpha_inlet) {
 }
 
 void Def::coordsToString(int i) {
-    std::cout << "[" << i % Def::xCells << ", " << i / Def::xCells << "]" << std::endl;
+    std::cout << "[" << i % Def::xPoints << ", " << i / Def::xPoints << "]" << std::endl;
 }

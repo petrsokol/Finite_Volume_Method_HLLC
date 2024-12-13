@@ -11,7 +11,7 @@
 
 void GAMM::updateInlet(std::unordered_map<int, Cell> &cells) {
     for (int j  = 0; j < Def::yInner; ++j) {
-        int k = Def::firstInner + j * Def::xCells;
+        int k = Def::firstInnerPoint + j * Def::xPoints;
 
         Conservative innerW = cells.at(k).w;
         Conservative outerW = Bound::updateInletCell(innerW);
@@ -21,7 +21,7 @@ void GAMM::updateInlet(std::unordered_map<int, Cell> &cells) {
 
 void GAMM::updateOutlet(std::unordered_map<int, Cell> &cells) {
     for (int j = 0; j < Def::yInner; ++j) {
-        int k = Def::firstInner + Def::xInner - 1 + j * Def::xCells;
+        int k = Def::firstInnerPoint + Def::xInner - 1 + j * Def::xPoints;
 
         Conservative innerW = cells.at(k).w;
         Conservative outerW = Bound::updateOutletCell(innerW);
@@ -31,18 +31,18 @@ void GAMM::updateOutlet(std::unordered_map<int, Cell> &cells) {
 
 void GAMM::updateWalls(std::unordered_map<int, Cell> &cells, const std::unordered_map<std::pair<int, int>, Interface, pair_hash> &faces) {
     for (int i = 0; i < Def::xInner; ++i) {
-        int k = Def::firstInner + i;
+        int k = Def::firstInnerPoint + i;
 
         Interface face = faces.at(std::make_pair(k, k + 1));
         Conservative innerW = cells.at(k).w;
         Conservative outerW = Bound::updateWallCell(innerW, face);
-        cells.at(k - Def::xCells).w = outerW;
+        cells.at(k - Def::xPoints).w = outerW;
     }
     for (int i = 0; i < Def::xInner; ++i) {
-        int k = Def::firstInner + (Def::yInner) * Def::xCells + i;
+        int k = Def::firstInnerPoint + (Def::yInner) * Def::xPoints + i;
 
         Interface face = faces.at(std::make_pair(k, k + 1));
-        Conservative innerW = cells.at(k - Def::xCells).w;
+        Conservative innerW = cells.at(k - Def::xPoints).w;
         Conservative outerW = Bound::updateWallCell(innerW, face);
         cells.at(k).w = outerW;
     }
