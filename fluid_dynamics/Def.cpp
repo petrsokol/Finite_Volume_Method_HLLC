@@ -21,8 +21,13 @@ const int Def::gl = 2;
 const int Def::xPoints = xInner + 2 * gl + 1;
 const int Def::yPoints = yInner + 2 * gl + 1;
 const int Def::points = xPoints * yPoints;
-
 const int Def::firstInnerPoint = xPoints * gl + gl;
+
+const int Def::xCells = xInner + 2 * gl;
+const int Def::yCells = yInner + 2 * gl;
+const int Def::cells = xCells * yCells;
+const int Def::firstInner = gl * xCells + gl;
+
 
 const double Def::yLowerBound = 0;
 const double Def::yUpperBound = 1;
@@ -42,9 +47,9 @@ const double Def::EPSILON = -13;
 const double Def::CFL = 0.5;
 
 const double Def::rhoInitial = 1;
-const double Def::uInitial = 0.65;
+const double Def::uInitial = 1;
 const double Def::vInitial = 0;
-const double Def::pInitial = 0.9; // pro pInitial >= 1 NACA HLL nefunguje
+const double Def::pInitial = 0.737; // pro pInitial >= 1 NACA HLL nefunguje
 const double Def::rhoEInitial = pInitial / (KAPPA - 1) + 0.5 * rhoInitial * (pow(uInitial, 2) + pow(vInitial, 2));
 const Conservative Def::wInitial = Conservative(rhoInitial, rhoInitial * uInitial, rhoInitial * vInitial, rhoEInitial);
 
@@ -55,15 +60,11 @@ int Def::errorCount;
 bool Def::error = false;
 
 int Def::innerIndex(int i) {
-    return firstInnerPoint + i % xInner + (i / xInner) * xPoints;
+    return firstInner + i % xInner + (i / xInner) * xCells;
 }
 
 int Def::innerPointIndex(int i) {
     return firstInnerPoint + i % (xInner + 1) + (i / (xInner + 1)) * xPoints;
-}
-
-int Def::innerGhostIndex(int i) {
-    return (firstInnerPoint - xPoints - 1) + i % (xInner + 3) + (i / (xInner + 3) * xPoints);
 }
 
 void Def::setConditions(double p_inlet, double rho_inlet, double alpha_inlet, double p_outlet) {
@@ -85,5 +86,16 @@ void Def::setConditions(double mach_infinity, double alpha_inlet) {
 }
 
 void Def::coordsToString(int i) {
-    std::cout << "[" << i % Def::xPoints << ", " << i / Def::xPoints << "]" << std::endl;
+    std::cout << "[" << i % Def::xCells << ", " << i / Def::xCells << "]" << std::endl;
+}
+
+int Def::pointIndexToCellIndex (int k)
+{
+  return k % xPoints + (k / xPoints) * xCells;
+}
+
+int Def::cellIndexToPointIndex (int k)
+{
+  int pointIndex = k % xCells + (k / xCells) * xPoints;
+  return pointIndex;
 }

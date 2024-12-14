@@ -6,61 +6,53 @@
 #include "Cell.h"
 #include "../fluid_dynamics/Def.h"
 
-Cell::Cell(std::vector<Point> vec) {
-    Point a = vec[0];
-    Point b = vec[1];
-    Point c = vec[2];
-    Point d = vec[3];
+Cell::Cell (const Point & a, const Point & b, const Point & c, const Point & d)
+{
+  Cell::index = Def::pointIndexToCellIndex(a.index);
 
-    Cell::index = a.index;
+  double x1 = 1.0 / 3 * (a.x + b.x + c.x);
+  double y1 = 1.0 / 3 * (a.y + b.y + c.y);
+  double A1 = 0.5 * fabs(a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y));
 
-    double x1 = 1.0/3 * (a.x + b.x + c.x);
-    double y1 = 1.0/3 * (a.y + b.y + c.y);
-    double A1 = 0.5 * fabs(a.x*(b.y-c.y) + b.x*(c.y-a.y) + c.x*(a.y-b.y));
+  double x2 = 1.0 / 3 * (a.x + c.x + d.x);
+  double y2 = 1.0 / 3 * (a.y + c.y + d.y);
+  double A2 = 0.5 * fabs(a.x * (c.y - d.y) + c.x * (d.y - a.y) + d.x * (a.y - c.y));
 
-    double x2 = 1.0/3 * (a.x + c.x + d.x);
-    double y2 = 1.0/3 * (a.y + c.y + d.y);
-    double A2 = 0.5 * fabs(a.x*(c.y-d.y) + c.x*(d.y-a.y) + d.x*(a.y-c.y));
+  Cell::area = A1 + A2;
+  Cell::tx = (A1 * x1 + A2 * x2) / (A1 + A2);
+  Cell::ty = (A1 * y1 + A2 * y2) / (A1 + A2); //ChatGPT
 
-    Cell::area = A1 + A2;
-    Cell::tx = (A1*x1 + A2*x2)/(A1 + A2);
-    Cell::ty = (A1*y1 + A2*y2)/(A1 + A2); //ChatGPT
+  Cell::w = Def::wInitial;
+  Cell::rezi = 0;
+  Cell::dt = 1e9;
 
-    Cell::w = Def::wInitial;
-    Cell::rezi = 0;
-
-    Cell::xi = Vector((a + d) / 2, (b + c) / 2);
-    Cell::eta = Vector((c + d) / 2, (a + b) / 2);
-
-    Cell::isInner = false;
+  Cell::xi = Vector((a + d) / 2, (b + c) / 2);
+  Cell::eta = Vector((c + d) / 2, (a + b) / 2);
 }
 
-std::vector<Point> Cell::getVertices(const std::vector<Point>& points, int i) {
-    std::vector<Point> res{};
-    res.push_back(points[i]); // a
-    res.push_back(points[i + 1]); // b
-    res.push_back(points[i + 1 + Def::xPoints]); // c
-    res.push_back(points[i + Def::xPoints]); // d
-    return res;
-}
+std::vector<Cell> Cell::createCells (const std::vector<Point> & points)
+{
+  std::vector<Cell> res;
+  for (int j = 0; j < Def::yCells; ++j) {
+    for (int i = 0; i < Def::xCells; ++i) {
+      // get points from point vector
+      const Point & a = points.at(j * (Def::xPoints) + i);
+      const Point & b = points.at(j * (Def::xPoints) + i + 1);
+      const Point & c = points.at((j + 1) * (Def::xPoints) + i + 1);
+      const Point & d = points.at((j + 1) * (Def::xPoints) + i);
 
-std::unordered_map<int, Cell> Cell::createCells(const std::vector<Point>& points) {
-    std::unordered_map<int, Cell> res{};
-    for (int j = 0; j < Def::yPoints - 1; ++j) {
-        for (int i = 0; i < Def::xPoints - 1; ++i) {
-            int k = i + j * Def::xPoints;
-            res[k] = Cell(getVertices(points, k));
-        }
+      // create a cell from points
+      Cell curr = Cell(a, b, c, d);
+
+      res.push_back(curr);
     }
-
-    for (int i = 0; i < Def::inner; ++i) {
-        int k = Def::innerIndex(i);
-        res.at(k).isInner = true;
-    }
-    return res;
+  }
+  printf("created %llu cells.\n", res.size());
+  return res;
 }
 
-void Cell::toString() const {
-    std::cout << "Cell " << index << ": area = " << area << ", T = [" << tx << ";" << ty << "], W = ";
-    w.toString();
+void Cell::toString () const
+{
+  std::cout << "Cell " << index << ": area = " << area << ", T = [" << tx << ";" << ty << "], W = ";
+  w.toString();
 }

@@ -6,14 +6,17 @@
 #define GAMM_GAMM_H
 
 
-class GAMM {
+class GAMM
+{
 
 public:
-    static void updateInlet(std::unordered_map<int, Cell>& cells);
-    static void updateOutlet(std::unordered_map<int, Cell>& cells);
-    static void updateWalls(std::unordered_map<int, Cell>& cells, const std::unordered_map<std::pair<int, int>, Interface, pair_hash>& faces);
-    static void updateBounds(std::unordered_map<int, Cell>& cells, const std::unordered_map<std::pair<int, int>, Interface, pair_hash>& faces);
+  static void updateInlet (std::vector<Cell> & cells);
 
+  static void updateOutlet (std::vector<Cell> & cells);
+
+  static void updateWalls (std::vector<Cell> & cells, const std::vector<Interface> & faces);
+
+  static void updateBounds (std::vector<Cell> & cells, const std::vector<Interface> & faces);
 };
 
 

@@ -15,19 +15,19 @@ class Scheme {
 
 public:
 
-    static Conservative HLL(const std::unordered_map<int, Cell>& cells, const Interface& face);
+    static Conservative HLL(const std::vector<Cell> & cells, const Interface& face);
 
-    static Conservative HLLC(const std::unordered_map<int, Cell>& cells, const Interface& face);
+    static Conservative HLLC(const std::vector<Cell> & cells, const Interface& face);
 
-    static void computeScheme(std::unordered_map<int, Cell>& cells, const std::unordered_map<std::pair<int, int>, Interface, pair_hash>& faces);
+    static void computeScheme(std::vector<Cell> & cells, const std::vector<Interface> & faces);
 
-    static void updateCellDT(std::unordered_map<int, Cell> &cells, double CFL, bool useGlobalTimeStep);
+    static void updateCellDT(std::vector<Cell> & cells, double CFL, bool useGlobalTimeStep);
 
-    static double computeRezi(const std::unordered_map<int, Cell>& cells);
+    static double computeRezi(const std::vector<Cell> & cells);
 
     static double computeCP(double p_inner);
 
-    static void updateCells(std::unordered_map<int, Cell> &cells);
+    static void updateCells(std::vector<Cell> & cells);
 
     static Conservative flux(Interface face, Conservative w, double q, double p);
 

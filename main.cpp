@@ -13,49 +13,83 @@
 #include "fluid_dynamics/GAMM.h"
 #include "utilities/Instructions.h"
 
-int main() {
-    std::cout << "Dobry DEN!!!!" << std::endl;
-    std::cout << "program started at " << DataIO::getDate() << "_" << DataIO::getTime() << std::endl;
 
-    std::string name = Def::isNaca ? "naca" : "gamm";
-    std::string scheme = Def::isHLLC ? "hllc" : "hll";
-    name += "_" + scheme + "_" + DataIO::getDate() + "_" + DataIO::getTime();
+// Define DEBUG_ON to toggle debugging messages
+#define DEBUG_ON 1
 
-    //DEBUG
-    name = "gamm_test";
+#if DEBUG_ON
+#define debug_printf(fmt, ...) printf(fmt, ##__VA_ARGS__)
+#else
+#define debug_printf(fmt, ...) ((void)0) // No-op when debugging is off
+#endif
 
-    Instructions::verticesName = name + "_vertices.csv";
-    Instructions::wallName = name + "_wall.dat";
-    Instructions::reziName = name + "_rezi.dat";
-    Instructions::overlayName = Def::isNaca ? "only-naca.csv" : "only-gamm.csv";
+int main ()
+{
+  std::cout << "Dobry DEN!!!!" << std::endl;
+  std::cout << "program started at " << DataIO::getDate() << "_" << DataIO::getTime() << std::endl;
 
-    Def::setConditions(1,1,0,0.737); // change starting conditions accordingly
-    // subsonic p2 = 0.843019
-    // transonic p2 = 0.623512
-    std::vector<Point> points = Point::loadPointsFromFile(Instructions::geometryInput, Def::isNaca ? "nacaMesh.dat" : "gammMesh.dat");
-    std::unordered_map<std::pair<int, int>, Interface, pair_hash> faces = Interface::createInnerFaces(points);
-    std::unordered_map<int, Cell> cells = Cell::createCells(points);
-    std::vector<double> reziVec{};
+  std::string name = Def::isNaca ? "naca" : "gamm";
+  std::string scheme = Def::isHLLC ? "hllc" : "hll";
+  name += "_" + scheme + "_" + DataIO::getDate() + "_" + DataIO::getTime();
 
-    Def::wInitial.toString();
+  //DEBUG
+  name = "gamm_test";
 
-    int reps = 0;
-    double rezi = 1;
-    while (rezi > Def::EPSILON && !Def::error && reps < 100) {
-        reps++;
+  Instructions::verticesName = name + "_vertices.csv";
+  Instructions::wallName = name + "_wall.dat";
+  Instructions::reziName = name + "_rezi.dat";
+  Instructions::overlayName = Def::isNaca ? "only-naca.csv" : "only-gamm.csv";
 
-        Scheme::updateCellDT(cells, Def::CFL, false);
-        Def::isNaca ? NACA::updateBounds(cells, faces) : GAMM::updateBounds(cells, faces);
-        Scheme::computeScheme(cells, faces);
+  Def::setConditions(1, 1, 0, 0.737); // change starting conditions accordingly
+  // subsonic p2 = 0.843019
+  // transonic p2 = 0.623512
 
-        rezi = Scheme::computeRezi(cells);
-        reziVec.push_back(rezi);
-        Scheme::updateCells(cells);
+  // points
+  std::string dir = Instructions::geometryInput;
+  std::string fileName = Def::isNaca ? "nacaMesh.dat" : "gammMesh.dat";
+  std::vector<Point> points = Point::loadPointsFromFile(dir, fileName);
+//  for (int i = 0; i < points.size(); ++i) {
+//    points.at(i).toString();
+//  }
 
-        if (reps % 100 == 0) {
-            std::cout << "reps: " << reps << ", rezi: " << rezi << std::endl;
-        }
+  // faces
+  std::vector<Interface> faces = Interface::createFaces(points);
+//  for (int i = 0; i < faces.size(); ++i) {
+//    faces.at(i).toString();
+//  }
+
+  // cells
+  std::vector<Cell> cells = Cell::createCells(points);
+//  for (int i = 0; i < cells.size(); ++i) {
+//    cells.at(i).toString();
+//  }
+
+  Def::wInitial.toString();
+  // reziVec
+  std::vector<double> reziVec;
+
+  int reps = 0;
+  double rezi = 1;
+  while (rezi > Def::EPSILON && !Def::error && reps < 30000) {
+    reps++;
+
+    Scheme::updateCellDT(cells, 0.7, true);
+    Def::isNaca ? NACA::updateBounds(cells, faces) : GAMM::updateBounds(cells, faces);
+    Scheme::computeScheme(cells, faces);
+
+    rezi = Scheme::computeRezi(cells);
+    reziVec.push_back(rezi);
+    Scheme::updateCells(cells);
+
+    if (reps % 100 == 0) {
+      std::cout << "reps: " << reps << ", rezi: " << rezi << std::endl;
     }
+  }
+
+//  for (int i = 0; i < Def::cells; ++i) {
+//    if (i != cells.at(i).index)
+//      printf("main: i = %d, cell index = %d\n", i, cells.at(i).index);
+//  }
 
   std::string command = "python \"C:\\Users\\petrs\\Documents\\CTU\\BP\\PYTHON-scripts\\compareCSV.py\" \"C:\\Users\\petrs\\Documents\\CTU\\BP\\FVM_REF\\gamm_hll_vert_REF.csv\" \"C:\\Users\\petrs\\Documents\\CTU\\BP\\FVM_Data\\gamm_test_vertices.csv\" 1e-6";
   int result = std::system(command.c_str());
@@ -66,21 +100,27 @@ int main() {
   }
 
 
-    if (!Def::error) {
-        DataIO::exportPointsToCSV(cells, points, Instructions::dataInput, Instructions::verticesName);
-        DataIO::exportPointsToDat(cells, points, Instructions::dataInput, Instructions::wallName);
-        DataIO::exportVectorToDat(reziVec, Instructions::dataInput, Instructions::reziName);
-        Instructions::generateInstructions();
-        Instructions::generateBackup();
+  if (!Def::error) {
+    DataIO::exportPointsToCSV(cells, points, Instructions::dataInput, Instructions::verticesName);
+    DataIO::exportPointsToDat(cells, points, Instructions::dataInput, Instructions::wallName);
+    DataIO::exportVectorToDat(reziVec, Instructions::dataInput, Instructions::reziName);
+    Instructions::generateInstructions();
+    Instructions::generateBackup();
 
-        std::system(R"(python C:\Users\petrs\Documents\CTU\BP\PYTHON-scripts\mach-cp-charts.py)");
-        std::system(R"(python C:\Users\petrs\Documents\CTU\BP\PYTHON-scripts\rezi-chart.py)");
-    }
+    std::system(R"(python C:\Users\petrs\Documents\CTU\BP\PYTHON-scripts\mach-cp-charts.py)");
+    std::system(R"(python C:\Users\petrs\Documents\CTU\BP\PYTHON-scripts\rezi-chart.py)");
+  }
 
-    if(Def::error) {std::cout << "error at rep " << reps << std::endl;}
+  if (Def::error) { std::cout << "error at rep " << reps << std::endl; }
 
-    std::cout << "error count: " << Def::errorCount << std::endl;
-    std::cout << "program ended at " << DataIO::getTime() << std::endl;
-    std::cout << "nashledanou" << std::endl;
-    return 0;
+  std::cout << "error count: " << Def::errorCount << std::endl;
+  std::cout << "program ended at " << DataIO::getTime() << std::endl;
+  std::cout << "nashledanou" << std::endl;
+  return 0;
+
+  /*
+   * TODO
+   *  k čemu je v Point.h index?
+   *  change HLL and HLLC to only take certain cells instead of whole vector
+   */
 }
