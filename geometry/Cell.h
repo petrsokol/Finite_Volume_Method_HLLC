@@ -11,27 +11,23 @@
 #include "../structures/Conservative.h"
 #include "Point.h"
 
-class Cell {
+class Cell
+{
 
 public:
-    Conservative w, rezi;
-    double area, tx, ty, dt;
-    Vector xi{}, eta{};
-    int index;
+  Conservative w, rezi;
+  double area, tx, ty, dt;
+  Vector xi{}, eta{};
+  int index;
 
-    bool isInner;
+  // Constructor
+  Cell () = default;
 
-    // Constructor
-    Cell() = default;
+  Cell (const Point& a, const Point& b, const Point& c, const Point& d);
 
-    explicit Cell(std::vector<Point> vec);
+  static std::vector<Cell> createCells (const std::vector<Point> & points);
 
-    // Methods
-    static std::vector<Point> getVertices(const std::vector<Point>& points, int i);
-
-    static std::unordered_map<int, Cell> createCells(const std::vector<Point>& points);
-
-    void toString() const;
+  void toString () const;
 };
 
 

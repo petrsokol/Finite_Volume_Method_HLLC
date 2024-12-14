@@ -16,15 +16,15 @@ public:
     static const int wingStart;
     static const int wingLength;
 
-    static void updateInlet(std::unordered_map<int, Cell>& cells);
+    static void updateInlet(std::vector<Cell> & cells);
 
-    static void updateOutlet(std::unordered_map<int, Cell>& cells);
+    static void updateOutlet(std::vector<Cell> & cells);
 
-    static void updateWalls(std::unordered_map<int, Cell>& cells, const std::unordered_map<std::pair<int, int>, Interface, pair_hash>& faces);
+    static void updateWalls(std::vector<Cell> & cells, const std::vector<Interface> & faces);
 
-    static void updatePeriodicity(std::unordered_map<int, Cell>& cells);
+    static void updatePeriodicity(std::vector<Cell> & cells);
 
-    static void updateBounds(std::unordered_map<int, Cell>& cells, const std::unordered_map<std::pair<int, int>, Interface, pair_hash>& faces);
+    static void updateBounds(std::vector<Cell> & cells, const std::vector<Interface> & faces);
 
 };
 

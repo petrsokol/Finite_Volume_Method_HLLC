@@ -34,6 +34,8 @@ public:
     Point operator/(double scalar) const;
 
     static std::vector<Point> loadPointsFromFile(const std::string &dir, const std::string &file);
+
+  static int pointIndexToCellIndex (int i, int j);
 };
 
 

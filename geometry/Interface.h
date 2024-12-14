@@ -10,32 +10,44 @@
 #include "Point.h"
 
 // Custom hash function for std::pair<int, int>
-struct pair_hash {
-    template <class T1, class T2>
-    std::size_t operator () (const std::pair<T1, T2>& p) const {
-        auto hash1 = std::hash<T1>{}(p.first);
-        auto hash2 = std::hash<T2>{}(p.second);
+struct pair_hash
+{
+  template<class T1, class T2>
+  std::size_t operator() (const std::pair<T1, T2> & p) const
+  {
+    auto hash1 = std::hash<T1>{}(p.first);
+    auto hash2 = std::hash<T2>{}(p.second);
 
-        // Simple hash combining technique
-        return hash1 ^ hash2;
-    }
+    // Simple hash combining technique
+    return hash1 ^ hash2;
+  }
 };
 
-class Interface {
+class Interface
+{
 
 public:
-    double length, nx, ny;
-    int left, right;
+  double len, nx, ny;
+  int ll, l, r, rr;
 
-    // Constructor
-    Interface() = default;
+  // Constructor
+  Interface () = default;
 
-    Interface(Point p1, Point p2);
+//  Interface (const Point & p1, const Point & p2);
 
-    // Methods
-    static std::unordered_map<std::pair<int, int>, Interface, pair_hash> createInnerFaces(std::vector<Point> points);
+  Interface (double len, double nx, double ny, int ll, int l, int r, int rr);
 
-    void toString() const;
+  // Methods
+//  static std::unordered_map<std::pair<int, int>, Interface, pair_hash> createInnerFaces (std::vector<Point> points);
+
+  static std::vector<Interface> createFaces (const std::vector<Point> & points);
+
+  void toString () const;
+
+private:
+  static Interface horizontalFace (int k, const Point & a, const Point & b);
+
+  static Interface verticalFace (int k, const Point & a, const Point & c);
 };
 
 
