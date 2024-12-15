@@ -11,29 +11,38 @@
 #include "../geometry/Cell.h"
 #include "../geometry/Interface.h"
 
-class Scheme {
+class Scheme
+{
 
 public:
+  // iterator functions
+  static void computeScheme (std::vector<Cell> & cells, const std::vector<Interface> & faces);
 
-    static Conservative HLL(const std::vector<Cell> & cells, const Interface& face);
+  static void updateCellDT (std::vector<Cell> & cells, double CFL, bool useGlobalTimeStep);
 
-    static Conservative HLLC(const std::vector<Cell> & cells, const Interface& face);
+  static void updateCells (std::vector<Cell> & cells);
 
-    static void computeScheme(std::vector<Cell> & cells, const std::vector<Interface> & faces);
+  static double computeRezi (const std::vector<Cell> & cells);
 
-    static void updateCellDT(std::vector<Cell> & cells, double CFL, bool useGlobalTimeStep);
+  static double computeCP (double p_inner);
 
-    static double computeRezi(const std::vector<Cell> & cells);
+  // numerical schemes
+  static Conservative HLL (const std::vector<Cell> & cells, const Interface & face);
 
-    static double computeCP(double p_inner);
+  static Conservative HLLC (const std::vector<Cell> & cells, const Interface & face);
 
-    static void updateCells(std::vector<Cell> & cells);
+  // second order
+  Conservative minmod (Conservative a, Conservative b);
 
-    static Conservative flux(Interface face, Conservative w, double q, double p);
+  double minmod (double a, double b);
 
-    static Conservative fluxStar(Interface face, Conservative w, double q, double S, double SM, double p, double p_star);
+private:
+  // support methods
+  static Conservative flux (Interface face, Conservative w, double q, double p);
 
-    static double bar(double rho_l, double rho_r, double vl, double vr);
+  static Conservative fluxStar (Interface face, Conservative w, double q, double S, double SM, double p, double p_star);
+
+  static double bar (double rho_l, double rho_r, double vl, double vr);
 };
 
 
