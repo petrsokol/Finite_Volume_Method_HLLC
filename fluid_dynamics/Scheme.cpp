@@ -100,23 +100,31 @@ void Scheme::computeScheme (std::vector<Cell> & cells,
       const Interface & face = faces.at(index);
 
       // extract participating cells for code clarity
-      const Cell & cll = cells.at(face.ll);
       const Cell & cl = cells.at(face.l);
       const Cell & cr = cells.at(face.r);
-      const Cell & crr = cells.at(face.rr);
 
-      // second order additions
-      const Conservative sigma_l_dopr = (cr.w - cl.w) / centroidDistance(cr, cl);
-      const Conservative sigma_l_zpet = (cl.w - cll.w) / centroidDistance(cr, cl);
-      const Conservative sigma_r_dopr = (crr.w - cr.w) / centroidDistance(cr, cl);
-      const Conservative sigma_r_zpet = (cr.w - cl.w) / centroidDistance(cr, cl);
+      if (Def::isSecOrd)
+      {
+        const Cell & cll = cells.at(face.ll);
+        const Cell & crr = cells.at(face.rr);
+        // second order additions
+        const Conservative sigma_l_dopr = (cr.w - cl.w) / centroidDistance(cr, cl);
+        const Conservative sigma_l_zpet = (cl.w - cll.w) / centroidDistance(cr, cl);
+        const Conservative sigma_r_dopr = (crr.w - cr.w) / centroidDistance(cr, cl);
+        const Conservative sigma_r_zpet = (cr.w - cl.w) / centroidDistance(cr, cl);
 
-      int secondOrderSwitch = Def::isSecOrd ? 1 : 0;
-      Conservative sigma_l = minmod(sigma_l_dopr, sigma_l_zpet) * secondOrderSwitch;
-      Conservative sigma_r = minmod(sigma_r_dopr, sigma_r_zpet) * secondOrderSwitch;
+        int secondOrderSwitch = Def::isSecOrd ? 1 : 0;
+        Conservative sigma_l = minmod(sigma_l_dopr, sigma_l_zpet) * secondOrderSwitch;
+        Conservative sigma_r = minmod(sigma_r_dopr, sigma_r_zpet) * secondOrderSwitch;
 
-      Conservative wl = cells.at(face.l).w + centroidDistance(cr, cl) / 2 * sigma_l;
-      Conservative wr = cells.at(face.r).w - centroidDistance(cr, cl) / 2 * sigma_r;
+        Conservative wl = cells.at(face.l).w + centroidDistance(cr, cl) / 2 * sigma_l;
+        Conservative wr = cells.at(face.r).w - centroidDistance(cr, cl) / 2 * sigma_r;
+      }
+      else
+      {
+        Conservative wl = cl.w;
+        Conservative wr = cr.w;
+      }
 
       // compute flux between two cells sharing the interface
       Conservative flux = Def::isHLLC
