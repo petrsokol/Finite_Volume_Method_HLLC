@@ -9,7 +9,7 @@ const std::string Def::defaultPath = R"(C:\Users\petrs\Documents\CTU\BP\Charts\D
 const std::string Def::defaultExtension = ".dat";
 
 const bool Def::isNaca = false;
-const bool Def::isHLLC = false;
+const bool Def::isHLLC = true;
 bool Def::isSetByMach = false;
 
 const int Def::xInner = isNaca ? 260 : 150;

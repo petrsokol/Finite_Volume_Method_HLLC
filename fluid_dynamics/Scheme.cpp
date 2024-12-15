@@ -90,13 +90,6 @@ Conservative Scheme::HLL (const std::vector<Cell> & cells, const Interface & fac
 void Scheme::computeScheme (std::vector<Cell> & cells,
                             const std::vector<Interface> & faces)
 {
-//  for (const auto & face: faces) {
-//    Conservative flux = Def::isHLLC ? HLLC(cells, face) : HLL(cells, face);
-//
-//    cells.at(face.l).rezi -= cells.at(face.l).dt / cells.at(face.l).area * flux * face.len;
-//    cells.at(face.r).rezi += cells.at(face.r).dt / cells.at(face.r).area * flux * face.len;
-//  }
-
   // for every inner face in one row (+1 -> one extra vertical face at the end of the row)
   int xLim = 2 * Def::xInner + 1;
 
@@ -145,23 +138,15 @@ void Scheme::computeScheme (std::vector<Cell> & cells,
 double Scheme::computeRezi (const std::vector<Cell> & cells)
 {
   double res = 0;
-//  for (int i = 0; i < Def::inner; ++i) {
-//    int k = Def::innerIndex(i);
-//    res += pow(cells.at(k).rezi.r1 / cells.at(k).dt, 2) * cells.at(k).area;
-//    if (_isnan(res)) {
-//      cells.at(k).rezi.toString();
-//      Def::error = true;
-//      break;
-//    }
-//  }
+
   for (int j = 0; j < Def::yInner; ++j) {
     for (int i = 0; i < Def::xInner; ++i) {
       int k = Def::firstInner + i + j * Def::xCells;
       res += pow(cells.at(k).rezi.r1 / cells.at(k).dt, 2) * cells.at(k).area;
     }
   }
-  res = log(sqrt(res));
-  return res;
+
+  return log(sqrt(res));
 }
 
 void Scheme::updateCells (std::vector<Cell> & cells)
@@ -247,3 +232,31 @@ double Scheme::bar (double rho_l, double rho_r, double vl, double vr)
 {
   return (sqrt(rho_l) * vl + sqrt(rho_r) * vr) / (sqrt(rho_l) + sqrt(rho_r));
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+// SECOND ORDER
+
+double Scheme::minmod (double a, double b)
+{
+  if (a * b <= 0) {
+    return 0;
+  } else if (fabs(a) <= fabs(b) && a * b > 0) {
+    return a;
+  } else if (fabs(a) > fabs(b) && a * b > 0) {
+    return b;
+  } else {
+    printf("sus\n");
+    return 0;
+  }
+}
+
+Conservative Scheme::minmod (Conservative a, Conservative b)
+{
+  Conservative res;
+  res.r1 = minmod(a.r1, b.r1);
+  res.r2 = minmod(a.r2, b.r2);
+  res.r3 = minmod(a.r3, b.r3);
+  return res;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
