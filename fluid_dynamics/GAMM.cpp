@@ -13,10 +13,7 @@ void GAMM::updateInlet (std::vector<Cell> & cells)
 {
   for (int j = 0; j < Def::yInner; ++j) {
     int k = Def::firstInner + j * Def::xCells;
-
-    Conservative innerW = cells.at(k).w;
-    Conservative outerW = Bound::updateInletCell(innerW);
-    cells.at(k - 1).w = outerW;
+    Bound::inlet2ndOrder(cells.at(k - 2).w, cells.at(k - 1).w, cells.at(k).w);
   }
 }
 
@@ -24,35 +21,33 @@ void GAMM::updateOutlet (std::vector<Cell> & cells)
 {
   for (int j = 0; j < Def::yInner; ++j) {
     int k = Def::firstInner + Def::xInner - 1 + j * Def::xCells;
-
-    Conservative innerW = cells.at(k).w;
-    Conservative outerW = Bound::updateOutletCell(innerW);
-    cells.at(k + 1).w = outerW;
-//    printf("GAMM::outlet: moved data from inner cell [%d: %d] to outer cell [%d: %d]\n", k, cells.at(k).index, k + 1, cells.at(k + 1).index);
+    Bound::outlet2ndOrder(cells.at(k + 2).w, cells.at(k + 1).w, cells.at(k).w);
   }
-//  printf("\n");
 }
 
-void GAMM::updateWalls (std::vector<Cell> & cells,
-                        const std::vector<Interface> & faces)
+void GAMM::updateWalls (std::vector<Cell> & cells, const std::vector<Interface> & faces)
 {
   for (int i = 0; i < Def::xInner; ++i) {
     int k = Def::firstInner + i;
 
-    // there are two faces for every cell - horizontal indices are even
+    // there are two faces for every cell - horizontal indices are odd
     Interface face = faces.at(2 * k + 1);
-    Conservative innerW = cells.at(k).w;
-    Conservative outerW = Bound::updateWallCell(innerW, face);
-    cells.at(k - Def::xCells).w = outerW;
+    Cell & outer2 = cells.at(face.ll);
+    Cell & outer1 = cells.at(face.l);
+    const Cell & inner1 = cells.at(face.r);
+    const Cell & inner2 = cells.at(face.rr);
+    Bound::wall2ndOrder(face, outer2.w, outer1.w, inner1.w, inner2.w);
   }
   for (int i = 0; i < Def::xInner; ++i) {
     int k = Def::firstInner + (Def::yInner) * Def::xCells + i;
 
-    // there are two faces for every cell - horizontal indices are even
+    // there are two faces for every cell - horizontal indices are odd
     Interface face = faces.at(2 * k + 1);
-    Conservative innerW = cells.at(k - Def::xCells).w;
-    Conservative outerW = Bound::updateWallCell(innerW, face);
-    cells.at(k).w = outerW;
+    Cell & outer2 = cells.at(face.rr);
+    Cell & outer1 = cells.at(face.r);
+    const Cell & inner1 = cells.at(face.l);
+    const Cell & inner2 = cells.at(face.ll);
+    Bound::wall2ndOrder(face, outer2.w, outer1.w, inner1.w, inner2.w);
   }
 }
 
