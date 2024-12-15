@@ -22,20 +22,24 @@ public:
 
   static Conservative updateWallCell (const Conservative & innerW, const Interface & face);
 
-  static void subsonicInlet2ndOrder(Conservative & outer2, Conservative & outer1,
-                                    const Conservative & inner1, const Conservative inner2);
+  static void subsonicInlet2ndOrder (Conservative & outer2, Conservative & outer1,
+                                     const Conservative & inner1, const Conservative inner2);
 
-  static void supersonicInlet2ndOrder(Conservative & outer2, Conservative & outer1,
-                                    const Conservative & inner1, const Conservative inner2);
+  static void supersonicInlet2ndOrder (Conservative & outer2, Conservative & outer1,
+                                       const Conservative & inner1, const Conservative inner2);
 
-  static void subsonicOutlet2ndOrder(Conservative & outer2, Conservative & outer1,
-                                    const Conservative & inner1, const Conservative inner2);
-
-  static void supersonicOutlet2ndOrder(Conservative & outer2, Conservative & outer1,
+  static void subsonicOutlet2ndOrder (Conservative & outer2, Conservative & outer1,
                                       const Conservative & inner1, const Conservative inner2);
 
-  static void wall2ndOrder(Conservative & outer2, Conservative & outer1,
-                                    const Conservative & inner1, const Conservative inner2);
+  static void supersonicOutlet2ndOrder (Conservative & outer2, Conservative & outer1,
+                                        const Conservative & inner1, const Conservative & inner2);
+
+  static void wall2ndOrder (const Interface & f, Conservative & outer2, Conservative & outer1,
+                            const Conservative & inner1, const Conservative & inner2);
+
+  static void inlet2ndOrder (Conservative & outer2, Conservative & outer1, const Conservative & inner1);
+
+  static void outlet2ndOrder (Conservative & outer2, Conservative & outer1, const Conservative & inner1);
 
 };
 

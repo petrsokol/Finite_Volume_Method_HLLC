@@ -79,3 +79,22 @@ Conservative Bound::updateWallCell(const Conservative &innerW, const Interface &
 
     return outerW;
 }
+
+void Bound::wall2ndOrder (const Interface & f, Conservative & outer2, Conservative & outer1,
+                          const Conservative & inner1, const Conservative & inner2)
+{
+  outer1 = updateWallCell(inner1, f);
+  outer2 = updateWallCell(inner2, f);
+}
+
+void Bound::inlet2ndOrder (Conservative & outer2, Conservative & outer1, const Conservative & inner1)
+{
+  outer1 = updateInletCell(inner1);
+  outer2 = updateInletCell(inner1);
+}
+
+void Bound::outlet2ndOrder (Conservative & outer2, Conservative & outer1, const Conservative & inner1)
+{
+  outer1 = updateOutletCell(inner1);
+  outer2 = updateOutletCell(inner1);
+}

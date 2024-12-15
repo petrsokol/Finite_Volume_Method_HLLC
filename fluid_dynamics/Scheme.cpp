@@ -103,6 +103,7 @@ void Scheme::computeScheme (std::vector<Cell> & cells,
       const Cell & cl = cells.at(face.l);
       const Cell & cr = cells.at(face.r);
 
+      Conservative wl, wr;
       if (Def::isSecOrd)
       {
         const Cell & cll = cells.at(face.ll);
@@ -117,13 +118,13 @@ void Scheme::computeScheme (std::vector<Cell> & cells,
         Conservative sigma_l = minmod(sigma_l_dopr, sigma_l_zpet) * secondOrderSwitch;
         Conservative sigma_r = minmod(sigma_r_dopr, sigma_r_zpet) * secondOrderSwitch;
 
-        Conservative wl = cells.at(face.l).w + centroidDistance(cr, cl) / 2 * sigma_l;
-        Conservative wr = cells.at(face.r).w - centroidDistance(cr, cl) / 2 * sigma_r;
+        wl = cells.at(face.l).w + centroidDistance(cr, cl) / 2 * sigma_l;
+        wr = cells.at(face.r).w - centroidDistance(cr, cl) / 2 * sigma_r;
       }
       else
       {
-        Conservative wl = cl.w;
-        Conservative wr = cr.w;
+        wl = cl.w;
+        wr = cr.w;
       }
 
       // compute flux between two cells sharing the interface

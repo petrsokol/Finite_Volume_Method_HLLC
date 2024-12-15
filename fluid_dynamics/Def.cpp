@@ -44,7 +44,7 @@ double Def::rho_inlet = 1;
 double Def::alpha_inlet = M_PI * 1.25 / 180;
 double Def::mach_infty = 0.5; // keep < 1 by default
 
-const double Def::EPSILON = -13;
+const double Def::EPSILON = -5;
 const double Def::CFL = 0.5;
 
 const double Def::rhoInitial = 1;

@@ -30,17 +30,17 @@ int main ()
 
   std::string name = Def::isNaca ? "naca" : "gamm";
   std::string scheme = Def::isHLLC ? "hllc" : "hll";
-  name += "_" + scheme + "_" + DataIO::getDate() + "_" + DataIO::getTime();
+  std::string order = Def::isSecOrd ? "2nd" : "1st";
+  name += "_" + scheme + "_" + order + "_" + DataIO::getDate() + "_" + DataIO::getTime();
 
-  //DEBUG
-  name = "gamm_test";
 
   Instructions::verticesName = name + "_vertices.csv";
   Instructions::wallName = name + "_wall.dat";
   Instructions::reziName = name + "_rezi.dat";
   Instructions::overlayName = Def::isNaca ? "only-naca.csv" : "only-gamm.csv";
 
-  Def::setConditions(1, 1, 0, 0.737); // change starting conditions accordingly
+  // change starting conditions accordingly
+  Def::setConditions(1, 1, 0, 0.737);
   // subsonic p2 = 0.843019
   // transonic p2 = 0.623512
 
@@ -48,29 +48,19 @@ int main ()
   std::string dir = Instructions::geometryInput;
   std::string fileName = Def::isNaca ? "nacaMesh.dat" : "gammMesh.dat";
   std::vector<Point> points = Point::loadPointsFromFile(dir, fileName);
-//  for (int i = 0; i < points.size(); ++i) {
-//    points.at(i).toString();
-//  }
 
   // faces
   std::vector<Interface> faces = Interface::createFaces(points);
-//  for (int i = 0; i < faces.size(); ++i) {
-//    faces.at(i).toString();
-//  }
 
   // cells
   std::vector<Cell> cells = Cell::createCells(points);
-//  for (int i = 0; i < cells.size(); ++i) {
-//    cells.at(i).toString();
-//  }
 
-  Def::wInitial.toString();
   // reziVec
   std::vector<double> reziVec;
 
   int reps = 0;
   double rezi = 1;
-  while (rezi > Def::EPSILON && !Def::error && reps < 30000) {
+  while (rezi > Def::EPSILON && !Def::error && reps < 15000) {
     reps++;
 
     Scheme::updateCellDT(cells, 0.7, true);
@@ -85,11 +75,6 @@ int main ()
       std::cout << "reps: " << reps << ", rezi: " << rezi << std::endl;
     }
   }
-
-//  for (int i = 0; i < Def::cells; ++i) {
-//    if (i != cells.at(i).index)
-//      printf("main: i = %d, cell index = %d\n", i, cells.at(i).index);
-//  }
 
   std::string command = "python \"C:\\Users\\petrs\\Documents\\CTU\\BP\\PYTHON-scripts\\compareCSV.py\" \"C:\\Users\\petrs\\Documents\\CTU\\BP\\FVM_REF\\gamm_hll_vert_REF.csv\" \"C:\\Users\\petrs\\Documents\\CTU\\BP\\FVM_Data\\gamm_test_vertices.csv\" 1e-6";
   int result = std::system(command.c_str());
