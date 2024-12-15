@@ -15,8 +15,9 @@ public:
   static const std::string defaultPath;
   static const std::string defaultExtension;
 
-  static const bool isNaca;
-  static const bool isHLLC;
+  static bool isNaca;
+  static bool isHLLC;
+  static bool isSecOrd;
   static bool isSetByMach;
 
   static const int xInner;

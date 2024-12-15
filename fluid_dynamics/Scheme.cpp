@@ -40,35 +40,34 @@ void Scheme::updateCellDT (std::vector<Cell> & cells, double CFL, bool useGlobal
   }
 }
 
-Conservative Scheme::HLL (const std::vector<Cell> & cells, const Interface & face)
+Conservative Scheme::HLL (const Interface & f, Conservative & wl, Conservative & wr)
 {
   Conservative res{};
-  Conservative wl = cells.at(face.l).w;
-  Conservative wr = cells.at(face.r).w;
+
   Primitive pvl = Primitive::computePV(wl);
   Primitive pvr = Primitive::computePV(wr);
 
   if (_isnan(pvr.p)) {
     std::cout << "tlak je divnej";
     wr.toString();
-    face.toString();
+    f.toString();
   }
 
-  double ql = pvl.u * face.nx + pvl.v * face.ny; // normálová rychlost
-  double qr = pvr.u * face.nx + pvr.v * face.ny;
+  double ql = pvl.u * f.nx + pvl.v * f.ny; // normálová rychlost
+  double qr = pvr.u * f.nx + pvr.v * f.ny;
 
   double SL = fmin(ql - pvl.c, qr - pvr.c);
   double SR = fmax(ql + pvl.c, qr + pvr.c);
 
-  Conservative FL = Scheme::flux(face, wl, ql, pvl.p);
-  Conservative FR = Scheme::flux(face, wr, qr, pvr.p);
+  Conservative FL = Scheme::flux(f, wl, ql, pvl.p);
+  Conservative FR = Scheme::flux(f, wr, qr, pvr.p);
 
   if (_isnan(FL.r1)) {
-    std::cout << "error at l side " << face.l << std::endl;
+    std::cout << "error at l side " << f.l << std::endl;
     wl.toString();
   }
   if (_isnan(FR.r1)) {
-    std::cout << "error at r side " << face.r << std::endl;
+    std::cout << "error at r side " << f.r << std::endl;
     wr.toString();
     Def::errorCount++;
   }
@@ -96,19 +95,49 @@ void Scheme::computeScheme (std::vector<Cell> & cells,
   // nested for loops iterate over inner faces (apart from the top horizontal row)
   for (int j = 0; j < Def::yInner; ++j) {
     for (int i = 0; i < xLim; ++i) {
-
+      // select an interface
       int index = 2 * (Def::firstInner + j * Def::xCells) + i;
       const Interface & face = faces.at(index);
-      Conservative flux = Def::isHLLC ? HLLC(cells, face) : HLL(cells, face);
+
+      // extract participating cells for code clarity
+      const Cell & cll = cells.at(face.ll);
+      const Cell & cl = cells.at(face.l);
+      const Cell & cr = cells.at(face.r);
+      const Cell & crr = cells.at(face.rr);
+
+      // second order additions
+      const Conservative sigma_l_dopr = (cr.w - cl.w) / centroidDistance(cr, cl);
+      const Conservative sigma_l_zpet = (cl.w - cll.w) / centroidDistance(cr, cl);
+      const Conservative sigma_r_dopr = (crr.w - cr.w) / centroidDistance(cr, cl);
+      const Conservative sigma_r_zpet = (cr.w - cl.w) / centroidDistance(cr, cl);
+
+      int secondOrderSwitch = Def::isSecOrd ? 1 : 0;
+      Conservative sigma_l = minmod(sigma_l_dopr, sigma_l_zpet) * secondOrderSwitch;
+      Conservative sigma_r = minmod(sigma_r_dopr, sigma_r_zpet) * secondOrderSwitch;
+
+      Conservative wl = cells.at(face.l).w + centroidDistance(cr, cl) / 2 * sigma_l;
+      Conservative wr = cells.at(face.r).w - centroidDistance(cr, cl) / 2 * sigma_r;
+
+      // compute flux between two cells sharing the interface
+      Conservative flux = Def::isHLLC
+              ? HLLC(face, wl, wr)
+              : HLL(face, wl, wr);
+
+      // add flux to cells neighboring the interface
       cells.at(face.l).rezi -= cells.at(face.l).dt / cells.at(face.l).area * flux * face.len;
       cells.at(face.r).rezi += cells.at(face.r).dt / cells.at(face.r).area * flux * face.len;
     }
   }
   // final top row
   for (int i = 0; i < Def::xInner; ++i) {
+
     int index = 2 * (Def::firstInner + Def::yInner * Def::xCells + i) + 1;
     const Interface & face = faces.at(index);
-    Conservative flux = Def::isHLLC ? HLLC(cells, face) : HLL(cells, face);
+
+    Conservative flux = Def::isHLLC
+                        ? HLLC(face, cells.at(face.l).w, cells.at(face.r).w)
+                        : HLL(face, cells.at(face.l).w, cells.at(face.r).w);
+
     cells.at(face.l).rezi -= cells.at(face.l).dt / cells.at(face.l).area * flux * face.len;
     cells.at(face.r).rezi += cells.at(face.r).dt / cells.at(face.r).area * flux * face.len;
   }
@@ -120,8 +149,12 @@ void Scheme::computeScheme (std::vector<Cell> & cells,
       // there are two faces for every cell - horizontal indices are even
       Interface face = faces.at(2 * k);
 
+      // compute flux
+      Conservative flux = Def::isHLLC
+                          ? HLLC(face, cells.at(face.l).w, cells.at(face.r).w)
+                          : HLL(face, cells.at(face.l).w, cells.at(face.r).w);
+
       // subtract original flux
-      Conservative flux = Def::isHLLC ? HLLC(cells, face) : HLL(cells, face);
       cells.at(face.r).rezi -= cells.at(face.r).dt / cells.at(face.r).area * flux * face.len;
 
       // create new flux
@@ -163,15 +196,13 @@ double Scheme::computeCP (double p_inner)
   return (p_inner - Bound::p_infty) / (0.5 * Bound::rho_infty * (pow(Bound::u_infty, 2) + pow(Bound::v_infty, 2)));
 }
 
-Conservative Scheme::HLLC (const std::vector<Cell> & cells, const Interface & face)
+Conservative Scheme::HLLC (const Interface & f, Conservative & wl, Conservative & wr)
 {
-  Conservative wl = cells.at(face.l).w;
-  Conservative wr = cells.at(face.r).w;
   Primitive pvl = Primitive::computePV(wl);
   Primitive pvr = Primitive::computePV(wr);
 
-  double ql = pvl.u * face.nx + pvl.v * face.ny; // normálová rychlost
-  double qr = pvr.u * face.nx + pvr.v * face.ny; // DP - \tilde u
+  double ql = pvl.u * f.nx + pvl.v * f.ny; // normálová rychlost
+  double qr = pvr.u * f.nx + pvr.v * f.ny; // DP - \tilde u
 
   double q_bar = Scheme::bar(pvl.rho, pvr.rho, ql, qr); // viz Toro
   double h_bar = Scheme::bar(pvl.rho, pvr.rho, pvl.h, pvr.h);
@@ -192,17 +223,17 @@ Conservative Scheme::HLLC (const std::vector<Cell> & cells, const Interface & fa
 
   double p_star = pvl.rho * (ql - SL) * (ql - SM) + pvl.p;
 
-  Conservative wlStar = 1 / (SL - SM) * Scheme::fluxStar(face, wl, ql, SL, SM, pvl.p, p_star);
-  Conservative wrStar = 1 / (SR - SM) * Scheme::fluxStar(face, wr, qr, SR, SM, pvr.p, p_star);
+  Conservative wlStar = 1 / (SL - SM) * Scheme::fluxStar(f, wl, ql, SL, SM, pvl.p, p_star);
+  Conservative wrStar = 1 / (SR - SM) * Scheme::fluxStar(f, wr, qr, SR, SM, pvr.p, p_star);
 
   if (SL > 0) {
-    return Scheme::flux(face, wl, ql, pvl.p);
+    return Scheme::flux(f, wl, ql, pvl.p);
   } else if (SL <= 0 && 0 < SM) {
-    return Scheme::flux(face, wlStar, SM, p_star);
+    return Scheme::flux(f, wlStar, SM, p_star);
   } else if (SM <= 0 && 0 <= SR) {
-    return Scheme::flux(face, wrStar, SM, p_star);
+    return Scheme::flux(f, wrStar, SM, p_star);
   } else {
-    return Scheme::flux(face, wr, qr, pvr.p);
+    return Scheme::flux(f, wr, qr, pvr.p);
   }
 }
 
@@ -260,3 +291,8 @@ Conservative Scheme::minmod (Conservative a, Conservative b)
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
+
+double Scheme::centroidDistance (const Cell & c1, const Cell & c2)
+{
+  return hypot((c2.tx - c1.tx), (c2.ty - c1.ty));
+}

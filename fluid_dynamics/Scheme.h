@@ -27,14 +27,14 @@ public:
   static double computeCP (double p_inner);
 
   // numerical schemes
-  static Conservative HLL (const std::vector<Cell> & cells, const Interface & face);
+  static Conservative HLL (const Interface & f, Conservative & wl, Conservative & wr);
 
-  static Conservative HLLC (const std::vector<Cell> & cells, const Interface & face);
+  static Conservative HLLC (const Interface & f, Conservative & wl, Conservative & wr);
 
   // second order
-  Conservative minmod (Conservative a, Conservative b);
+  static Conservative minmod (Conservative a, Conservative b);
 
-  double minmod (double a, double b);
+  static double minmod (double a, double b);
 
 private:
   // support methods
@@ -43,6 +43,8 @@ private:
   static Conservative fluxStar (Interface face, Conservative w, double q, double S, double SM, double p, double p_star);
 
   static double bar (double rho_l, double rho_r, double vl, double vr);
+
+  static double centroidDistance (const Cell & c1, const Cell & c2);
 };
 
 
