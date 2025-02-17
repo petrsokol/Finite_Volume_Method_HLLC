@@ -8,9 +8,9 @@
 const std::string Def::defaultPath = R"(C:\Users\petrs\Documents\CTU\BP\Charts\Data)";
 const std::string Def::defaultExtension = ".dat";
 
-bool Def::isNaca = false;
-bool Def::isHLLC = true;
-bool Def::isSecOrd = true;
+bool Def::isNaca = true;
+bool Def::isHLLC = false;
+bool Def::isSecOrd = false;
 bool Def::isSetByMach = false;
 
 const int Def::xInner = isNaca ? 260 : 150;
@@ -41,7 +41,7 @@ const double Def::KAPPA = 1.4;
 double Def::p_inlet = 1;
 double Def::p_outlet = 0.656;
 double Def::rho_inlet = 1;
-double Def::alpha_inlet = M_PI * 1.25 / 180;
+double Def::alpha_inlet = M_PI * 0 / 180;
 double Def::mach_infty = 0.5; // keep < 1 by default
 
 const double Def::EPSILON = -5;

@@ -95,6 +95,7 @@ void Scheme::computeScheme (std::vector<Cell> & cells,
   // nested for loops iterate over inner faces (apart from the top horizontal row)
   for (int j = 0; j < Def::yInner; ++j) {
     for (int i = 0; i < xLim; ++i) {
+
       // select an interface
       int index = 2 * (Def::firstInner + j * Def::xCells) + i;
       const Interface & face = faces.at(index);
@@ -104,8 +105,7 @@ void Scheme::computeScheme (std::vector<Cell> & cells,
       const Cell & cr = cells.at(face.r);
 
       Conservative wl, wr;
-      if (Def::isSecOrd)
-      {
+      if (Def::isSecOrd) {
         const Cell & cll = cells.at(face.ll);
         const Cell & crr = cells.at(face.rr);
         // second order additions
@@ -120,17 +120,15 @@ void Scheme::computeScheme (std::vector<Cell> & cells,
 
         wl = cells.at(face.l).w + centroidDistance(cr, cl) / 2 * sigma_l;
         wr = cells.at(face.r).w - centroidDistance(cr, cl) / 2 * sigma_r;
-      }
-      else
-      {
+      } else {
         wl = cl.w;
         wr = cr.w;
       }
 
       // compute flux between two cells sharing the interface
       Conservative flux = Def::isHLLC
-              ? HLLC(face, wl, wr)
-              : HLL(face, wl, wr);
+                          ? HLLC(face, wl, wr)
+                          : HLL(face, wl, wr);
 
       // add flux to cells neighboring the interface
       cells.at(face.l).rezi -= cells.at(face.l).dt / cells.at(face.l).area * flux * face.len;
