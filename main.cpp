@@ -13,16 +13,6 @@
 #include "fluid_dynamics/GAMM.h"
 #include "utilities/Instructions.h"
 
-
-// Define DEBUG_ON to toggle debugging messages
-#define DEBUG_ON 1
-
-#if DEBUG_ON
-#define debug_printf(fmt, ...) printf(fmt, ##__VA_ARGS__)
-#else
-#define debug_printf(fmt, ...) ((void)0) // No-op when debugging is off
-#endif
-
 int main ()
 {
   std::cout << "Dobry DEN!!!!" << std::endl;
@@ -40,7 +30,7 @@ int main ()
   Instructions::overlayName = Def::isNaca ? "only-naca.csv" : "only-gamm.csv";
 
   // change starting conditions accordingly
-  Def::setConditions(1, 1, 0, 0.737);
+  Def::setConditions(1, 1, 0, 0.843);
   // subsonic p2 = 0.843019
   // transonic p2 = 0.623512
 
@@ -60,7 +50,7 @@ int main ()
 
   int reps = 0;
   double rezi = 1;
-  while (rezi > Def::EPSILON && !Def::error && reps < 15000) {
+  while (rezi > Def::EPSILON && !Def::error && reps < 10000) {
     reps++;
 
     Scheme::updateCellDT(cells, 0.7, true);
@@ -71,18 +61,18 @@ int main ()
     reziVec.push_back(rezi);
     Scheme::updateCells(cells);
 
-    if (reps % 100 == 0) {
+    if (reps % 50 == 0) {
       std::cout << "reps: " << reps << ", rezi: " << rezi << std::endl;
     }
   }
 
-  std::string command = "python \"C:\\Users\\petrs\\Documents\\CTU\\BP\\PYTHON-scripts\\compareCSV.py\" \"C:\\Users\\petrs\\Documents\\CTU\\BP\\FVM_REF\\gamm_hll_vert_REF.csv\" \"C:\\Users\\petrs\\Documents\\CTU\\BP\\FVM_Data\\gamm_test_vertices.csv\" 1e-6";
-  int result = std::system(command.c_str());
-  if (result == 0) {
-    std::cout << "Files match within tolerance!" << std::endl;
-  } else {
-    std::cout << "Files do not match!" << std::endl;
-  }
+//  std::string command = "python \"C:\\Users\\petrs\\Documents\\CTU\\BP\\PYTHON-scripts\\compareCSV.py\" \"C:\\Users\\petrs\\Documents\\CTU\\BP\\FVM_REF\\gamm_hll_vert_REF.csv\" \"C:\\Users\\petrs\\Documents\\CTU\\BP\\FVM_Data\\gamm_test_vertices.csv\" 1e-6";
+//  int result = std::system(command.c_str());
+//  if (result == 0) {
+//    std::cout << "Files match within tolerance!" << std::endl;
+//  } else {
+//    std::cout << "Files do not match!" << std::endl;
+//  }
 
 
   if (!Def::error) {
