@@ -51,7 +51,7 @@ int main ()
 
   int reps = 0;
   double rezi = 1;
-  while (rezi > Def::EPSILON && !Def::error && reps < 1500) {
+  while (rezi > Def::EPSILON && !Def::error && reps < 10000) {
     reps++;
 
     Scheme::updateCellDT(cells, 0.7, false);

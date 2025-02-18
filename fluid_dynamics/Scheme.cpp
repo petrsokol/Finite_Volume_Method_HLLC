@@ -79,6 +79,7 @@ void Scheme::computeW (Conservative & wl, Conservative & wr,
 {
   if (Def::isSecOrd) {
     double centroidDist = centroidDistance(cr, cl);
+
     const Conservative sigma_l_forward = (cr.w - cl.w) / centroidDist;
     const Conservative sigma_l_backward = (cl.w - cll.w) / centroidDist;
     const Conservative sigma_r_forward = (crr.w - cr.w) / centroidDist;
@@ -97,6 +98,28 @@ void Scheme::computeW (Conservative & wl, Conservative & wr,
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
+void Scheme::updateInterface (std::vector<Cell> & cells, const Interface & face)
+{
+  // extract participating cells for code clarity
+  Cell & cl = cells.at(face.l);
+  Cell & cr = cells.at(face.r);
+  const Cell & cll = cells.at(face.ll);
+  const Cell & crr = cells.at(face.rr);
+
+  // compute conservative variables wl and wr
+  Conservative wl, wr;
+  computeW(wl, wr, cll, cl, cr, crr);
+
+  // compute flux between two cells sharing the interface
+  Conservative flux = Def::isHLLC ? HLLC(face, wl, wr) : HLL(face, wl, wr);
+
+  // add flux to cells neighboring the interface
+  cl.rezi -= cl.dt / cl.area * flux * face.len;
+  cr.rezi += cr.dt / cr.area * flux * face.len;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 void Scheme::computeScheme (std::vector<Cell> & cells, const std::vector<Interface> & faces)
 {
   // for every inner face in one row (+1 -> one extra vertical face at the end of the row)
@@ -110,24 +133,11 @@ void Scheme::computeScheme (std::vector<Cell> & cells, const std::vector<Interfa
       int index = 2 * (Def::firstInner + j * Def::xCells) + i;
       const Interface & face = faces.at(index);
 
-      // extract participating cells for code clarity
-      Cell & cl = cells.at(face.l);
-      Cell & cr = cells.at(face.r);
-      const Cell & cll = cells.at(face.ll);
-      const Cell & crr = cells.at(face.rr);
-
-      // compute conservative variables wl and wr
-      Conservative wl, wr;
-      computeW(wl, wr, cll, cl, cr, crr);
-
-      // compute flux between two cells sharing the interface
-      Conservative flux = Def::isHLLC ? HLLC(face, wl, wr) : HLL(face, wl, wr);
-
-      // add flux to cells neighboring the interface
-      cl.rezi -= cl.dt / cl.area * flux * face.len;
-      cr.rezi += cr.dt / cr.area * flux * face.len;
+      // compute flux over the selected interface
+      updateInterface(cells, face);
     }
   }
+
   // final top row
   for (int i = 0; i < Def::xInner; ++i) {
 
@@ -135,20 +145,8 @@ void Scheme::computeScheme (std::vector<Cell> & cells, const std::vector<Interfa
     int index = 2 * (Def::firstInner + Def::yInner * Def::xCells + i) + 1;
     const Interface & face = faces.at(index);
 
-    // extract participating cells for code clarity
-    Cell & cl = cells.at(face.l);
-    Cell & cr = cells.at(face.r);
-    const Cell & cll = cells.at(face.ll);
-    const Cell & crr = cells.at(face.rr);
-
-    // compute conservative variables wl and wr
-    Conservative wl, wr;
-    computeW(wl, wr, cll, cl, cr, crr);
-
-    Conservative flux = Def::isHLLC ? HLLC(face, wl, wr) : HLL(face, wl, wr);
-
-    cl.rezi -= cl.dt / cl.area * flux * face.len;
-    cr.rezi += cr.dt / cr.area * flux * face.len;
+    // compute flux over the selected interface
+    updateInterface(cells, face);
   }
 
   // place for alternative wall flux
@@ -185,8 +183,8 @@ void Scheme::updateCells (std::vector<Cell> & cells)
 
 double Scheme::computeCP (double p_inner)
 {
-  return (p_inner - Bound::p_infty) / (0.5 * Bound::rho_infty * (pow(Bound::u_infty, 2) + pow(Bound::v_infty, 2)));
-  // todo - change pow(...) to a * a
+  return (p_inner - Bound::p_infty) /
+         (0.5 * Bound::rho_infty * (Bound::u_infty * Bound::u_infty + Bound::v_infty * Bound::v_infty));
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

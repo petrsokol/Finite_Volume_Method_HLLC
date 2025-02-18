@@ -48,6 +48,8 @@ private:
 
   static void computeW(Conservative & wl, Conservative & wr,
                        const Cell & cll, const Cell & cl, const Cell & cr, const Cell & crr);
+
+  static void updateInterface (std::vector<Cell> & cells, const Interface & face);
 };
 
 
