@@ -122,31 +122,19 @@ void Scheme::updateInterface (std::vector<Cell> & cells, const Interface & face)
 
 void Scheme::computeScheme (std::vector<Cell> & cells, const std::vector<Interface> & faces)
 {
-  // for every inner face in one row (+1 -> one extra vertical face at the end of the row)
+  // iterate over all *inner* interfaces
   int xLim = 2 * Def::xInner + 1;
-
-  // nested for loops iterate over *inner* faces (apart from the top horizontal row)
   for (int j = 0; j < Def::yInner; ++j) {
     for (int i = 0; i < xLim; ++i) {
-
-      // select an interface
-      int index = 2 * (Def::firstInner + j * Def::xCells) + i;
-      const Interface & face = faces.at(index);
-
-      // compute flux over the selected interface
-      updateInterface(cells, face);
+      int k = 2 * (Def::firstInner + j * Def::xCells) + i;
+      updateInterface(cells, faces.at(k));
     }
   }
 
-  // final top row
+  // iterate over top row - only horizontal interfaces
   for (int i = 0; i < Def::xInner; ++i) {
-
-    // select an interface
-    int index = 2 * (Def::firstInner + Def::yInner * Def::xCells + i) + 1;
-    const Interface & face = faces.at(index);
-
-    // compute flux over the selected interface
-    updateInterface(cells, face);
+    int k = 2 * (Def::firstInner + Def::yInner * Def::xCells + i) + 1;
+    updateInterface(cells, faces.at(k));
   }
 
   // place for alternative wall flux
