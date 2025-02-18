@@ -8,8 +8,8 @@
 #include "../structures/Primitive.h"
 #include "Bound.h"
 
-const int NACA::wingStart = 31;
-const int NACA::wingLength = 198; // previous tests with 200 - changed 240506
+const int NACA::wingStart = 30;
+const int NACA::wingLength = 200; // previous tests with 200 - changed 240506
 
 void NACA::updateInlet (std::vector<Cell> & cells)
 {
@@ -105,8 +105,8 @@ void NACA::updatePeriodicity (std::vector<Cell> & cells)
 
 void NACA::updateBounds (std::vector<Cell> & cells, const std::vector<Interface> & faces)
 {
-  updateInlet(cells);
-  updateOutlet(cells);
-  updateWalls(cells, faces);
-  updatePeriodicity(cells);
+  NACA::updateInlet(cells);
+  NACA::updateOutlet(cells);
+  NACA::updateWalls(cells, faces);
+  NACA::updatePeriodicity(cells);
 }

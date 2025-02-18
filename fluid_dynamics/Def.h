@@ -56,7 +56,9 @@ public:
   static const double vInitial;
   static const double pInitial;
   static const double rhoEInitial;
-  static const Conservative wInitial;
+  static Conservative wInitial;
+  static const Conservative wInitialSupersonic;
+  static const Conservative wInitialSubsonic;
 
   static int errorCount;
 
