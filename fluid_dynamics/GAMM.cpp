@@ -40,8 +40,8 @@ void GAMM::updateWalls (std::vector<Cell> & cells, const std::vector<Interface> 
     Interface face = faces.at(2 * k + 1);
     Cell & outer2 = cells.at(face.ll);
     Cell & outer1 = cells.at(face.l);
-    const Cell & inner1 = cells.at(face.r);
-    const Cell & inner2 = cells.at(face.rr);
+    Cell & inner1 = cells.at(face.r);
+    Cell & inner2 = cells.at(face.rr);
     Bound::wall2ndOrder(face, inner2.w, inner1.w, outer1.w, outer2.w);
   }
 
@@ -53,8 +53,8 @@ void GAMM::updateWalls (std::vector<Cell> & cells, const std::vector<Interface> 
     Interface face = faces.at(2 * k + 1);
     Cell & outer2 = cells.at(face.rr);
     Cell & outer1 = cells.at(face.r);
-    const Cell & inner1 = cells.at(face.l);
-    const Cell & inner2 = cells.at(face.ll);
+    Cell & inner1 = cells.at(face.l);
+    Cell & inner2 = cells.at(face.ll);
     Bound::wall2ndOrder(face, inner2.w, inner1.w, outer1.w, outer2.w);
   }
 }

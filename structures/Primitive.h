@@ -18,6 +18,8 @@ public:
     // Constructor
     Primitive() = default;
 
+    Primitive (Conservative w);
+
     // Methods
     static Primitive computePV(Conservative w);
 };

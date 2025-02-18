@@ -16,7 +16,7 @@ double Bound::p_infty = 1;
 
 Conservative Bound::updateInletCell (const Conservative & innerW)
 {
-  Primitive innerPV = Primitive::computePV(innerW);
+  Primitive innerPV(innerW);
 
   Bound::p_infty = innerPV.p; // p_0
   double p_0 = Def::p_inlet;
@@ -47,7 +47,7 @@ Conservative Bound::updateInletCell (const Conservative & innerW)
 
 Conservative Bound::updateOutletCell (const Conservative & innerW)
 {
-  Primitive innerPV = Primitive::computePV(innerW);
+  Primitive innerPV(innerW);
   Conservative outerW;
 
   if (Def::mach_infty < 1) {

@@ -63,7 +63,7 @@ DataIO::exportToCSV (const std::unordered_map<int, Cell> & cells, const std::str
 
   for (int i = 0; i < Def::inner; ++i) {
     int k = Def::innerIndex(i);
-    Primitive pv = Primitive::computePV(cells.at(k).w);
+    Primitive pv(cells.at(k).w);
     double mach = pv.U / pv.c;
     stream << cells.at(k).tx << ", " << cells.at(k).ty << ", 1, " << mach << ", " << pv.p << "\n";
   }
@@ -81,7 +81,7 @@ DataIO::exportToDAT (const std::unordered_map<int, Cell> & cells, const std::str
 
   for (int i = 0; i < upperBound; ++i) {
     int k = offset + i;
-    Primitive pv = Primitive::computePV(cells.at(k).w);
+    Primitive pv(cells.at(k).w);
     double mach = pv.U / pv.c;
     stream << cells.at(k).tx << " " << cells.at(k).ty << " " << mach << " " << pv.p << "\n";
   }
@@ -172,7 +172,7 @@ std::vector<Point> DataIO::updatePointValues (const std::vector<Cell> & cells, c
   std::vector<Point> res = points;
 
   // reference cp and mach values
-  Primitive pv = Primitive::computePV(cells.at(Def::firstInnerPoint).w);
+  Primitive pv(cells.at(Def::firstInnerPoint).w);
   Instructions::machLB = pv.U / pv.c;
   Instructions::machUB = pv.U / pv.c;
   Instructions::cpLB = Scheme::computeCP(pv.p);
@@ -183,7 +183,7 @@ std::vector<Point> DataIO::updatePointValues (const std::vector<Cell> & cells, c
   // iterate over inner cells
   for (int i = 0; i < Def::inner; ++i) {
     int k = Def::innerIndex(i);
-    Primitive pv = Primitive::computePV(cells.at(k).w);
+    Primitive pv(cells.at(k).w);
     double mach = pv.U / pv.c;
     double cp = Scheme::computeCP(pv.p);
 
@@ -204,7 +204,7 @@ std::vector<Point> DataIO::updatePointValues (const std::vector<Cell> & cells, c
       int l = Def::firstInnerPoint - Def::xPoints + Def::xInner - 1 -
               i; //o řadu níž, poslední index - jede v protisměru // l viz BP, p. 13
 
-      Primitive pv = Primitive::computePV(cells.at(l).w);
+      Primitive pv(cells.at(l).w);
       double mach = pv.U / pv.c;
       double cp = Scheme::computeCP(pv.p);
 
@@ -215,7 +215,7 @@ std::vector<Point> DataIO::updatePointValues (const std::vector<Cell> & cells, c
     for (int i = 0; i < NACA::wingStart; ++i) {
       int l = Def::firstInnerPoint - Def::xPoints + NACA::wingStart - 1 - i; // -1 = těsně před koncem
 
-      Primitive pv = Primitive::computePV(cells.at(l).w);
+      Primitive pv(cells.at(l).w);
       double mach = pv.U / pv.c;
       double cp = Scheme::computeCP(pv.p);
 

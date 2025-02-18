@@ -16,7 +16,7 @@ void Scheme::updateCellDT (std::vector<Cell> & cells, double CFL, bool useGlobal
   double globalDT = 1e9;
 
   for (auto & cell: cells) {
-    Primitive pv = Primitive::computePV(cell.w);
+    Primitive pv(cell.w);
 
     double u_xi = fabs(pv.u * cell.xi.ux + pv.v * cell.xi.uy);
     double u_eta = fabs(pv.u * cell.eta.ux + pv.v * cell.eta.uy);
@@ -45,8 +45,8 @@ Conservative Scheme::HLL (const Interface & f, Conservative & wl, Conservative &
 {
   Conservative res{};
 
-  Primitive pvl = Primitive::computePV(wl);
-  Primitive pvr = Primitive::computePV(wr);
+  Primitive pvl(wl);
+  Primitive pvr(wr);
 
   double ql = pvl.u * f.nx + pvl.v * f.ny;
   double qr = pvr.u * f.nx + pvr.v * f.ny;
@@ -179,8 +179,8 @@ double Scheme::computeCP (double p_inner)
 
 Conservative Scheme::HLLC (const Interface & f, Conservative & wl, Conservative & wr)
 {
-  Primitive pvl = Primitive::computePV(wl);
-  Primitive pvr = Primitive::computePV(wr);
+  Primitive pvl(wl);
+  Primitive pvr(wr);
 
   double ql = pvl.u * f.nx + pvl.v * f.ny; // normálová rychlost
   double qr = pvr.u * f.nx + pvr.v * f.ny; // DP - \tilde u
