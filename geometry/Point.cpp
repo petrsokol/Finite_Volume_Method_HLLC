@@ -9,8 +9,12 @@
 
 const int Point::valueCount = 2;
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 Point::Point (double x, double y, int index) : x(x), y(y), index(index), values(valueCount, 0), contributors(0)
 {}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
 
 std::vector<Point> Point::createPoints (std::vector<double> bot, std::vector<double> top)
 {
@@ -30,25 +34,35 @@ std::vector<Point> Point::createPoints (std::vector<double> bot, std::vector<dou
   return res;
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 void Point::toString () const
 {
   std::cout << "point " << index << ": [" << x << ";" << y << "] \n";
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/
 
 Point Point::operator+ (Point other) const
 {
   return {Point::x + other.x, Point::y + other.y, -1};
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 Point Point::operator- (Point other) const
 {
   return {Point::x - other.x, Point::y - other.y, -1};
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 Point Point::operator* (double scalar) const
 {
   return {Point::x * scalar, Point::y * scalar, -1};
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/
 
 Point Point::operator/ (double scalar) const
 {
@@ -58,6 +72,8 @@ Point Point::operator/ (double scalar) const
   }
   return {Point::x / scalar, Point::y / scalar, -1};
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/
 
 std::vector<Point> Point::loadPointsFromFile (const std::string & dir, const std::string & file)
 {
@@ -78,6 +94,8 @@ std::vector<Point> Point::loadPointsFromFile (const std::string & dir, const std
   return res;
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 int Point::pointIndexToCellIndex (int i, int j)
 {
   int res;
@@ -90,3 +108,5 @@ int Point::pointIndexToCellIndex (int i, int j)
 //  printf("for point [%d, %d] index = %d\n", i, j, res);
   return res;
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/

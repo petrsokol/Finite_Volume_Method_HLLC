@@ -32,6 +32,4 @@ add_executable(GAMM main.cpp
         fluid_dynamics/GAMM.h
         utilities/Instructions.cpp
         utilities/Instructions.h
-        utilities/Debug.cpp
-        utilities/Debug.h
 )

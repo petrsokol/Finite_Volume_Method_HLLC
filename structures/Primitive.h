@@ -15,13 +15,10 @@ public:
     double rho, rhoU, rhoV, rhoE;
     double U, u, v, c, p, h;
 
-    // Constructor
+    // Constructors
     Primitive() = default;
 
     Primitive (Conservative w);
-
-    // Methods
-    static Primitive computePV(Conservative w);
 };
 
 

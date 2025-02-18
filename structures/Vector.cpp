@@ -5,12 +5,6 @@
 #include <cmath>
 #include "Vector.h"
 
-Vector::Vector(double x, double y) {
-    Vector::x = x;
-    Vector::y = y;
-    Vector::length = sqrt(pow(x, 2) + pow(y, 2));
-}
-
 Vector::Vector(Point a, Point b) {
     Vector::x = b.x - a.x;
     Vector::y = b.y - a.y;

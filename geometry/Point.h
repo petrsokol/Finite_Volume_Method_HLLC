@@ -9,31 +9,33 @@
 #include <vector>
 #include <string>
 
-class Point {
+class Point
+{
 
 public:
-    static const int valueCount;
-    double x, y;
-    std::vector<double> values;
-    int index, contributors;
+  static const int valueCount;
+  double x, y;
+  std::vector<double> values;
+  int index, contributors;
 
-    // Constructor
-    Point(double x, double y, int index);
+  // Constructor
+  Point (double x, double y, int index);
 
-    // Methods
-    static std::vector<Point> createPoints(std::vector<double> bot, std::vector<double> top);
+  // Methods
+  static std::vector<Point> createPoints (std::vector<double> bot, std::vector<double> top);
 
+  void toString () const;
 
+  // Overloaded operators
+  Point operator+ (Point other) const;
 
-    void toString() const;
+  Point operator- (Point other) const;
 
-    // Overload
-    Point operator+(Point other) const;
-    Point operator-(Point other) const;
-    Point operator*(double scalar) const;
-    Point operator/(double scalar) const;
+  Point operator* (double scalar) const;
 
-    static std::vector<Point> loadPointsFromFile(const std::string &dir, const std::string &file);
+  Point operator/ (double scalar) const;
+
+  static std::vector<Point> loadPointsFromFile (const std::string & dir, const std::string & file);
 
   static int pointIndexToCellIndex (int i, int j);
 };

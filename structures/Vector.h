@@ -8,17 +8,16 @@
 
 #include "../geometry/Point.h"
 
-class Vector {
+class Vector
+{
 
 public:
-    double x, y, length, ux, uy;
+  double x, y, length, ux, uy;
 
-    // Constructor
-    Vector() = default;
+  // Constructors
+  Vector () = default;
 
-    Vector(double x, double y);
-
-    Vector(Point a, Point b);
+  Vector (Point a, Point b);
 };
 
 

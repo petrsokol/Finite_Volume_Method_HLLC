@@ -35,15 +35,12 @@ std::vector<Cell> Cell::createCells (const std::vector<Point> & points)
   std::vector<Cell> res;
   for (int j = 0; j < Def::yCells; ++j) {
     for (int i = 0; i < Def::xCells; ++i) {
-      // get points from point vector
       const Point & a = points.at(j * (Def::xPoints) + i);
       const Point & b = points.at(j * (Def::xPoints) + i + 1);
       const Point & c = points.at((j + 1) * (Def::xPoints) + i + 1);
       const Point & d = points.at((j + 1) * (Def::xPoints) + i);
 
-      // create a cell from points
       Cell curr = Cell(a, b, c, d);
-
       res.push_back(curr);
     }
   }
