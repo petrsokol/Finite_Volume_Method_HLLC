@@ -2,12 +2,13 @@
 // Created by petrs on 27.04.2024.
 //
 
-#include <unordered_map>
 #include "../geometry/Cell.h"
 #include "../geometry/Interface.h"
 #include "GAMM.h"
 #include "Def.h"
 #include "Bound.h"
+
+/*--------------------------------------------------------------------------------------------------------------------*/
 
 void GAMM::updateInlet (std::vector<Cell> & cells)
 {
@@ -17,6 +18,8 @@ void GAMM::updateInlet (std::vector<Cell> & cells)
   }
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 void GAMM::updateOutlet (std::vector<Cell> & cells)
 {
   for (int j = 0; j < Def::yInner; ++j) {
@@ -24,6 +27,8 @@ void GAMM::updateOutlet (std::vector<Cell> & cells)
     Bound::outlet2ndOrder(cells.at(k).w, cells.at(k + 1).w, cells.at(k + 2).w);
   }
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/
 
 void GAMM::updateWalls (std::vector<Cell> & cells, const std::vector<Interface> & faces)
 {
@@ -54,9 +59,13 @@ void GAMM::updateWalls (std::vector<Cell> & cells, const std::vector<Interface> 
   }
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 void GAMM::updateBounds (std::vector<Cell> & cells, const std::vector<Interface> & faces)
 {
   updateInlet(cells);
   updateOutlet(cells);
   updateWalls(cells, faces);
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/

@@ -12,6 +12,8 @@ double Bound::u_infty = 1;
 double Bound::rho_infty = 1;
 double Bound::p_infty = 1;
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 Conservative Bound::updateInletCell (const Conservative & innerW)
 {
   Primitive innerPV = Primitive::computePV(innerW);
@@ -41,6 +43,8 @@ Conservative Bound::updateInletCell (const Conservative & innerW)
   return outerW;
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 Conservative Bound::updateOutletCell (const Conservative & innerW)
 {
   Primitive innerPV = Primitive::computePV(innerW);
@@ -67,6 +71,8 @@ Conservative Bound::updateOutletCell (const Conservative & innerW)
   return outerW;
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 Conservative Bound::updateWallCell (const Conservative & innerW, const Interface & face)
 {
   double uInner = innerW.r2 / innerW.r1;
@@ -83,6 +89,8 @@ Conservative Bound::updateWallCell (const Conservative & innerW, const Interface
   return outerW;
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 void Bound::wall2ndOrder (const Interface & f, const Conservative & inner2, const Conservative & inner1,
                           Conservative & outer1, Conservative & outer2)
 {
@@ -90,14 +98,20 @@ void Bound::wall2ndOrder (const Interface & f, const Conservative & inner2, cons
   outer2 = updateWallCell(inner2, f);
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 void Bound::inlet2ndOrder (const Conservative & inner1, Conservative & outer1, Conservative & outer2)
 {
   outer1 = updateInletCell(inner1);
   outer2 = updateInletCell(inner1);
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 void Bound::outlet2ndOrder (const Conservative & inner1, Conservative & outer1, Conservative & outer2)
 {
   outer1 = updateOutletCell(inner1);
   outer2 = updateOutletCell(inner1);
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/

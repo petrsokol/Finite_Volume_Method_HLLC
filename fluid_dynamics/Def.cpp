@@ -5,6 +5,8 @@
 #include <cmath>
 #include "Def.h"
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 const std::string Def::defaultPath = R"(C:\Users\petrs\Documents\CTU\BP\Charts\Data)";
 const std::string Def::defaultExtension = ".dat";
 
@@ -62,48 +64,67 @@ const Conservative Def::wInitialSubsonic = Conservative(1, 0.65, 0, 2.4);
 Conservative Def::wInitial = Def::wInitialSubsonic;
 
 int Def::errorCount;
-
-
-
 bool Def::error = false;
 
-int Def::innerIndex(int i) {
-    return firstInner + i % xInner + (i / xInner) * xCells;
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+int Def::innerIndex (int i)
+{
+  return firstInner + i % xInner + (i / xInner) * xCells;
 }
 
-int Def::innerPointIndex(int i) {
-    return firstInnerPoint + i % (xInner + 1) + (i / (xInner + 1)) * xPoints;
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+int Def::innerPointIndex (int i)
+{
+  return firstInnerPoint + i % (xInner + 1) + (i / (xInner + 1)) * xPoints;
 }
 
-void Def::setConditions(double p_inlet, double rho_inlet, double alpha_inlet, double p_outlet) {
-    Def::isSetByMach = false;
-    Def::p_inlet = p_inlet;
-    Def::rho_inlet = rho_inlet;
-    Def::alpha_inlet = alpha_inlet;
-    Def::p_outlet = p_outlet;
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+void Def::setConditions (double p_inlet, double rho_inlet, double alpha_inlet, double p_outlet)
+{
+  Def::isSetByMach = false;
+  Def::p_inlet = p_inlet;
+  Def::rho_inlet = rho_inlet;
+  Def::alpha_inlet = alpha_inlet;
+  Def::p_outlet = p_outlet;
 }
 
-void Def::setConditions(double mach_infinity, double alpha_inlet) {
-    Def::isSetByMach = true;
-    Def::p_inlet = 1;
-    Def::rho_inlet = 1;
-    Def::alpha_inlet = alpha_inlet;
-    Def::mach_infty = mach_infinity;
-    double p_2 = Def::p_inlet * pow(1 + (Def::KAPPA - 1) / 2 * pow(Def::mach_infty, 2), -1 * (Def::KAPPA / (Def::KAPPA - 1)));
-    std::cout << "vystupni tlak p_2 = " << p_2 << std::endl;
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+void Def::setConditions (double mach_infinity, double alpha_inlet)
+{
+  Def::isSetByMach = true;
+  Def::p_inlet = 1;
+  Def::rho_inlet = 1;
+  Def::alpha_inlet = alpha_inlet;
+  Def::mach_infty = mach_infinity;
+  double p_2 = Def::p_inlet * pow(1 + (Def::KAPPA - 1) /
+                                      2 * pow(Def::mach_infty, 2), -1 * (Def::KAPPA / (Def::KAPPA - 1)));
+  std::cout << "vystupni tlak p_2 = " << p_2 << std::endl;
 }
 
-void Def::coordsToString(int i) {
-    std::cout << "[" << i % Def::xCells << ", " << i / Def::xCells << "]" << std::endl;
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+void Def::coordsToString (int i)
+{
+  std::cout << "[" << i % Def::xCells << ", " << i / Def::xCells << "]" << std::endl;
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/
 
 int Def::pointIndexToCellIndex (int k)
 {
   return k % xPoints + (k / xPoints) * xCells;
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 int Def::cellIndexToPointIndex (int k)
 {
   int pointIndex = k % xCells + (k / xCells) * xPoints;
   return pointIndex;
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/

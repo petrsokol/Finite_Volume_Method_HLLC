@@ -10,6 +10,8 @@
 #include "../geometry/Cell.h"
 #include "../geometry/Interface.h"
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 class Bound
 {
 
@@ -34,8 +36,8 @@ public:
   static void supersonicOutlet2ndOrder (Conservative & outer2, Conservative & outer1,
                                         const Conservative & inner1, const Conservative & inner2);
 
-  static void wall2ndOrder (const Interface & f, const Conservative & inner2, const Conservative & inner1, Conservative & outer1,
-                Conservative & outer2);
+  static void wall2ndOrder (const Interface & f, const Conservative & inner2, const Conservative & inner1,
+                            Conservative & outer1, Conservative & outer2);
 
   static void inlet2ndOrder (const Conservative & inner1, Conservative & outer1, Conservative & outer2);
 
@@ -43,5 +45,6 @@ public:
 
 };
 
+/*--------------------------------------------------------------------------------------------------------------------*/
 
 #endif //GAMM_BOUND_H
