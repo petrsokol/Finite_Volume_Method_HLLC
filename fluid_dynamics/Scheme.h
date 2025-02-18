@@ -45,6 +45,9 @@ private:
   static double bar (double rho_l, double rho_r, double vl, double vr);
 
   static double centroidDistance (const Cell & c1, const Cell & c2);
+
+  static void computeW(Conservative & wl, Conservative & wr,
+                       const Cell & cll, const Cell & cl, const Cell & cr, const Cell & crr);
 };
 
 

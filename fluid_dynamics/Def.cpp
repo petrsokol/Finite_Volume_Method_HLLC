@@ -8,7 +8,7 @@
 const std::string Def::defaultPath = R"(C:\Users\petrs\Documents\CTU\BP\Charts\Data)";
 const std::string Def::defaultExtension = ".dat";
 
-bool Def::isNaca = false;
+bool Def::isNaca = true;
 bool Def::isHLLC = true;
 bool Def::isSecOrd = true;
 bool Def::isSetByMach = false;

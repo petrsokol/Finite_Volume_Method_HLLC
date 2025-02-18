@@ -29,17 +29,14 @@ void Scheme::updateCellDT (std::vector<Cell> & cells, double CFL, bool useGlobal
     if (useGlobalTimeStep) {
       globalDT = fmin(globalDT, res);
     } else {
-      // local time step is assigned to each cell
       cell.dt = res;
     }
   }
 
-  if (useGlobalTimeStep) {
-    // global time step is assigned to every cell
-    for (auto & cell: cells) {
+  // global time step is assigned to every cell
+  if (useGlobalTimeStep)
+    for (auto & cell: cells)
       cell.dt = globalDT;
-    }
-  }
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -51,13 +48,7 @@ Conservative Scheme::HLL (const Interface & f, Conservative & wl, Conservative &
   Primitive pvl = Primitive::computePV(wl);
   Primitive pvr = Primitive::computePV(wr);
 
-  if (_isnan(pvr.p)) {
-    std::cout << "tlak je divnej";
-    wr.toString();
-    f.toString();
-  }
-
-  double ql = pvl.u * f.nx + pvl.v * f.ny; // normálová rychlost
+  double ql = pvl.u * f.nx + pvl.v * f.ny;
   double qr = pvr.u * f.nx + pvr.v * f.ny;
 
   double SL = fmin(ql - pvl.c, qr - pvr.c);
@@ -65,16 +56,6 @@ Conservative Scheme::HLL (const Interface & f, Conservative & wl, Conservative &
 
   Conservative FL = Scheme::flux(f, wl, ql, pvl.p);
   Conservative FR = Scheme::flux(f, wr, qr, pvr.p);
-
-  if (_isnan(FL.r1)) {
-    std::cout << "error at l side " << f.l << std::endl;
-    wl.toString();
-  }
-  if (_isnan(FR.r1)) {
-    std::cout << "error at r side " << f.r << std::endl;
-    wr.toString();
-    Def::errorCount++;
-  }
 
   if (SL > 0) {
     res = FL;
@@ -92,13 +73,36 @@ Conservative Scheme::HLL (const Interface & f, Conservative & wl, Conservative &
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void Scheme::computeScheme (std::vector<Cell> & cells,
-                            const std::vector<Interface> & faces)
+void Scheme::computeW (Conservative & wl, Conservative & wr,
+                       const Cell & cll, const Cell & cl,
+                       const Cell & cr, const Cell & crr)
+{
+  if (Def::isSecOrd) {
+    double centroidDist = centroidDistance(cr, cl);
+    const Conservative sigma_l_forward = (cr.w - cl.w) / centroidDist;
+    const Conservative sigma_l_backward = (cl.w - cll.w) / centroidDist;
+    const Conservative sigma_r_forward = (crr.w - cr.w) / centroidDist;
+    const Conservative sigma_r_backward = (cr.w - cl.w) / centroidDist;
+
+    Conservative sigma_l = minmod(sigma_l_forward, sigma_l_backward);
+    Conservative sigma_r = minmod(sigma_r_forward, sigma_r_backward);
+
+    wl = cl.w + centroidDistance(cr, cl) / 2 * sigma_l;
+    wr = cr.w - centroidDistance(cr, cl) / 2 * sigma_r;
+  } else {
+    wl = cl.w;
+    wr = cr.w;
+  }
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+void Scheme::computeScheme (std::vector<Cell> & cells, const std::vector<Interface> & faces)
 {
   // for every inner face in one row (+1 -> one extra vertical face at the end of the row)
   int xLim = 2 * Def::xInner + 1;
 
-  // nested for loops iterate over inner faces (apart from the top horizontal row)
+  // nested for loops iterate over *inner* faces (apart from the top horizontal row)
   for (int j = 0; j < Def::yInner; ++j) {
     for (int i = 0; i < xLim; ++i) {
 
@@ -107,80 +111,47 @@ void Scheme::computeScheme (std::vector<Cell> & cells,
       const Interface & face = faces.at(index);
 
       // extract participating cells for code clarity
-      const Cell & cl = cells.at(face.l);
-      const Cell & cr = cells.at(face.r);
+      Cell & cl = cells.at(face.l);
+      Cell & cr = cells.at(face.r);
+      const Cell & cll = cells.at(face.ll);
+      const Cell & crr = cells.at(face.rr);
 
+      // compute conservative variables wl and wr
       Conservative wl, wr;
-      if (Def::isSecOrd) {
-        const Cell & cll = cells.at(face.ll);
-        const Cell & crr = cells.at(face.rr);
-        // second order additions
-        const Conservative sigma_l_dopr = (cr.w - cl.w) / centroidDistance(cr, cl);
-        const Conservative sigma_l_zpet = (cl.w - cll.w) / centroidDistance(cr, cl);
-        const Conservative sigma_r_dopr = (crr.w - cr.w) / centroidDistance(cr, cl);
-        const Conservative sigma_r_zpet = (cr.w - cl.w) / centroidDistance(cr, cl);
-
-        int secondOrderSwitch = Def::isSecOrd ? 1 : 0;
-        Conservative sigma_l = minmod(sigma_l_dopr, sigma_l_zpet) * secondOrderSwitch;
-        Conservative sigma_r = minmod(sigma_r_dopr, sigma_r_zpet) * secondOrderSwitch;
-
-        wl = cells.at(face.l).w + centroidDistance(cr, cl) / 2 * sigma_l;
-        wr = cells.at(face.r).w - centroidDistance(cr, cl) / 2 * sigma_r;
-      } else {
-        wl = cl.w;
-        wr = cr.w;
-      }
+      computeW(wl, wr, cll, cl, cr, crr);
 
       // compute flux between two cells sharing the interface
-      Conservative flux = Def::isHLLC
-                          ? HLLC(face, wl, wr)
-                          : HLL(face, wl, wr);
+      Conservative flux = Def::isHLLC ? HLLC(face, wl, wr) : HLL(face, wl, wr);
 
       // add flux to cells neighboring the interface
-      cells.at(face.l).rezi -= cells.at(face.l).dt / cells.at(face.l).area * flux * face.len;
-      cells.at(face.r).rezi += cells.at(face.r).dt / cells.at(face.r).area * flux * face.len;
+      cl.rezi -= cl.dt / cl.area * flux * face.len;
+      cr.rezi += cr.dt / cr.area * flux * face.len;
     }
   }
   // final top row
   for (int i = 0; i < Def::xInner; ++i) {
 
+    // select an interface
     int index = 2 * (Def::firstInner + Def::yInner * Def::xCells + i) + 1;
     const Interface & face = faces.at(index);
 
-    Conservative flux = Def::isHLLC
-                        ? HLLC(face, cells.at(face.l).w, cells.at(face.r).w)
-                        : HLL(face, cells.at(face.l).w, cells.at(face.r).w);
+    // extract participating cells for code clarity
+    Cell & cl = cells.at(face.l);
+    Cell & cr = cells.at(face.r);
+    const Cell & cll = cells.at(face.ll);
+    const Cell & crr = cells.at(face.rr);
 
-    cells.at(face.l).rezi -= cells.at(face.l).dt / cells.at(face.l).area * flux * face.len;
-    cells.at(face.r).rezi += cells.at(face.r).dt / cells.at(face.r).area * flux * face.len;
+    // compute conservative variables wl and wr
+    Conservative wl, wr;
+    computeW(wl, wr, cll, cl, cr, crr);
+
+    Conservative flux = Def::isHLLC ? HLLC(face, wl, wr) : HLL(face, wl, wr);
+
+    cl.rezi -= cl.dt / cl.area * flux * face.len;
+    cr.rezi += cr.dt / cr.area * flux * face.len;
   }
 
-  bool test = false;
-  if (test && Def::isNaca) {
-    for (int i = 0; i < NACA::wingLength; ++i) {
-      int k = Def::firstInnerPoint + NACA::wingStart + i;
-      // there are two faces for every cell - horizontal indices are even
-      Interface face = faces.at(2 * k + 1);
-
-      // compute flux
-      Conservative flux = Def::isHLLC
-                          ? HLLC(face, cells.at(face.l).w, cells.at(face.r).w)
-                          : HLL(face, cells.at(face.l).w, cells.at(face.r).w);
-
-      // subtract original flux
-      cells.at(face.r).rezi -= cells.at(face.r).dt / cells.at(face.r).area * flux * face.len;
-      cells.at(face.rr).rezi -= cells.at(face.rr).dt / cells.at(face.rr).area * flux * face.len;
-
-      // create new flux
-      Conservative updatedFlux = Conservative(0, face.nx, face.ny, 0);
-      double p_1 = Primitive::computePV(cells.at(k).w).p;
-      double p_2 = Primitive::computePV(cells.at(k + Def::xCells).w).p;
-      double p_w = 1.5 * p_1 - 0.5 * p_2;
-      updatedFlux = updatedFlux * p_w;
-      cells.at(face.r).rezi += cells.at(face.r).dt / cells.at(face.r).area * updatedFlux * face.len;
-      cells.at(face.rr).rezi += cells.at(face.rr).dt / cells.at(face.rr).area * updatedFlux * face.len;
-    }
-  }
+  // place for alternative wall flux
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -329,3 +300,31 @@ double Scheme::centroidDistance (const Cell & c1, const Cell & c2)
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
+
+/*
+   if (test && Def::isNaca) {
+    for (int i = 0; i < NACA::wingLength; ++i) {
+      int k = Def::firstInnerPoint + NACA::wingStart + i;
+      // there are two faces for every cell - horizontal indices are even
+      Interface face = faces.at(2 * k + 1);
+
+      // compute flux
+      Conservative flux = Def::isHLLC
+                          ? HLLC(face, cells.at(face.l).w, cells.at(face.r).w)
+                          : HLL(face, cells.at(face.l).w, cells.at(face.r).w);
+
+      // subtract original flux
+      cells.at(face.r).rezi -= cells.at(face.r).dt / cells.at(face.r).area * flux * face.len;
+      cells.at(face.rr).rezi -= cells.at(face.rr).dt / cells.at(face.rr).area * flux * face.len;
+
+      // create new flux
+      Conservative updatedFlux = Conservative(0, face.nx, face.ny, 0);
+      double p_1 = Primitive::computePV(cells.at(k).w).p;
+      double p_2 = Primitive::computePV(cells.at(k + Def::xCells).w).p;
+      double p_w = 1.5 * p_1 - 0.5 * p_2;
+      updatedFlux = updatedFlux * p_w;
+      cells.at(face.r).rezi += cells.at(face.r).dt / cells.at(face.r).area * updatedFlux * face.len;
+      cells.at(face.rr).rezi += cells.at(face.rr).dt / cells.at(face.rr).area * updatedFlux * face.len;
+    }
+  }
+ */
