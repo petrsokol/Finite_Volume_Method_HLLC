@@ -29,7 +29,7 @@ int main ()
   Instructions::overlayName = Def::isNaca ? "only-naca.csv" : "only-gamm.csv";
 
   // change starting conditions accordingly
-  Def::setConditions(1, 1, 0, 0.737);
+  Def::setConditions(1, 1, 1.25, 0.623512);
   Def::wInitial = Def::wInitialSubsonic;
   // subsonic p2 = 0.843019
   // transonic p2 = 0.623512
@@ -51,7 +51,7 @@ int main ()
 
   int reps = 0;
   double rezi = 1;
-  while (rezi > Def::EPSILON && !Def::error && reps < 10000) {
+  while (rezi > Def::EPSILON && !Def::error && reps < 5000) {
     reps++;
 
     Scheme::updateCellDT(cells, 0.7, false);

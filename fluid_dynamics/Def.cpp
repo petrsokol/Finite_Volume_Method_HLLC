@@ -43,11 +43,11 @@ const double Def::KAPPA = 1.4;
 double Def::p_inlet = 1;
 double Def::p_outlet = 0.656;
 double Def::rho_inlet = 1;
-double Def::alpha_inlet = M_PI * 0 / 180;
+double Def::alpha_inlet = M_PI * 1.25 / 180;
 double Def::mach_infty = 0.5; // keep < 1 by default
 
 const double Def::EPSILON = -4;
-const double Def::CFL = 0.5;
+const double Def::CFL = 0.2;
 
 const double Def::rhoInitial = 1;
 const double Def::uInitial = 0.65;
@@ -59,7 +59,7 @@ const double Def::rhoEInitial = pInitial / (KAPPA - 1) + 0.5 * rhoInitial * (pow
 const Conservative Def::wInitialSupersonic = Conservative(1, 2.2, 0, 4.42);
 
 // subsonic initial condition
-const Conservative Def::wInitialSubsonic = Conservative(1, 0.65, 0, 2.4);
+const Conservative Def::wInitialSubsonic = Conservative(1, 1, 0, 2.42);
 
 Conservative Def::wInitial = Def::wInitialSubsonic;
 
@@ -87,7 +87,7 @@ void Def::setConditions (double p_inlet, double rho_inlet, double alpha_inlet, d
   Def::isSetByMach = false;
   Def::p_inlet = p_inlet;
   Def::rho_inlet = rho_inlet;
-  Def::alpha_inlet = alpha_inlet;
+  Def::alpha_inlet = alpha_inlet * M_PI / 180;
   Def::p_outlet = p_outlet;
 }
 
