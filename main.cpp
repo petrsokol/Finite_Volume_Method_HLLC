@@ -23,16 +23,17 @@ int main ()
   std::string order = Def::isSecOrd ? "2nd" : "1st";
   name += "_" + scheme + "_" + order + "_" + DataIO::getDate() + "_" + DataIO::getTime();
 
-
   Instructions::verticesName = name + "_vertices.csv";
   Instructions::wallName = name + "_wall.dat";
   Instructions::reziName = name + "_rezi.dat";
   Instructions::overlayName = Def::isNaca ? "only-naca.csv" : "only-gamm.csv";
 
   // change starting conditions accordingly
-  Def::setConditions(1, 1, 0, 0.843);
+  Def::setConditions(1, 1, 0, 0.737);
+  Def::wInitial = Def::wInitialSubsonic;
   // subsonic p2 = 0.843019
   // transonic p2 = 0.623512
+  Def::wInitial.toString(); //[1;0.65;0;2.46125]
 
   // points
   std::string dir = Instructions::geometryInput;
@@ -50,7 +51,7 @@ int main ()
 
   int reps = 0;
   double rezi = 1;
-  while (rezi > Def::EPSILON && !Def::error && reps < 10000) {
+  while (rezi > Def::EPSILON && !Def::error && reps < 40000) {
     reps++;
 
     Scheme::updateCellDT(cells, 0.7, true);

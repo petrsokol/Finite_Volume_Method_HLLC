@@ -9,6 +9,8 @@
 #include "Bound.h"
 #include "NACA.h"
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 void Scheme::updateCellDT (std::vector<Cell> & cells, double CFL, bool useGlobalTimeStep)
 {
   double globalDT = 1e9;
@@ -39,6 +41,8 @@ void Scheme::updateCellDT (std::vector<Cell> & cells, double CFL, bool useGlobal
     }
   }
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/
 
 Conservative Scheme::HLL (const Interface & f, Conservative & wl, Conservative & wr)
 {
@@ -85,6 +89,8 @@ Conservative Scheme::HLL (const Interface & f, Conservative & wl, Conservative &
 
   return res;
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/
 
 void Scheme::computeScheme (std::vector<Cell> & cells,
                             const std::vector<Interface> & faces)
@@ -149,12 +155,12 @@ void Scheme::computeScheme (std::vector<Cell> & cells,
     cells.at(face.r).rezi += cells.at(face.r).dt / cells.at(face.r).area * flux * face.len;
   }
 
-  bool test = true;
+  bool test = false;
   if (test && Def::isNaca) {
     for (int i = 0; i < NACA::wingLength; ++i) {
       int k = Def::firstInnerPoint + NACA::wingStart + i;
       // there are two faces for every cell - horizontal indices are even
-      Interface face = faces.at(2 * k);
+      Interface face = faces.at(2 * k + 1);
 
       // compute flux
       Conservative flux = Def::isHLLC
@@ -163,6 +169,7 @@ void Scheme::computeScheme (std::vector<Cell> & cells,
 
       // subtract original flux
       cells.at(face.r).rezi -= cells.at(face.r).dt / cells.at(face.r).area * flux * face.len;
+      cells.at(face.rr).rezi -= cells.at(face.rr).dt / cells.at(face.rr).area * flux * face.len;
 
       // create new flux
       Conservative updatedFlux = Conservative(0, face.nx, face.ny, 0);
@@ -171,9 +178,12 @@ void Scheme::computeScheme (std::vector<Cell> & cells,
       double p_w = 1.5 * p_1 - 0.5 * p_2;
       updatedFlux = updatedFlux * p_w;
       cells.at(face.r).rezi += cells.at(face.r).dt / cells.at(face.r).area * updatedFlux * face.len;
+      cells.at(face.rr).rezi += cells.at(face.rr).dt / cells.at(face.rr).area * updatedFlux * face.len;
     }
   }
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/
 
 double Scheme::computeRezi (const std::vector<Cell> & cells)
 {
@@ -189,6 +199,8 @@ double Scheme::computeRezi (const std::vector<Cell> & cells)
   return log(sqrt(res));
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 void Scheme::updateCells (std::vector<Cell> & cells)
 {
   for (int i = 0; i < Def::inner; ++i) {
@@ -198,10 +210,15 @@ void Scheme::updateCells (std::vector<Cell> & cells)
   }
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 double Scheme::computeCP (double p_inner)
 {
   return (p_inner - Bound::p_infty) / (0.5 * Bound::rho_infty * (pow(Bound::u_infty, 2) + pow(Bound::v_infty, 2)));
+  // todo - change pow(...) to a * a
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/
 
 Conservative Scheme::HLLC (const Interface & f, Conservative & wl, Conservative & wr)
 {
@@ -244,6 +261,8 @@ Conservative Scheme::HLLC (const Interface & f, Conservative & wl, Conservative 
   }
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 Conservative Scheme::flux (Interface face, Conservative w, double q, double p)
 {
   Conservative res{};
@@ -254,6 +273,8 @@ Conservative Scheme::flux (Interface face, Conservative w, double q, double p)
   res.r4 = (w.r4 + p) * q;
   return res;
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/
 
 Conservative Scheme::fluxStar (Interface face, Conservative w, double q, double S, double SM, double p, double p_star)
 {
@@ -266,13 +287,14 @@ Conservative Scheme::fluxStar (Interface face, Conservative w, double q, double 
   return res;
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 double Scheme::bar (double rho_l, double rho_r, double vl, double vr)
 {
   return (sqrt(rho_l) * vl + sqrt(rho_r) * vr) / (sqrt(rho_l) + sqrt(rho_r));
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-// SECOND ORDER
 
 double Scheme::minmod (double a, double b)
 {
@@ -283,10 +305,12 @@ double Scheme::minmod (double a, double b)
   } else if (fabs(a) > fabs(b) && a * b > 0) {
     return b;
   } else {
-    printf("sus\n");
+    printf("sus: a = %f, b = %f\n", a, b);
     return 0;
   }
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/
 
 Conservative Scheme::minmod (Conservative a, Conservative b)
 {
@@ -303,3 +327,5 @@ double Scheme::centroidDistance (const Cell & c1, const Cell & c2)
 {
   return hypot((c2.tx - c1.tx), (c2.ty - c1.ty));
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/

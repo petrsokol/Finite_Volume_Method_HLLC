@@ -8,9 +8,9 @@
 const std::string Def::defaultPath = R"(C:\Users\petrs\Documents\CTU\BP\Charts\Data)";
 const std::string Def::defaultExtension = ".dat";
 
-bool Def::isNaca = true;
-bool Def::isHLLC = false;
-bool Def::isSecOrd = false;
+bool Def::isNaca = false;
+bool Def::isHLLC = true;
+bool Def::isSecOrd = true;
 bool Def::isSetByMach = false;
 
 const int Def::xInner = isNaca ? 260 : 150;
@@ -44,15 +44,22 @@ double Def::rho_inlet = 1;
 double Def::alpha_inlet = M_PI * 0 / 180;
 double Def::mach_infty = 0.5; // keep < 1 by default
 
-const double Def::EPSILON = -5;
+const double Def::EPSILON = -4;
 const double Def::CFL = 0.5;
 
 const double Def::rhoInitial = 1;
-const double Def::uInitial = 1;
+const double Def::uInitial = 0.65;
 const double Def::vInitial = 0;
 const double Def::pInitial = 0.737; // pro pInitial >= 1 NACA HLL nefunguje
 const double Def::rhoEInitial = pInitial / (KAPPA - 1) + 0.5 * rhoInitial * (pow(uInitial, 2) + pow(vInitial, 2));
-const Conservative Def::wInitial = Conservative(rhoInitial, rhoInitial * uInitial, rhoInitial * vInitial, rhoEInitial);
+
+// supersonic initial condition
+const Conservative Def::wInitialSupersonic = Conservative(1, 2.2, 0, 4.42);
+
+// subsonic initial condition
+const Conservative Def::wInitialSubsonic = Conservative(1, 0.65, 0, 2.4);
+
+Conservative Def::wInitial = Def::wInitialSubsonic;
 
 int Def::errorCount;
 
