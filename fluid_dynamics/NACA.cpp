@@ -8,13 +8,18 @@
 #include "../structures/Primitive.h"
 #include "Bound.h"
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 const int NACA::wingStart = 30;
 const int NACA::wingLength = 200; // previous tests with 200 - changed 240506
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+// top row of cells
 void NACA::updateInlet (std::vector<Cell> & cells)
 {
-  for (int i = 0; i < Def::xInner; ++i) { //celá horní stěna
-    int k = Def::firstInner + (Def::yInner - 1) * Def::xCells + i; // last inner row
+  for (int i = 0; i < Def::xInner; ++i) {
+    int k = Def::firstInner + (Def::yInner - 1) * Def::xCells + i;
 
     const Conservative & innerW1 = cells.at(k).w;
     Conservative & outerW1 = cells.at(k + Def::xCells).w;
@@ -24,6 +29,9 @@ void NACA::updateInlet (std::vector<Cell> & cells)
   }
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+// leftmost and rightmost inner columns in cell grid
 void NACA::updateOutlet (std::vector<Cell> & cells)
 {
   for (int j = 0; j < Def::yInner; ++j) {
@@ -37,7 +45,7 @@ void NACA::updateOutlet (std::vector<Cell> & cells)
   }
 
   for (int j = 0; j < Def::yInner; ++j) {
-    int k = Def::firstInner + Def::xInner - 1 + j * Def::xCells; // last inner in each row
+    int k = Def::firstInner + Def::xInner - 1 + j * Def::xCells;
 
     const Conservative & innerW1 = cells.at(k).w;
     Conservative & outerW1 = cells.at(k + 1).w;
@@ -47,12 +55,14 @@ void NACA::updateOutlet (std::vector<Cell> & cells)
   }
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+// part of bottom row of cells
 void NACA::updateWalls (std::vector<Cell> & cells, const std::vector<Interface> & faces)
 {
   for (int i = 0; i < NACA::wingLength; ++i) {
     int k = Def::firstInner + NACA::wingStart + i;
 
-    // there are two faces for every cell - horizontal indices are odd
     Interface face = faces.at(2 * k + 1);
 
     const Cell & inner2 = cells.at(face.rr);
@@ -64,44 +74,37 @@ void NACA::updateWalls (std::vector<Cell> & cells, const std::vector<Interface> 
   }
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+// remaining part of bottom row of cells
 void NACA::updatePeriodicity (std::vector<Cell> & cells)
 {
   // start
   for (int i = 0; i < NACA::wingStart; ++i) {
-
-    // inner points - k1, k2
     int k1 = Def::firstInner + i;
     int k2 = Def::firstInner + i + Def::xCells;
 
-    // indices for ghost cells - l1, l2
     int l1 = Def::firstInner + Def::xInner - Def::xCells - 1 - i;
     int l2 = Def::firstInner + Def::xInner - 2 * Def::xCells - 1 - i;
 
-    // update ghost cells
     cells.at(l1).w = cells.at(k1).w;
     cells.at(l2).w = cells.at(k2).w;
-
-    if (_isnan(cells.at(l1).w.r1)) {
-      std::cout << "Naca::periodicity: mame problem";
-    }
   }
 
   // finish
   for (int i = 0; i < NACA::wingStart; ++i) {
-
-    // k1: inner points
     int k1 = Def::firstInner + NACA::wingStart + NACA::wingLength + i;
     int k2 = Def::firstInner + NACA::wingStart + NACA::wingLength + i + Def::xCells;
 
-    // l1: ghost points
     int l1 = Def::firstInner - Def::xCells + NACA::wingStart - 1 - i;
     int l2 = Def::firstInner - 2 * Def::xCells + NACA::wingStart - 1 - i;
 
-    // update ghost cells
     cells.at(l1).w = cells.at(k1).w;
     cells.at(l2).w = cells.at(k2).w;
   }
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/
 
 void NACA::updateBounds (std::vector<Cell> & cells, const std::vector<Interface> & faces)
 {
@@ -110,3 +113,5 @@ void NACA::updateBounds (std::vector<Cell> & cells, const std::vector<Interface>
   NACA::updateWalls(cells, faces);
   NACA::updatePeriodicity(cells);
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/
