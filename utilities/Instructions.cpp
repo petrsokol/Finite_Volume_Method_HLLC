@@ -75,3 +75,15 @@ void Instructions::generateBackup() {
 
     stream.close();
 }
+
+void Instructions::createName(bool isNaca, bool isHLLC, bool isSecondOrder) {
+  std::string geometry = isNaca ? "NACA" : "GAMM";
+  std::string scheme = isHLLC ? "HLLC" : "HLL";
+  std::string order = isSecondOrder ? "2nd" : "1st";
+  std::string name = geometry + "___" + scheme + "___" + order + "___" + DataIO::getDate() + "___" + DataIO::getTime();
+
+  Instructions::verticesName = name + "_vertices.csv";
+  Instructions::wallName = name + "_wall.dat";
+  Instructions::reziName = name + "_rezi.dat";
+  Instructions::overlayName = Def::isNaca ? "only-naca.csv" : "only-gamm.csv";
+}

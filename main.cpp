@@ -13,27 +13,25 @@
 #include "fluid_dynamics/GAMM.h"
 #include "utilities/Instructions.h"
 
+
 int main ()
 {
-  std::cout << "Dobry DEN!!!!" << std::endl;
-  std::cout << "program started at " << DataIO::getDate() << "_" << DataIO::getTime() << std::endl;
+  Instructions::createName(Def::isNaca, Def::isHLLC, Def::isSecOrd);
 
-  std::string name = Def::isNaca ? "naca" : "gamm";
-  std::string scheme = Def::isHLLC ? "hllc" : "hll";
-  std::string order = Def::isSecOrd ? "2nd" : "1st";
-  name += "_" + scheme + "_" + order + "_" + DataIO::getDate() + "_" + DataIO::getTime();
 
-  Instructions::verticesName = name + "_vertices.csv";
-  Instructions::wallName = name + "_wall.dat";
-  Instructions::reziName = name + "_rezi.dat";
-  Instructions::overlayName = Def::isNaca ? "only-naca.csv" : "only-gamm.csv";
 
-  // change starting conditions accordingly
-  Def::setConditions(1, 1, 1.25, 0.623512);
+  // set conditions by rho, p_in, alpha, p_out
+  // Def::setConditions(1, 1, 1.25, 0.623512);
+
+  // set conditions by mach number and angle of attack
+  Def::setConditions(0.8, 1.25);
+
   Def::wInitial = Def::wInitialSubsonic;
+  Def::wInitial.toString(); // [1;0.65;0;2.46125]
   // subsonic p2 = 0.843019
   // transonic p2 = 0.623512
-  Def::wInitial.toString(); //[1;0.65;0;2.46125]
+
+  // todo mach 0.8 nesymetricky, 0.5 symm
 
   // points
   std::string dir = Instructions::geometryInput;
@@ -51,7 +49,7 @@ int main ()
 
   int reps = 0;
   double rezi = 1;
-  while (rezi > Def::EPSILON && !Def::error && reps < 1000) {
+  while (rezi > Def::EPSILON && !Def::error && reps < 30000) {
     reps++;
 
     Scheme::updateCellDT(cells, 0.7, false);
@@ -67,36 +65,21 @@ int main ()
     }
   }
 
-//  std::string command = "python \"C:\\Users\\petrs\\Documents\\CTU\\BP\\PYTHON-scripts\\compareCSV.py\" \"C:\\Users\\petrs\\Documents\\CTU\\BP\\FVM_REF\\gamm_hll_vert_REF.csv\" \"C:\\Users\\petrs\\Documents\\CTU\\BP\\FVM_Data\\gamm_test_vertices.csv\" 1e-6";
-//  int result = std::system(command.c_str());
-//  if (result == 0) {
-//    std::cout << "Files match within tolerance!" << std::endl;
-//  } else {
-//    std::cout << "Files do not match!" << std::endl;
-//  }
-
-
   if (!Def::error) {
     DataIO::exportPointsToCSV(cells, points, Instructions::dataInput, Instructions::verticesName);
     DataIO::exportPointsToDat(cells, points, Instructions::dataInput, Instructions::wallName);
     DataIO::exportVectorToDat(reziVec, Instructions::dataInput, Instructions::reziName);
     Instructions::generateInstructions();
-    Instructions::generateBackup();
 
     std::system(R"(python C:\Users\petrs\Documents\CTU\BP\PYTHON-scripts\mach-cp-charts.py)");
     std::system(R"(python C:\Users\petrs\Documents\CTU\BP\PYTHON-scripts\rezi-chart.py)");
   }
 
-  if (Def::error) { std::cout << "error at rep " << reps << std::endl; }
+  if (Def::error)
+    std::cout << "error at rep " << reps << std::endl;
 
   std::cout << "error count: " << Def::errorCount << std::endl;
   std::cout << "program ended at " << DataIO::getTime() << std::endl;
   std::cout << "nashledanou" << std::endl;
   return 0;
-
-  /*
-   * TODO
-   *  k čemu je v Point.h index?
-   *  change HLL and HLLC to only take certain cells instead of whole vector
-   */
 }

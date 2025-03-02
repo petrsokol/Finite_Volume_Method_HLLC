@@ -75,10 +75,11 @@ public:
 
   static void coordsToString (int i);
 
-  static void setConditions (double mach_infinity, double alpha_inlet);
+  static void setConditions (double mach_infinity, double alphaInletDegrees);
 
-  static void setConditions (double p_inlet, double rho_inlet, double alpha_inlet, double p_outlet);
+  static void setConditions (double p_inlet, double rho_inlet, double alphaInletDegrees, double p_outlet);
 
+  static double degreesToRadians (double degrees);
 
 };
 

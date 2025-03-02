@@ -8,36 +8,41 @@
 
 #include <string>
 
-class Instructions {
+class Instructions
+{
 
 public:
-    // where the data is stored
-    static std::string geometryInput;
-    static std::string dataInput;
+  // where the data is stored
+  static std::string geometryInput;
+  static std::string dataInput;
 
-    // where the charts are to be saved
-    static std::string outputDir;
+  // where the charts are to be saved
+  static std::string outputDir;
 
-    // input data file names
-    static std::string verticesName;
-    static std::string wallName;
-    static std::string reziName;
+  // input data file names
+  static std::string verticesName;
+  static std::string wallName;
+  static std::string reziName;
 
-    // output file names
-    static std::string outputParaView1;
-    static std::string overlayName;
-    static std::string outputParaView2;
-    static std::string outputRezi;
-    static std::string outputWall;
+  // output file names
+  static std::string overlayName;
+  static std::string outputParaView1;
+  static std::string outputParaView2;
+  static std::string outputRezi;
+  static std::string outputWall;
 
-    static double machLB;
-    static double machUB;
-    static double cpLB;
-    static double cpUB;
+  // value bounds for paraview visualisations
+  static double machLB;
+  static double machUB;
+  static double cpLB;
+  static double cpUB;
 
-    // methods
-    static void generateInstructions();
-    static void generateBackup();
+  // methods
+  static void createName (bool isNaca, bool isHLLC, bool isSecondOrder);
+
+  static void generateInstructions ();
+
+  static void generateBackup ();
 
 };
 

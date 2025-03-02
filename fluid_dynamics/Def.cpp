@@ -46,7 +46,7 @@ double Def::rho_inlet = 1;
 double Def::alpha_inlet = M_PI * 1.25 / 180;
 double Def::mach_infty = 0.5; // keep < 1 by default
 
-const double Def::EPSILON = -4;
+const double Def::EPSILON = -8;
 const double Def::CFL = 0.2;
 
 const double Def::rhoInitial = 1;
@@ -82,23 +82,31 @@ int Def::innerPointIndex (int i)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void Def::setConditions (double p_inlet, double rho_inlet, double alpha_inlet, double p_outlet)
+double Def::degreesToRadians (double degrees)
+{
+  double radians = degrees * M_PI / 180;
+  return radians;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+void Def::setConditions (double p_inlet, double rho_inlet, double alphaInletDegrees, double p_outlet)
 {
   Def::isSetByMach = false;
   Def::p_inlet = p_inlet;
   Def::rho_inlet = rho_inlet;
-  Def::alpha_inlet = alpha_inlet * M_PI / 180;
+  Def::alpha_inlet = degreesToRadians(alphaInletDegrees);
   Def::p_outlet = p_outlet;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void Def::setConditions (double mach_infinity, double alpha_inlet)
+void Def::setConditions (double mach_infinity, double alphaInletDegrees)
 {
   Def::isSetByMach = true;
   Def::p_inlet = 1;
   Def::rho_inlet = 1;
-  Def::alpha_inlet = alpha_inlet;
+  Def::alpha_inlet = degreesToRadians(alphaInletDegrees);
   Def::mach_infty = mach_infinity;
   double p_2 = Def::p_inlet * pow(1 + (Def::KAPPA - 1) /
                                       2 * pow(Def::mach_infty, 2), -1 * (Def::KAPPA / (Def::KAPPA - 1)));
