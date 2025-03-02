@@ -16,10 +16,7 @@
 
 int main ()
 {
-  Instructions::createName(Def::isNaca, Def::isHLLC, Def::isSecOrd);
-
-
-
+  Instructions::createName();
   // set conditions by rho, p_in, alpha, p_out
   // Def::setConditions(1, 1, 1.25, 0.623512);
 
@@ -49,7 +46,7 @@ int main ()
 
   int reps = 0;
   double rezi = 1;
-  while (rezi > Def::EPSILON && !Def::error && reps < 30000) {
+  while (rezi > Def::EPSILON && !Def::error && reps < 2000) {
     reps++;
 
     Scheme::updateCellDT(cells, 0.7, false);
@@ -69,10 +66,11 @@ int main ()
     DataIO::exportPointsToCSV(cells, points, Instructions::dataInput, Instructions::verticesName);
     DataIO::exportPointsToDat(cells, points, Instructions::dataInput, Instructions::wallName);
     DataIO::exportVectorToDat(reziVec, Instructions::dataInput, Instructions::reziName);
-    Instructions::generateInstructions();
 
+    Instructions::generateInstructions();
     std::system(R"(python C:\Users\petrs\Documents\CTU\BP\PYTHON-scripts\mach-cp-charts.py)");
     std::system(R"(python C:\Users\petrs\Documents\CTU\BP\PYTHON-scripts\rezi-chart.py)");
+    std::system("cmd /c \"\"C:\\Program Files\\ParaView 5.10.1-Windows-Python3.9-msvc2017-AMD64\\bin\\pvpython.exe\" \"C:\\Users\\petrs\\Documents\\CTU\\BP\\PYTHON-scripts\\paraView-macro-minimal.py\"\"");
   }
 
   if (Def::error)

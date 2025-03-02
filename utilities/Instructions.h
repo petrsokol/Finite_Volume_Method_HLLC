@@ -20,6 +20,7 @@ public:
   static std::string outputDir;
 
   // input data file names
+  static std::string name;
   static std::string verticesName;
   static std::string wallName;
   static std::string reziName;
@@ -38,7 +39,7 @@ public:
   static double cpUB;
 
   // methods
-  static void createName (bool isNaca, bool isHLLC, bool isSecondOrder);
+  static void createName ();
 
   static void generateInstructions ();
 
