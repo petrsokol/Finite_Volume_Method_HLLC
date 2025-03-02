@@ -42,8 +42,6 @@ public:
 
   static void generateInstructions ();
 
-  static void generateBackup ();
-
 };
 
 
