@@ -11,6 +11,9 @@
 #include "../geometry/Cell.h"
 #include "../geometry/Interface.h"
 #include "Def.h"
+#include "../utilities/DataIO.h"
+#include "../utilities/Instructions.h"
+#include "../geometry/Mesh.h"
 
 class Scheme
 {
@@ -34,6 +37,8 @@ public:
 
   static double minmod (double a, double b);
 
+  /*------------------------------------------------------------------------------------------------------------------*/
+
   // iterator functions
   template <typename NumericalScheme>
   static void computeScheme (std::vector<Cell> & cells, const std::vector<Interface> & faces, NumericalScheme scheme)
@@ -56,6 +61,55 @@ public:
     // place for alternative wall flux
   }
 
+  /*------------------------------------------------------------------------------------------------------------------*/
+
+  template <typename NumericalScheme, typename BoundsIterator>
+  static void runExperiment (Mesh & mesh, NumericalScheme scheme, BoundsIterator boundsIterator, double epsilon,
+                             int repsMax, double CFL, bool useGlobalTimeStep)
+  {
+    int reps = 0;
+    double rezi = 1;
+    std::vector<double> reziVec{};
+
+    // main iteration loop
+    while (rezi > epsilon && reps < repsMax) {
+      reps++;
+
+      Scheme::updateCellDT(mesh.cells, CFL, useGlobalTimeStep);
+      boundsIterator(mesh.cells, mesh.faces);
+      Scheme::computeScheme(mesh.cells, mesh.faces, scheme);
+
+      reziVec.push_back(rezi = Scheme::computeRezi(mesh.cells));
+      Scheme::updateCells(mesh.cells);
+
+      if (reps % 50 == 0) {
+        std::cout << "reps: " << reps << ", rezi: " << rezi << std::endl;
+      }
+    }
+
+    // export point vertices for paraView
+    DataIO::exportPointsToCSV(mesh.cells, mesh.points,
+                              Instructions::dataInput, Instructions::verticesName);
+
+    // export points to see Ma and c_p along bottom wall
+    DataIO::exportPointsToDat(mesh.cells, mesh.points,
+                              Instructions::dataInput, Instructions::wallName);
+
+    // export for rezi chart
+    DataIO::exportVectorToDat(reziVec, Instructions::dataInput, Instructions::reziName);
+
+    // run post-processing python scripts
+    Instructions::generateInstructions();
+    std::system(R"(python C:\Users\petrs\Documents\CTU\BP\PYTHON-scripts\mach-cp-charts.py)");
+    std::system(R"(python C:\Users\petrs\Documents\CTU\BP\PYTHON-scripts\rezi-chart.py)");
+    std::system(
+            "cmd /c \"\"C:\\Program Files\\ParaView 5.10.1-Windows-Python3.9-msvc2017-AMD64\\bin\\"
+            "pvpython.exe\" \"C:\\Users\\petrs\\Documents\\CTU\\BP\\PYTHON-scripts\\paraView-macro-minimal.py\"\"");
+
+  }
+
+  /*------------------------------------------------------------------------------------------------------------------*/
+
 private:
   // support methods
   static Conservative flux (Interface face, Conservative w, double q, double p);
@@ -66,8 +120,10 @@ private:
 
   static double centroidDistance (const Cell & c1, const Cell & c2);
 
-  static void computeW(Conservative & wl, Conservative & wr,
-                       const Cell & cll, const Cell & cl, const Cell & cr, const Cell & crr);
+  static void computeW (Conservative & wl, Conservative & wr,
+                        const Cell & cll, const Cell & cl, const Cell & cr, const Cell & crr);
+
+  /*------------------------------------------------------------------------------------------------------------------*/
 
   template <typename NumericalScheme>
   static void updateInterface (std::vector<Cell> & cells, const Interface & face, NumericalScheme scheme)
@@ -89,6 +145,9 @@ private:
     cl.rezi -= cl.dt / cl.area * flux * face.len;
     cr.rezi += cr.dt / cr.area * flux * face.len;
   }
+
+  /*------------------------------------------------------------------------------------------------------------------*/
+
 };
 
 
