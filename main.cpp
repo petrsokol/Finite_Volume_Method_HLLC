@@ -12,7 +12,43 @@
 #include "utilities/DataIO.h"
 #include "fluid_dynamics/GAMM.h"
 #include "utilities/Instructions.h"
+#include "geometry/Mesh.h"
 
+template <typename NumericalScheme, typename BoundsIterator>
+void runExperiment (Mesh & mesh, NumericalScheme scheme, BoundsIterator boundsIterator, double epsilon, int repsMax,
+                    double CFL, bool useGlobalTimeStep)
+{
+  int reps = 0;
+  double rezi = 1;
+  std::vector<double> reziVec{};
+  while (rezi > epsilon && reps < repsMax) {
+    reps++;
+
+    Scheme::updateCellDT(mesh.cells, CFL, useGlobalTimeStep);
+    boundsIterator(mesh.cells, mesh.faces);
+    Scheme::computeScheme(mesh.cells, mesh.faces, scheme);
+
+    rezi = Scheme::computeRezi(mesh.cells);
+    reziVec.push_back(rezi);
+    Scheme::updateCells(mesh.cells);
+
+    if (reps % 50 == 0) {
+      std::cout << "reps: " << reps << ", rezi: " << rezi << std::endl;
+    }
+  }
+
+  DataIO::exportPointsToCSV(mesh.cells, mesh.points, Instructions::dataInput, Instructions::verticesName);
+  DataIO::exportPointsToDat(mesh.cells, mesh.points, Instructions::dataInput, Instructions::wallName);
+  DataIO::exportVectorToDat(reziVec, Instructions::dataInput, Instructions::reziName);
+
+  Instructions::generateInstructions();
+  std::system(R"(python C:\Users\petrs\Documents\CTU\BP\PYTHON-scripts\mach-cp-charts.py)");
+  std::system(R"(python C:\Users\petrs\Documents\CTU\BP\PYTHON-scripts\rezi-chart.py)");
+  std::system(
+          "cmd /c \"\"C:\\Program Files\\ParaView 5.10.1-Windows-Python3.9-msvc2017-AMD64\\bin\\"
+          "pvpython.exe\" \"C:\\Users\\petrs\\Documents\\CTU\\BP\\PYTHON-scripts\\paraView-macro-minimal.py\"\"");
+
+}
 
 int main ()
 {
@@ -30,53 +66,17 @@ int main ()
 
   // todo mach 0.8 nesymetricky, 0.5 symm
 
-  // points
-  std::string dir = Instructions::geometryInput;
-  std::string fileName = Def::isNaca ? "nacaMesh.dat" : "gammMesh.dat";
-  std::vector<Point> points = Point::loadPointsFromFile(dir, fileName);
+  Mesh nacaMesh(Instructions::geometryInput, "nacaMesh.dat");
+  Mesh gammMesh(Instructions::geometryInput, "gammMesh.dat"); // will not work -> Def issues
+  // run experiments
 
-  // faces
-  std::vector<Interface> faces = Interface::createFaces(points);
+  // exp 1
+  runExperiment(nacaMesh, Scheme::HLL, NACA::updateBounds, -4, 3000, 0.7, false);
+  // exp 2
+  // exp 3
 
-  // cells
-  std::vector<Cell> cells = Cell::createCells(points);
 
-  // reziVec
-  std::vector<double> reziVec;
 
-  int reps = 0;
-  double rezi = 1;
-  while (rezi > Def::EPSILON && !Def::error && reps < 2000) {
-    reps++;
-
-    Scheme::updateCellDT(cells, 0.7, false);
-    Def::isNaca ? NACA::updateBounds(cells, faces) : GAMM::updateBounds(cells, faces);
-    Scheme::computeScheme(cells, faces);
-
-    rezi = Scheme::computeRezi(cells);
-    reziVec.push_back(rezi);
-    Scheme::updateCells(cells);
-
-    if (reps % 50 == 0) {
-      std::cout << "reps: " << reps << ", rezi: " << rezi << std::endl;
-    }
-  }
-
-  if (!Def::error) {
-    DataIO::exportPointsToCSV(cells, points, Instructions::dataInput, Instructions::verticesName);
-    DataIO::exportPointsToDat(cells, points, Instructions::dataInput, Instructions::wallName);
-    DataIO::exportVectorToDat(reziVec, Instructions::dataInput, Instructions::reziName);
-
-    Instructions::generateInstructions();
-    std::system(R"(python C:\Users\petrs\Documents\CTU\BP\PYTHON-scripts\mach-cp-charts.py)");
-    std::system(R"(python C:\Users\petrs\Documents\CTU\BP\PYTHON-scripts\rezi-chart.py)");
-    std::system("cmd /c \"\"C:\\Program Files\\ParaView 5.10.1-Windows-Python3.9-msvc2017-AMD64\\bin\\pvpython.exe\" \"C:\\Users\\petrs\\Documents\\CTU\\BP\\PYTHON-scripts\\paraView-macro-minimal.py\"\"");
-  }
-
-  if (Def::error)
-    std::cout << "error at rep " << reps << std::endl;
-
-  std::cout << "error count: " << Def::errorCount << std::endl;
   std::cout << "program ended at " << DataIO::getTime() << std::endl;
   std::cout << "nashledanou" << std::endl;
   return 0;
