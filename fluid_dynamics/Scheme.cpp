@@ -61,11 +61,8 @@ Conservative Scheme::HLL (const Interface & f, Conservative & wl, Conservative &
     res = FL;
   } else if (SL <= 0 && 0 <= SR) {
     res = (SR * FL - SL * FR + SR * SL * (wr - wl)) / (SR - SL);
-  } else if (SR < 0) {
-    res = FR;
   } else {
-    std::cout << "error in HLL scheme" << std::endl;
-    Def::error = true;
+    res = FR;
   }
 
   return res;
@@ -88,56 +85,12 @@ void Scheme::computeW (Conservative & wl, Conservative & wr,
     Conservative sigma_l = minmod(sigma_l_forward, sigma_l_backward);
     Conservative sigma_r = minmod(sigma_r_forward, sigma_r_backward);
 
-    wl = cl.w + centroidDistance(cr, cl) / 2 * sigma_l;
-    wr = cr.w - centroidDistance(cr, cl) / 2 * sigma_r;
+    wl = cl.w + centroidDist / 2 * sigma_l;
+    wr = cr.w - centroidDist / 2 * sigma_r;
   } else {
     wl = cl.w;
     wr = cr.w;
   }
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-
-void Scheme::updateInterface (std::vector<Cell> & cells, const Interface & face)
-{
-  // extract participating cells for code clarity
-  Cell & cl = cells.at(face.l);
-  Cell & cr = cells.at(face.r);
-  const Cell & cll = cells.at(face.ll);
-  const Cell & crr = cells.at(face.rr);
-
-  // compute conservative variables wl and wr
-  Conservative wl, wr;
-  computeW(wl, wr, cll, cl, cr, crr);
-
-  // compute flux between two cells sharing the interface
-  Conservative flux = Def::isHLLC ? HLLC(face, wl, wr) : HLL(face, wl, wr);
-
-  // add flux to cells neighboring the interface
-  cl.rezi -= cl.dt / cl.area * flux * face.len;
-  cr.rezi += cr.dt / cr.area * flux * face.len;
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-
-void Scheme::computeScheme (std::vector<Cell> & cells, const std::vector<Interface> & faces)
-{
-  // iterate over all *inner* interfaces
-  int xLim = 2 * Def::xInner + 1;
-  for (int j = 0; j < Def::yInner; ++j) {
-    for (int i = 0; i < xLim; ++i) {
-      int k = 2 * (Def::firstInner + j * Def::xCells) + i;
-      updateInterface(cells, faces.at(k));
-    }
-  }
-
-  // iterate over top row - only horizontal interfaces
-  for (int i = 0; i < Def::xInner; ++i) {
-    int k = 2 * (Def::firstInner + Def::yInner * Def::xCells + i) + 1;
-    updateInterface(cells, faces.at(k));
-  }
-
-  // place for alternative wall flux
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
