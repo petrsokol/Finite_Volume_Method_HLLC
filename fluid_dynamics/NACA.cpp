@@ -21,9 +21,9 @@ void NACA::updateInlet (std::vector<Cell> & cells)
   for (int i = 0; i < Def::xInner; ++i) {
     int k = Def::firstInner + (Def::yInner - 1) * Def::xCells + i;
 
-    const Conservative & innerW1 = cells[k].w;
-    Conservative & outerW1 = cells[k + Def::xCells].w;
-    Conservative & outerW2 = cells[k + 2 * Def::xCells].w;
+    const Conservative & innerW1 = cells.at(k).w;
+    Conservative & outerW1 = cells.at(k + Def::xCells).w;
+    Conservative & outerW2 = cells.at(k + 2 * Def::xCells).w;
 
     Bound::inlet2ndOrder(innerW1, outerW1, outerW2);
   }
@@ -37,9 +37,9 @@ void NACA::updateOutlet (std::vector<Cell> & cells)
   for (int j = 0; j < Def::yInner; ++j) {
     int k = Def::firstInner + j * Def::xCells;
 
-    const Conservative & innerW1 = cells[k].w;
-    Conservative & outerW1 = cells[k - 1].w;
-    Conservative & outerW2 = cells[k - 2].w;
+    const Conservative & innerW1 = cells.at(k).w;
+    Conservative & outerW1 = cells.at(k - 1).w;
+    Conservative & outerW2 = cells.at(k - 2).w;
 
     Bound::outlet2ndOrder(innerW1, outerW1, outerW2);
   }
@@ -47,9 +47,9 @@ void NACA::updateOutlet (std::vector<Cell> & cells)
   for (int j = 0; j < Def::yInner; ++j) {
     int k = Def::firstInner + Def::xInner - 1 + j * Def::xCells;
 
-    const Conservative & innerW1 = cells[k].w;
-    Conservative & outerW1 = cells[k + 1].w;
-    Conservative & outerW2 = cells[k + 2].w;
+    const Conservative & innerW1 = cells.at(k).w;
+    Conservative & outerW1 = cells.at(k + 1).w;
+    Conservative & outerW2 = cells.at(k + 2).w;
 
     Bound::outlet2ndOrder(innerW1, outerW1, outerW2);
   }
@@ -63,12 +63,12 @@ void NACA::updateWalls (std::vector<Cell> & cells, const std::vector<Interface> 
   for (int i = 0; i < NACA::wingLength; ++i) {
     int k = Def::firstInner + NACA::wingStart + i;
 
-    Interface face = faces[2 * k + 1];
+    Interface face = faces.at(2 * k + 1);
 
-    const Cell & inner2 = cells[face.rr];
-    const Cell & inner1 = cells[face.r];
-    Cell & outer1 = cells[face.l];
-    Cell & outer2 = cells[face.ll];
+    const Cell & inner2 = cells.at(face.rr);
+    const Cell & inner1 = cells.at(face.r);
+    Cell & outer1 = cells.at(face.l);
+    Cell & outer2 = cells.at(face.ll);
 
     Bound::wall2ndOrder(face, inner2.w, inner1.w, outer1.w, outer2.w);
   }
@@ -87,8 +87,8 @@ void NACA::updatePeriodicity (std::vector<Cell> & cells)
     int l1 = Def::firstInner + Def::xInner - Def::xCells - 1 - i;
     int l2 = Def::firstInner + Def::xInner - 2 * Def::xCells - 1 - i;
 
-    cells[l1].w = cells[k1].w;
-    cells[l2].w = cells[k2].w;
+    cells.at(l1).w = cells.at(k1).w;
+    cells.at(l2).w = cells.at(k2).w;
   }
 
   // finish
@@ -99,8 +99,8 @@ void NACA::updatePeriodicity (std::vector<Cell> & cells)
     int l1 = Def::firstInner - Def::xCells + NACA::wingStart - 1 - i;
     int l2 = Def::firstInner - 2 * Def::xCells + NACA::wingStart - 1 - i;
 
-    cells[l1].w = cells[k1].w;
-    cells[l2].w = cells[k2].w;
+    cells.at(l1).w = cells.at(k1).w;
+    cells.at(l2).w = cells.at(k2).w;
   }
 }
 
