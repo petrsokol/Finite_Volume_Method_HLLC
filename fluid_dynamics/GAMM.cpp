@@ -14,7 +14,7 @@ void GAMM::updateInlet (std::vector<Cell> & cells)
 {
   for (int j = 0; j < Def::yInner; ++j) {
     int k = Def::firstInner + j * Def::xCells;
-    Bound::inlet2ndOrder(cells.at(k).w, cells.at(k - 1).w, cells.at(k - 2).w);
+    Bound::inlet2ndOrder(cells[k].w, cells[k - 1].w, cells[k - 2].w);
   }
 }
 
@@ -24,7 +24,7 @@ void GAMM::updateOutlet (std::vector<Cell> & cells)
 {
   for (int j = 0; j < Def::yInner; ++j) {
     int k = Def::firstInner + Def::xInner - 1 + j * Def::xCells;
-    Bound::outlet2ndOrder(cells.at(k).w, cells.at(k + 1).w, cells.at(k + 2).w);
+    Bound::outlet2ndOrder(cells[k].w, cells[k + 1].w, cells[k + 2].w);
   }
 }
 
@@ -37,11 +37,11 @@ void GAMM::updateWalls (std::vector<Cell> & cells, const std::vector<Interface> 
     int k = Def::firstInner + i;
 
     // there are two faces for every cell - horizontal indices are odd
-    Interface face = faces.at(2 * k + 1);
-    Cell & outer2 = cells.at(face.ll);
-    Cell & outer1 = cells.at(face.l);
-    Cell & inner1 = cells.at(face.r);
-    Cell & inner2 = cells.at(face.rr);
+    Interface face = faces[2 * k + 1];
+    Cell & outer2 = cells[face.ll];
+    Cell & outer1 = cells[face.l];
+    Cell & inner1 = cells[face.r];
+    Cell & inner2 = cells[face.rr];
     Bound::wall2ndOrder(face, inner2.w, inner1.w, outer1.w, outer2.w);
   }
 
@@ -50,11 +50,11 @@ void GAMM::updateWalls (std::vector<Cell> & cells, const std::vector<Interface> 
     int k = Def::firstInner + (Def::yInner) * Def::xCells + i;
 
     // there are two faces for every cell - horizontal indices are odd
-    Interface face = faces.at(2 * k + 1);
-    Cell & outer2 = cells.at(face.rr);
-    Cell & outer1 = cells.at(face.r);
-    Cell & inner1 = cells.at(face.l);
-    Cell & inner2 = cells.at(face.ll);
+    Interface face = faces[2 * k + 1];
+    Cell & outer2 = cells[face.rr];
+    Cell & outer1 = cells[face.r];
+    Cell & inner1 = cells[face.l];
+    Cell & inner2 = cells[face.ll];
     Bound::wall2ndOrder(face, inner2.w, inner1.w, outer1.w, outer2.w);
   }
 }

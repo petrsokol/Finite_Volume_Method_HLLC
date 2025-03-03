@@ -101,10 +101,10 @@ void Scheme::computeW (Conservative & wl, Conservative & wr,
 void Scheme::updateInterface (std::vector<Cell> & cells, const Interface & face)
 {
   // extract participating cells for code clarity
-  Cell & cl = cells.at(face.l);
-  Cell & cr = cells.at(face.r);
-  const Cell & cll = cells.at(face.ll);
-  const Cell & crr = cells.at(face.rr);
+  Cell & cl = cells[face.l];
+  Cell & cr = cells[face.r];
+  const Cell & cll = cells[face.ll];
+  const Cell & crr = cells[face.rr];
 
   // compute conservative variables wl and wr
   Conservative wl, wr;
@@ -127,14 +127,14 @@ void Scheme::computeScheme (std::vector<Cell> & cells, const std::vector<Interfa
   for (int j = 0; j < Def::yInner; ++j) {
     for (int i = 0; i < xLim; ++i) {
       int k = 2 * (Def::firstInner + j * Def::xCells) + i;
-      updateInterface(cells, faces.at(k));
+      updateInterface(cells, faces[k]);
     }
   }
 
   // iterate over top row - only horizontal interfaces
   for (int i = 0; i < Def::xInner; ++i) {
     int k = 2 * (Def::firstInner + Def::yInner * Def::xCells + i) + 1;
-    updateInterface(cells, faces.at(k));
+    updateInterface(cells, faces[k]);
   }
 
   // place for alternative wall flux
@@ -149,7 +149,7 @@ double Scheme::computeRezi (const std::vector<Cell> & cells)
   for (int j = 0; j < Def::yInner; ++j) {
     for (int i = 0; i < Def::xInner; ++i) {
       int k = Def::firstInner + i + j * Def::xCells;
-      res += pow(cells.at(k).rezi.r1 / cells.at(k).dt, 2) * cells.at(k).area;
+      res += pow(cells[k].rezi.r1 / cells[k].dt, 2) * cells[k].area;
     }
   }
 
@@ -162,8 +162,8 @@ void Scheme::updateCells (std::vector<Cell> & cells)
 {
   for (int i = 0; i < Def::inner; ++i) {
     int k = Def::innerIndex(i);
-    cells.at(k).w += cells.at(k).rezi;
-    cells.at(k).rezi = 0;
+    cells[k].w += cells[k].rezi;
+    cells[k].rezi = 0;
   }
 }
 
