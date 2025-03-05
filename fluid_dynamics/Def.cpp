@@ -12,7 +12,7 @@ const std::string Def::defaultExtension = ".dat";
 
 bool Def::isNaca = true;
 bool Def::isHLLC = true;
-bool Def::isSecOrd = true;
+bool Def::isSecOrd = false;
 bool Def::isSetByMach = false;
 
 const int Def::xInner = isNaca ? 260 : 150;

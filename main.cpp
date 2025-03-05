@@ -20,7 +20,6 @@ void runExperiment (Mesh & mesh, NumericalScheme scheme, BoundsIterator boundsIt
 {
   int reps = 0;
   double rezi = 1;
-  std::vector<double> reziVec{};
   while (rezi > epsilon && reps < repsMax) {
     reps++;
 
@@ -29,7 +28,7 @@ void runExperiment (Mesh & mesh, NumericalScheme scheme, BoundsIterator boundsIt
     Scheme::computeScheme(mesh.cells, mesh.faces, scheme);
 
     rezi = Scheme::computeRezi(mesh.cells);
-    reziVec.push_back(rezi);
+    mesh.reziVec.push_back(rezi);
     Scheme::updateCells(mesh.cells);
 
     if (reps % 50 == 0) {
@@ -39,7 +38,7 @@ void runExperiment (Mesh & mesh, NumericalScheme scheme, BoundsIterator boundsIt
 
   DataIO::exportPointsToCSV(mesh.cells, mesh.points, Instructions::dataInput, Instructions::verticesName);
   DataIO::exportPointsToDat(mesh.cells, mesh.points, Instructions::dataInput, Instructions::wallName);
-  DataIO::exportVectorToDat(reziVec, Instructions::dataInput, Instructions::reziName);
+  DataIO::exportVectorToDat(mesh.reziVec, Instructions::dataInput, Instructions::reziName);
 
   Instructions::generateInstructions();
   std::system(R"(python C:\Users\petrs\Documents\CTU\BP\PYTHON-scripts\mach-cp-charts.py)");

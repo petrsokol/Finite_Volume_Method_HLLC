@@ -4,6 +4,8 @@
 
 #include "Mesh.h"
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 Mesh::Mesh (const std::string& pointMeshDir, const std::string& pointMeshFileName)
 {
   // points
@@ -14,4 +16,18 @@ Mesh::Mesh (const std::string& pointMeshDir, const std::string& pointMeshFileNam
 
   // cells
   Mesh::cells = Cell::createCells(points);
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+void Mesh::centroidsToVertices ()
+{
+
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+void Mesh::exportPoints (const std::string & dir, const std::string & name)
+{
+
 }
