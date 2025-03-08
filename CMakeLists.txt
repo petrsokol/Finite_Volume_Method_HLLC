@@ -34,4 +34,6 @@ add_executable(GAMM main.cpp
         utilities/Instructions.h
         geometry/Mesh.cpp
         geometry/Mesh.h
+        geometry/MeshParams.cpp
+        geometry/MeshParams.h
 )
