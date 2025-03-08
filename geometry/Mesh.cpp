@@ -14,7 +14,7 @@ Mesh::Mesh (const std::string & pointMeshDir, const std::string & pointMeshFileN
   Mesh::points = Point::loadPointsFromFile(pointMeshDir, pointMeshFileName, mp);
 
   // faces
-  Mesh::faces = Interface::createFaces(points);
+  Mesh::faces = Interface::createFaces(points, mp);
 
   // cells
   Mesh::cells = Cell::createCells(points);

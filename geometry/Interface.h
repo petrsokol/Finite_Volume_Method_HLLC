@@ -21,12 +21,12 @@ public:
 
   Interface (double len, double nx, double ny, int ll, int l, int r, int rr);
 
-  static std::vector<Interface> createFaces (const std::vector<Point> & points);
+  static std::vector<Interface> createFaces (const std::vector<Point> & points, const MeshParams & mp);
 
   void toString () const;
 
 private:
-  static Interface horizontalFace (int k, const Point & a, const Point & b);
+  static Interface horizontalFace (int k, const Point & a, const Point & b, const MeshParams & mp);
 
   static Interface verticalFace (int k, const Point & a, const Point & c);
 };

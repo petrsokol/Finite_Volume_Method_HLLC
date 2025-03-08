@@ -3,7 +3,6 @@
 //
 
 #include "Interface.h"
-#include "../fluid_dynamics/Def.h"
 #include <cmath>
 
 void Interface::toString () const
@@ -11,22 +10,22 @@ void Interface::toString () const
   printf("face between cells [ %d : %d : %d : %d ], len = %f, normal vector (%f, %f)\n", ll, l, r, rr, len, nx, ny);
 }
 
-std::vector<Interface> Interface::createFaces (const std::vector<Point> & points)
+std::vector<Interface> Interface::createFaces (const std::vector<Point> & points, const MeshParams & mp)
 {
   std::vector<Interface> res = {};
 
   // create faces for each cell
-  for (int j = 0; j < Def::yCells; ++j) {
-    for (int i = 0; i < Def::xCells; ++i) {
+  for (int j = 0; j < mp.Y_CELLS; ++j) {
+    for (int i = 0; i < mp.X_CELLS; ++i) {
       // pair of horizontal and vertical interfaces
-      int k = i + j * Def::xPoints;
+      int k = i + j * mp.X_POINTS;
       // vertical goes first - advantages in iteration over inner faces
       const Point & a = points.at(k);
       const Point & b = points.at(k + 1);
-      const Point & c = points.at(k + Def::xPoints);
-      int faceIndex = i + j * Def::xCells;
+      const Point & c = points.at(k + mp.X_POINTS);
+      int faceIndex = i + j * mp.X_CELLS;
       res.emplace_back(verticalFace(faceIndex, a, c));
-      res.emplace_back(horizontalFace(faceIndex, a, b));
+      res.emplace_back(horizontalFace(faceIndex, a, b, mp));
     }
   }
 
@@ -34,13 +33,13 @@ std::vector<Interface> Interface::createFaces (const std::vector<Point> & points
   return res;
 }
 
-Interface Interface::horizontalFace (int k, const Point & a, const Point & b)
+Interface Interface::horizontalFace (int k, const Point & a, const Point & b, const MeshParams & mp)
 {
   // prepare indices for horizontal face (vertical stack of cells)
-  int ll = k - 2 * Def::xCells;
-  int l = k - Def::xCells;
+  int ll = k - 2 * mp.X_CELLS;
+  int l = k - mp.X_CELLS;
   int r = k;
-  int rr = k + Def::xCells;
+  int rr = k + mp.X_CELLS;
 
   // compute length of interface
   double lx = b.x - a.x;
