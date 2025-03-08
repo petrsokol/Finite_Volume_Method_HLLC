@@ -22,7 +22,7 @@ public:
 
   static void updateCells (std::vector<Cell> & cells);
 
-  static double computeRezi (const std::vector<Cell> & cells);
+  static double computeRezi (const MeshParams & mp, const std::vector<Cell> & cells);
 
   static double computeCP (double p_inner);
 
@@ -85,7 +85,7 @@ public:
       boundsIterator(mesh.cells, mesh.faces);
       Scheme::computeScheme(mesh.mp, mesh.cells, mesh.faces, scheme);
 
-      reziVec.push_back(rezi = Scheme::computeRezi(mesh.cells));
+      reziVec.push_back(rezi = Scheme::computeRezi(mesh.mp, mesh.cells));
       Scheme::updateCells(mesh.cells);
 
       if (reps % 50 == 0) {

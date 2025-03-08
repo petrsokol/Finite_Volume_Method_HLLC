@@ -31,7 +31,7 @@ void runExperiment (Mesh & mesh, NumericalScheme scheme, BoundsIterator boundsIt
     boundsIterator(mesh.cells, mesh.faces);
     Scheme::computeScheme(mesh.mp, mesh.cells, mesh.faces, scheme);
 
-    rezi = Scheme::computeRezi(mesh.cells);
+    rezi = Scheme::computeRezi(mesh.mp, mesh.cells);
     mesh.reziVec.push_back(rezi);
     Scheme::updateCells(mesh.cells);
 

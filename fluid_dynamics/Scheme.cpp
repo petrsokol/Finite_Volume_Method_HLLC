@@ -94,13 +94,13 @@ void Scheme::computeW (Conservative & wl, Conservative & wr,
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-double Scheme::computeRezi (const std::vector<Cell> & cells)
+double Scheme::computeRezi (const MeshParams & mp, const std::vector<Cell> & cells)
 {
   double res = 0;
 
-  for (int j = 0; j < Def::yInner; ++j) {
-    for (int i = 0; i < Def::xInner; ++i) {
-      int k = Def::firstInner + i + j * Def::xCells;
+  for (int j = 0; j < mp.Y_INNER; ++j) {
+    for (int i = 0; i < mp.X_INNER; ++i) {
+      int k = mp.FIRST_INNER + i + j * mp.X_CELLS;
       res += pow(cells.at(k).rezi.r1 / cells.at(k).dt, 2) * cells.at(k).area;
     }
   }
