@@ -28,7 +28,7 @@ void runExperiment (Mesh & mesh, NumericalScheme scheme, BoundsIterator boundsIt
     reps++;
 
     Scheme::updateCellDT(mesh.cells, CFL, useGlobalTimeStep);
-    boundsIterator(mesh.cells, mesh.faces);
+    boundsIterator(mesh.mp, mesh.cells, mesh.faces);
     Scheme::computeScheme(mesh.mp, mesh.cells, mesh.faces, scheme);
 
     rezi = Scheme::computeRezi(mesh.mp, mesh.cells);

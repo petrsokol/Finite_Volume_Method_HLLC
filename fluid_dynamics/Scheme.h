@@ -82,7 +82,7 @@ public:
       reps++;
 
       Scheme::updateCellDT(mesh.cells, CFL, useGlobalTimeStep);
-      boundsIterator(mesh.cells, mesh.faces);
+      boundsIterator(mesh.mp, mesh.cells, mesh.faces);
       Scheme::computeScheme(mesh.mp, mesh.cells, mesh.faces, scheme);
 
       reziVec.push_back(rezi = Scheme::computeRezi(mesh.mp, mesh.cells));
