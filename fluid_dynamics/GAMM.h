@@ -10,13 +10,13 @@ class GAMM
 {
 
 public:
-  static void updateInlet (std::vector<Cell> & cells);
+  static void updateInlet (const MeshParams & mp, std::vector<Cell> & cells);
 
-  static void updateOutlet (std::vector<Cell> & cells);
+  static void updateOutlet (const MeshParams & mp, std::vector<Cell> & cells);
 
-  static void updateWalls (std::vector<Cell> & cells, const std::vector<Interface> & faces);
+  static void updateWalls (const MeshParams & mp, std::vector<Cell> & cells, const std::vector<Interface> & faces);
 
-  static void updateBounds (std::vector<Cell> & cells, const std::vector<Interface> & faces);
+  static void updateBounds (const MeshParams & mp, std::vector<Cell> & cells, const std::vector<Interface> & faces);
 };
 
 
