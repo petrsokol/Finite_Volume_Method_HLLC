@@ -4,6 +4,8 @@
 
 #include "MeshParams.h"
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 MeshParams::MeshParams (int X_INNER, int Y_INNER, int GHOST_LAYERS) :
 // initialize ghost layers
         GHOST_LAYERS(GHOST_LAYERS),
@@ -21,3 +23,34 @@ MeshParams::MeshParams (int X_INNER, int Y_INNER, int GHOST_LAYERS) :
 {
 
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+int MeshParams::pointIndexToCellIndex (int k) const
+{
+  return k % X_POINTS + (k / X_POINTS) * X_CELLS;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+int MeshParams::cellIndexToPointIndex (int k) const
+{
+  int pointIndex = k % X_CELLS + (k / X_CELLS) * X_POINTS;
+  return pointIndex;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+int MeshParams::innerIndex (int i) const
+{
+  return FIRST_INNER + i % X_INNER + (i / X_INNER) * X_CELLS;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+int MeshParams::innerPointIndex (int i) const
+{
+  return FIRST_INNER_POINT + i % (X_INNER + 1) + (i / (X_INNER + 1)) * X_POINTS;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/

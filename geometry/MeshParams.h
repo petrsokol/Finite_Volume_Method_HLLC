@@ -29,6 +29,15 @@ public:
 
   // index of the first inner cell or first inner vertex
   const int FIRST_INNER, FIRST_INNER_POINT;
+
+  // functions for index conversion between points and cells
+  int innerIndex (int i) const;
+
+  int innerPointIndex (int i) const;
+
+  int pointIndexToCellIndex(int k) const;
+
+  int cellIndexToPointIndex(int k) const;
 };
 
 
