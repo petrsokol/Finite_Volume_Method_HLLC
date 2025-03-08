@@ -29,7 +29,7 @@ void runExperiment (Mesh & mesh, NumericalScheme scheme, BoundsIterator boundsIt
 
     Scheme::updateCellDT(mesh.cells, CFL, useGlobalTimeStep);
     boundsIterator(mesh.cells, mesh.faces);
-    Scheme::computeScheme(mesh.cells, mesh.faces, scheme);
+    Scheme::computeScheme(mesh.mp, mesh.cells, mesh.faces, scheme);
 
     rezi = Scheme::computeRezi(mesh.cells);
     mesh.reziVec.push_back(rezi);

@@ -10,7 +10,6 @@
 #include "../structures/Conservative.h"
 #include "../geometry/Cell.h"
 #include "../geometry/Interface.h"
-#include "Def.h"
 #include "../utilities/DataIO.h"
 #include "../utilities/Instructions.h"
 #include "../geometry/Mesh.h"
@@ -43,20 +42,21 @@ public:
 
   // iterator functions
   template <typename NumericalScheme>
-  static void computeScheme (std::vector<Cell> & cells, const std::vector<Interface> & faces, NumericalScheme scheme)
+  static void computeScheme (const MeshParams & mp, std::vector<Cell> & cells,
+                             const std::vector<Interface> & faces, NumericalScheme scheme)
   {
     // iterate over all *inner* interfaces
-    int xLim = 2 * Def::xInner + 1;
-    for (int j = 0; j < Def::yInner; ++j) {
+    int xLim = 2 * mp.X_INNER + 1;
+    for (int j = 0; j < mp.Y_INNER; ++j) {
       for (int i = 0; i < xLim; ++i) {
-        int k = 2 * (Def::firstInner + j * Def::xCells) + i;
+        int k = 2 * (mp.FIRST_INNER + j * mp.X_CELLS) + i;
         updateInterface(cells, faces.at(k), scheme);
       }
     }
 
     // iterate over top row - only horizontal interfaces
-    for (int i = 0; i < Def::xInner; ++i) {
-      int k = 2 * (Def::firstInner + Def::yInner * Def::xCells + i) + 1;
+    for (int i = 0; i < mp.X_INNER; ++i) {
+      int k = 2 * (mp.FIRST_INNER + mp.Y_INNER * mp.X_CELLS + i) + 1;
       updateInterface(cells, faces.at(k), scheme);
     }
 
@@ -83,7 +83,7 @@ public:
 
       Scheme::updateCellDT(mesh.cells, CFL, useGlobalTimeStep);
       boundsIterator(mesh.cells, mesh.faces);
-      Scheme::computeScheme(mesh.cells, mesh.faces, scheme);
+      Scheme::computeScheme(mesh.mp, mesh.cells, mesh.faces, scheme);
 
       reziVec.push_back(rezi = Scheme::computeRezi(mesh.cells));
       Scheme::updateCells(mesh.cells);
