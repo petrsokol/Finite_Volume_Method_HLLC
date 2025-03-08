@@ -17,7 +17,7 @@ public:
   static const int valueCount;
   double x, y;
   std::vector<double> values;
-  int index, contributors;
+  int contributors;
 
   // Constructor
   Point (double x, double y, int index);

@@ -10,14 +10,14 @@ const int Point::valueCount = 2;
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-Point::Point (double x, double y, int index) : x(x), y(y), index(index), values(valueCount, 0), contributors(0)
+Point::Point (double x, double y, int index) : x(x), y(y), values(valueCount, 0), contributors(0)
 {}
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 void Point::toString () const
 {
-  std::cout << "point " << index << ": [" << x << ";" << y << "] \n";
+  std::cout << "point" << ": [" << x << ";" << y << "] \n";
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

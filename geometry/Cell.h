@@ -18,7 +18,6 @@ public:
   Conservative w, rezi;
   double area, tx, ty, dt;
   Vector xi{}, eta{};
-  int index;
 
   // Constructor
   Cell () = default;

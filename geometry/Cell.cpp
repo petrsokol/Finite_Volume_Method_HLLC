@@ -8,8 +8,6 @@
 
 Cell::Cell (const Point & a, const Point & b, const Point & c, const Point & d)
 {
-  Cell::index = Def::pointIndexToCellIndex(a.index);
-
   double x1 = 1.0 / 3 * (a.x + b.x + c.x);
   double y1 = 1.0 / 3 * (a.y + b.y + c.y);
   double A1 = 0.5 * fabs(a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y));
@@ -50,6 +48,6 @@ std::vector<Cell> Cell::createCells (const std::vector<Point> & points)
 
 void Cell::toString () const
 {
-  std::cout << "Cell " << index << ": area = " << area << ", T = [" << tx << ";" << ty << "], W = ";
+  std::cout << "Cell"  << ": area = " << area << ", T = [" << tx << ";" << ty << "], W = ";
   w.toString();
 }
