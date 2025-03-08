@@ -28,15 +28,15 @@ Cell::Cell (const Point & a, const Point & b, const Point & c, const Point & d)
   Cell::eta = Vector((c + d) / 2, (a + b) / 2);
 }
 
-std::vector<Cell> Cell::createCells (const std::vector<Point> & points)
+std::vector<Cell> Cell::createCells (const std::vector<Point> & points, const MeshParams & mp)
 {
   std::vector<Cell> res;
-  for (int j = 0; j < Def::yCells; ++j) {
-    for (int i = 0; i < Def::xCells; ++i) {
-      const Point & a = points.at(j * (Def::xPoints) + i);
-      const Point & b = points.at(j * (Def::xPoints) + i + 1);
-      const Point & c = points.at((j + 1) * (Def::xPoints) + i + 1);
-      const Point & d = points.at((j + 1) * (Def::xPoints) + i);
+  for (int j = 0; j < mp.Y_CELLS; ++j) {
+    for (int i = 0; i < mp.X_CELLS; ++i) {
+      const Point & a = points.at(j * (mp.X_POINTS) + i);
+      const Point & b = points.at(j * (mp.X_POINTS) + i + 1);
+      const Point & c = points.at((j + 1) * (mp.X_POINTS) + i + 1);
+      const Point & d = points.at((j + 1) * (mp.X_POINTS) + i);
 
       Cell curr = Cell(a, b, c, d);
       res.push_back(curr);

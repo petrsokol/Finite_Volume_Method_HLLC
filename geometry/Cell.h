@@ -22,9 +22,9 @@ public:
   // Constructor
   Cell () = default;
 
-  Cell (const Point& a, const Point& b, const Point& c, const Point& d);
+  Cell (const Point & a, const Point & b, const Point & c, const Point & d);
 
-  static std::vector<Cell> createCells (const std::vector<Point> & points);
+  static std::vector<Cell> createCells (const std::vector<Point> & points, const MeshParams & mp);
 
   void toString () const;
 };
