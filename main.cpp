@@ -60,7 +60,7 @@ int main ()
   // Def::setConditions(1, 1, 1.25, 0.623512);
 
   // set conditions by mach number and angle of attack
-  Def::setConditions(0.8, 1.25);
+  Def::setConditions(0.8, 0);
 
   Def::wInitial = Def::wInitialSubsonic;
   Def::wInitial.toString(); // [1;0.65;0;2.46125]
@@ -69,8 +69,9 @@ int main ()
 
   // todo mach 0.8 nesymetricky, 0.5 symm
 
+  // todo add boundsIterator as a mesh parameter, since it makes sense
   Mesh nacaMesh(Instructions::geometryInput, "nacaMesh.dat", 260, 60, 2);
-  // Mesh gammMesh(Instructions::geometryInput, "gammMesh.dat", 150, 50, 2); // will not work -> Def issues
+  Mesh gammMesh(Instructions::geometryInput, "gammMesh.dat", 150, 50, 2); // will not work -> Def issues
   // run experiments
 
   // exp 1
