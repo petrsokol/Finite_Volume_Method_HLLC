@@ -3,9 +3,8 @@
 //
 
 #include <fstream>
+#include <iostream>
 #include "Point.h"
-#include "../fluid_dynamics/Def.h"
-#include "../structures/Primitive.h"
 
 const int Point::valueCount = 2;
 
