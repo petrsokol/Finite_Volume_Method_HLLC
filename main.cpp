@@ -15,11 +15,15 @@
 #include "geometry/Mesh.h"
 
 template <typename NumericalScheme, typename BoundsIterator>
-void runExperiment (Mesh & mesh, NumericalScheme scheme, BoundsIterator boundsIterator, double epsilon, int repsMax,
-                    double CFL, bool useGlobalTimeStep)
+void runExperiment (Mesh & mesh, NumericalScheme scheme, BoundsIterator boundsIterator, const Conservative & wInitial,
+                    double epsilon, int repsMax, double CFL, bool useGlobalTimeStep)
 {
   int reps = 0;
   double rezi = 1;
+
+  // set initial condition
+  Scheme::setInitialCondition(mesh.cells, wInitial);
+
   while (rezi > epsilon && reps < repsMax) {
     reps++;
 
@@ -70,7 +74,7 @@ int main ()
   // run experiments
 
   // exp 1
-  runExperiment(nacaMesh, Scheme::HLL, NACA::updateBounds, -4, 3000, 0.7, false);
+  runExperiment(nacaMesh, Scheme::HLL, NACA::updateBounds, Def::wInitial, -4, 3000, 0.7, false);
   // exp 2
   // exp 3
 

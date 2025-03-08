@@ -240,6 +240,14 @@ double Scheme::centroidDistance (const Cell & c1, const Cell & c2)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
+void Scheme::setInitialCondition (std::vector<Cell> & cells, const Conservative & wInitial)
+{
+  for (auto & cell : cells)
+    cell.w = wInitial;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 /*
    if (test && Def::isNaca) {
     for (int i = 0; i < NACA::wingLength; ++i) {

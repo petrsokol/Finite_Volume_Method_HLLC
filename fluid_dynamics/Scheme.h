@@ -27,6 +27,8 @@ public:
 
   static double computeCP (double p_inner);
 
+  static void setInitialCondition (std::vector<Cell> & cells, const Conservative & wInitial);
+
   // numerical schemes
   static Conservative HLL (const Interface & f, Conservative & wl, Conservative & wr);
 
@@ -64,12 +66,16 @@ public:
   /*------------------------------------------------------------------------------------------------------------------*/
 
   template <typename NumericalScheme, typename BoundsIterator>
-  static void runExperiment (Mesh & mesh, NumericalScheme scheme, BoundsIterator boundsIterator, double epsilon,
-                             int repsMax, double CFL, bool useGlobalTimeStep)
+  static void
+  runExperiment (Mesh & mesh, NumericalScheme scheme, BoundsIterator boundsIterator, const Conservative & wInitial,
+                 double epsilon, int repsMax, double CFL, bool useGlobalTimeStep)
   {
     int reps = 0;
     double rezi = 1;
     std::vector<double> reziVec{};
+
+    // set initial condition
+    Scheme::setInitialCondition(mesh.cells, wInitial);
 
     // main iteration loop
     while (rezi > epsilon && reps < repsMax) {

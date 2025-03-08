@@ -4,7 +4,6 @@
 
 #include <cmath>
 #include "Cell.h"
-#include "../fluid_dynamics/Def.h"
 
 Cell::Cell (const Point & a, const Point & b, const Point & c, const Point & d)
 {
@@ -20,7 +19,8 @@ Cell::Cell (const Point & a, const Point & b, const Point & c, const Point & d)
   Cell::tx = (A1 * x1 + A2 * x2) / (A1 + A2);
   Cell::ty = (A1 * y1 + A2 * y2) / (A1 + A2); //ChatGPT
 
-  Cell::w = Def::wInitial;
+  // initial condition passed in a separate function
+  Cell::w = 0;
   Cell::rezi = 0;
   Cell::dt = 1e9;
 
