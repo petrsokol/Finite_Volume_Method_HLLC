@@ -110,10 +110,10 @@ double Scheme::computeRezi (const MeshParams & mp, const std::vector<Cell> & cel
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void Scheme::updateCells (std::vector<Cell> & cells)
+void Scheme::updateCells (const MeshParams & mp, std::vector<Cell> & cells)
 {
-  for (int i = 0; i < Def::inner; ++i) {
-    int k = Def::innerIndex(i);
+  for (int i = 0; i < mp.TOTAL_INNER; ++i) {
+    int k = mp.innerIndex(i);
     cells.at(k).w += cells.at(k).rezi;
     cells.at(k).rezi = 0;
   }

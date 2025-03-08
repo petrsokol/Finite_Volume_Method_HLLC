@@ -33,7 +33,7 @@ void runExperiment (Mesh & mesh, NumericalScheme scheme, BoundsIterator boundsIt
 
     rezi = Scheme::computeRezi(mesh.mp, mesh.cells);
     mesh.reziVec.push_back(rezi);
-    Scheme::updateCells(mesh.cells);
+    Scheme::updateCells(mesh.mp, mesh.cells);
 
     if (reps % 50 == 0) {
       std::cout << "reps: " << reps << ", rezi: " << rezi << std::endl;

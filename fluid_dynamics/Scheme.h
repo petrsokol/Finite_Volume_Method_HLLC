@@ -20,7 +20,7 @@ class Scheme
 public:
   static void updateCellDT (std::vector<Cell> & cells, double CFL, bool useGlobalTimeStep);
 
-  static void updateCells (std::vector<Cell> & cells);
+  static void updateCells (const MeshParams & mp, std::vector<Cell> & cells);
 
   static double computeRezi (const MeshParams & mp, const std::vector<Cell> & cells);
 
@@ -86,7 +86,7 @@ public:
       Scheme::computeScheme(mesh.mp, mesh.cells, mesh.faces, scheme);
 
       reziVec.push_back(rezi = Scheme::computeRezi(mesh.mp, mesh.cells));
-      Scheme::updateCells(mesh.cells);
+      Scheme::updateCells(mesh.mp, mesh.cells);
 
       if (reps % 50 == 0) {
         std::cout << "reps: " << reps << ", rezi: " << rezi << std::endl;
