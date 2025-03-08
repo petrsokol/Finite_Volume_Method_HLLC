@@ -16,26 +16,6 @@ Point::Point (double x, double y, int index) : x(x), y(y), index(index), values(
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-std::vector<Point> Point::createPoints (std::vector<double> bot, std::vector<double> top)
-{
-  std::vector<Point> res{};
-  std::vector<double> dy{};
-
-  for (int i = 0; i < Def::xPoints; ++i) {
-    dy.push_back((top[i] - bot[i]) / Def::yInner);
-  }
-
-  for (int i = 0; i < Def::points; ++i) {
-    double xx = (i % Def::xPoints - Def::gl) * Def::dx;
-    double yy = bot[i % Def::xPoints] + (int(i / Def::xPoints) - Def::gl) * dy[i % Def::xPoints];
-    res.emplace_back(xx, yy, i);
-  }
-
-  return res;
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-
 void Point::toString () const
 {
   std::cout << "point " << index << ": [" << x << ";" << y << "] \n";
@@ -75,18 +55,18 @@ Point Point::operator/ (double scalar) const
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-std::vector<Point> Point::loadPointsFromFile (const std::string & dir, const std::string & file)
+std::vector<Point> Point::loadPointsFromFile (const std::string & dir, const std::string & file, const MeshParams & mp)
 {
   std::vector<Point> res;
   std::ifstream input(dir + "\\" + file);
-  for (int j = 0; j < Def::yPoints; ++j) {
-    for (int i = 0; i < Def::xPoints; ++i) {
-      int k = i + j * Def::xPoints;
+  for (int j = 0; j < mp.Y_POINTS; ++j) {
+    for (int i = 0; i < mp.X_POINTS; ++i) {
+      int k = i + j * mp.X_POINTS;
       double x;
       double y;
       input >> x;
       input >> y;
-      int index = pointIndexToCellIndex(i, j);
+      int index = pointIndexToCellIndex(i, j, mp);
       res.emplace_back(x, y, k);
     }
   }
@@ -96,15 +76,15 @@ std::vector<Point> Point::loadPointsFromFile (const std::string & dir, const std
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-int Point::pointIndexToCellIndex (int i, int j)
+int Point::pointIndexToCellIndex (int i, int j, const MeshParams & mp)
 {
   int res;
-  if (i == Def::xPoints - 1)
+  if (i == mp.X_POINTS - 1)
     res = -1;
-  else if (j == Def::yPoints - 1)
+  else if (j == mp.Y_POINTS - 1)
     res = -1;
   else
-    res = i + j * Def::xCells;
+    res = i + j * mp.X_CELLS;
 //  printf("for point [%d, %d] index = %d\n", i, j, res);
   return res;
 }

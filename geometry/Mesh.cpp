@@ -11,7 +11,7 @@ Mesh::Mesh (const std::string & pointMeshDir, const std::string & pointMeshFileN
         mp(X_INNER, Y_INNER, GHOST_LAYERS)
 {
   // points
-  Mesh::points = Point::loadPointsFromFile(pointMeshDir, pointMeshFileName);
+  Mesh::points = Point::loadPointsFromFile(pointMeshDir, pointMeshFileName, mp);
 
   // faces
   Mesh::faces = Interface::createFaces(points);

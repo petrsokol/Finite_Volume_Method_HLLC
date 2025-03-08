@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <string>
+#include "MeshParams.h"
 
 class Point
 {
@@ -22,8 +23,6 @@ public:
   Point (double x, double y, int index);
 
   // Methods
-  static std::vector<Point> createPoints (std::vector<double> bot, std::vector<double> top);
-
   void toString () const;
 
   // Overloaded operators
@@ -35,9 +34,10 @@ public:
 
   Point operator/ (double scalar) const;
 
-  static std::vector<Point> loadPointsFromFile (const std::string & dir, const std::string & file);
+  static std::vector<Point>
+  loadPointsFromFile (const std::string & dir, const std::string & file, const MeshParams & mp);
 
-  static int pointIndexToCellIndex (int i, int j);
+  static int pointIndexToCellIndex (int i, int j, const MeshParams & mp);
 };
 
 
