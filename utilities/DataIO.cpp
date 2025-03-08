@@ -13,7 +13,11 @@
 #include "../fluid_dynamics/Scheme.h"
 #include "Instructions.h"
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 const std::string DataIO::CSV_HEADER = "\"X\", \"Y\", \"Z\", \"M\", \"c_p\"\n";
+
+/*--------------------------------------------------------------------------------------------------------------------*/
 
 std::string DataIO::getDate ()
 {
@@ -21,17 +25,20 @@ std::string DataIO::getDate ()
   std::time_t currentTime = std::time(nullptr);
 
   // Convert the current time to a local time
-  std::tm * localTime = std::localtime(&currentTime);
+  std::tm * lt = std::localtime(&currentTime);
 
-  // Extract the date components
-  int year = localTime->tm_year % 100; // tm_year counts years since 1900
-  int month = localTime->tm_mon + 1;    // tm_mon counts months from 0
-  int day = localTime->tm_mday;
-  std::string leadZeroMonth = (month < 10) ? "0" : "";
-  std::string leadZeroDay = (day < 10) ? "0" : "";
-  return std::to_string(year) + "_" + leadZeroMonth + std::to_string(month) + "_" + leadZeroDay + std::to_string(day);
+  // string stream for formatted date string
+  std::ostringstream formattedDate;
+  formattedDate << std::setfill('0')
+                << std::setw(2) << lt->tm_year % 100 << "_"
+                << std::setw(2) << lt->tm_mon + 1 << "_"
+                << std::setw(2) << lt->tm_mday;
+
+  // return res
+  return formattedDate.str();
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
 
 std::string DataIO::getTime ()
 {
@@ -42,13 +49,11 @@ std::string DataIO::getTime ()
   // Convert current time to tm struct for easy manipulation
   std::tm * timeInfo = std::localtime(&currentTime);
 
-  // Extract hours and minutes
-  int hours = timeInfo->tm_hour;
-  int minutes = timeInfo->tm_min;
-
   // Create a string stream to build the formatted time string
   std::ostringstream formattedTime;
-  formattedTime << std::setfill('0') << std::setw(2) << hours << "h" << std::setw(2) << minutes << "m";
+  formattedTime << std::setfill('0')
+                << std::setw(2) << timeInfo->tm_hour << "h"
+                << std::setw(2) << timeInfo->tm_min << "m";
 
   // Return the formatted time string
   return formattedTime.str();
@@ -178,8 +183,6 @@ std::vector<Point> DataIO::updatePointValues (const std::vector<Cell> & cells, c
   Instructions::cpLB = Scheme::computeCP(pv.p);
   Instructions::cpUB = Scheme::computeCP(pv.p);
 
-  // periodicity boundary condition needs special care - more contributors on the 'edge'
-  bool test = false;
   // iterate over inner cells
   for (int i = 0; i < Def::inner; ++i) {
     int k = Def::innerIndex(i);
@@ -225,17 +228,23 @@ std::vector<Point> DataIO::updatePointValues (const std::vector<Cell> & cells, c
   }
 
   // averaging values based on number of contributors
-  int pointCount = res.size();
-  for (int i = 0; i < pointCount; ++i) {
-    if (res[i].contributors == 0) {
-      continue;
-    } else {
-      for (int j = 0; j < res[i].values.size(); ++j) { // for loop prepared for any number of values
-        res[i].values[j] /= res[i].contributors;
-      }
-    }
-  }
+  averagePointValues(res);
+
+  // return result
   return res;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+void DataIO::averagePointValues (std::vector<Point> & points)
+{
+  // average Mach number and pressure coefficient based on the number of neighbouring cells
+  for (auto & point: points) {
+    if (point.contributors == 0)
+      continue;
+    for (auto & value: point.values)
+      value = value / point.contributors;
+  }
 }
 
 void DataIO::updatePoint (Point & p, double mach, double cp)
