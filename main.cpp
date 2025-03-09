@@ -40,8 +40,8 @@ void runExperiment (Mesh & mesh, NumericalScheme scheme, BoundsIterator boundsIt
     }
   }
 
-  DataIO::exportPointsToCSV(mesh.cells, mesh.points, Instructions::dataInput, Instructions::verticesName);
-  DataIO::exportPointsToDat(mesh.cells, mesh.points, Instructions::dataInput, Instructions::wallName);
+  DataIO::exportPointsToCSV(mesh.mp, mesh.cells, mesh.points, Instructions::dataInput, Instructions::verticesName);
+  DataIO::exportPointsToDat(mesh.mp, mesh.cells, mesh.points, Instructions::dataInput, Instructions::wallName);
   DataIO::exportVectorToDat(mesh.reziVec, Instructions::dataInput, Instructions::reziName);
 
   Instructions::generateInstructions();
@@ -75,7 +75,7 @@ int main ()
   // run experiments
 
   // exp 1
-  runExperiment(nacaMesh, Scheme::HLL, NACA::updateBounds, Def::wInitial, -4, 2000, 0.7, false);
+  runExperiment(nacaMesh, Scheme::HLL, NACA::updateBounds, Def::wInitial, -4, 800, 0.7, false);
   // exp 2
   // exp 3
 
@@ -85,3 +85,9 @@ int main ()
   std::cout << "nashledanou" << std::endl;
   return 0;
 }
+
+/*
+ * UŽITEČNÝ KLÁVESOVÝ ZKRATKY V CLION
+ * ctrl + shift + V - historie vkládání
+ * ctrl + p - nápověda parametrů funkce
+ */

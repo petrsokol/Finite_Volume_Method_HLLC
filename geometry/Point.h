@@ -16,6 +16,8 @@ class Point
 public:
   static const int valueCount;
   double x, y;
+  // values[0] -> mach
+  // values[1] -> c_p
   std::vector<double> values;
   int contributors;
 

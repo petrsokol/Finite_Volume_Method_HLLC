@@ -100,11 +100,11 @@ DataIO::exportToDAT (const std::unordered_map<int, Cell> & cells, const std::str
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void DataIO::exportPointsToCSV (const std::vector<Cell> & cells, std::vector<Point> points, const std::string & dir,
-                                const std::string & name)
+void DataIO::exportPointsToCSV (const MeshParams & mp, const std::vector<Cell> & cells, std::vector<Point> & points,
+                                const std::string & dir, const std::string & name)
 {
   // prepare points with data from the simulation
-  std::vector<Point> newPoints = DataIO::updatePointValues(cells, points);
+  std::vector<Point> newPoints = DataIO::updatePointValues(mp, cells, points);
 
   // open a stream and input a header
   std::ofstream stream(dir + "\\" + name);
@@ -142,11 +142,11 @@ void DataIO::exportPointsToCSV (const std::vector<Cell> & cells, std::vector<Poi
  * @param dir
  * @param name
  */
-void DataIO::exportPointsToDat (const std::vector<Cell> & cells, std::vector<Point> & points,
+void DataIO::exportPointsToDat (const MeshParams & mp, const std::vector<Cell> & cells, std::vector<Point> & points,
                                 const std::string & dir, const std::string & name)
 {
   // prepare points with data from the simulation
-  std::vector<Point> newPoints = DataIO::updatePointValues(cells, points);
+  std::vector<Point> newPoints = DataIO::updatePointValues(mp, cells, points);
 
   // open the stream
   std::ofstream stream(dir + "\\" + name);
@@ -184,63 +184,57 @@ void DataIO::exportVectorToDat (const std::vector<double> & vector, const std::s
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-std::vector<Point> DataIO::updatePointValues (const std::vector<Cell> & cells, const std::vector<Point> & points)
+std::vector<Point>
+DataIO::updatePointValues (const MeshParams & mp, const std::vector<Cell> & cells, const std::vector<Point> & points)
 {
   std::vector<Point> res = points;
 
-  // reference cp and mach values
-  Primitive pv(cells.at(Def::firstInnerPoint).w);
-  Instructions::machLB = pv.U / pv.c;
-  Instructions::machUB = pv.U / pv.c;
-  Instructions::cpLB = Scheme::computeCP(pv.p);
-  Instructions::cpUB = Scheme::computeCP(pv.p);
-
   // iterate over inner cells
-  for (int i = 0; i < Def::inner; ++i) {
-    int k = Def::innerIndex(i);
+  for (int i = 0; i < mp.TOTAL_INNER; ++i) {
+    int k = mp.innerIndex(i);
+
+    // compute mach number and cp
     Primitive pv(cells.at(k).w);
     double mach = pv.U / pv.c;
     double cp = Scheme::computeCP(pv.p);
 
-    // for paraview charts
-    Instructions::machUB = fmax(Instructions::machUB, mach);
-    Instructions::machLB = fmin(Instructions::machLB, mach);
-    Instructions::cpUB = fmax(Instructions::cpUB, cp);
-    Instructions::cpLB = fmin(Instructions::cpLB, cp);
-
     // update cell's corners
-    updateCorners(res, k, mach, cp);
+    updateCorners(mp, res, k, mach, cp);
   }
 
   if (Def::isNaca) {
     // taken from NACA::updatePeriodicity(...)
     // periodicity - start
     for (int i = 0; i < NACA::wingStart; ++i) {
-      int l = Def::firstInnerPoint - Def::xPoints + Def::xInner - 1 -
-              i; //o řadu níž, poslední index - jede v protisměru // l viz BP, p. 13
+      //o řadu níž, poslední index - jede v protisměru // l viz BP, p. 13
+      int l = mp.FIRST_INNER_POINT - mp.X_POINTS + mp.X_INNER - 1 - i;
 
       Primitive pv(cells.at(l).w);
       double mach = pv.U / pv.c;
       double cp = Scheme::computeCP(pv.p);
 
       // update cell's corners
-      updateCorners(res, l, mach, cp);
+      updateCorners(mp, res, l, mach, cp);
     }
+
     // periodicity - finish
     for (int i = 0; i < NACA::wingStart; ++i) {
-      int l = Def::firstInnerPoint - Def::xPoints + NACA::wingStart - 1 - i; // -1 = těsně před koncem
+      int l = mp.FIRST_INNER_POINT - mp.X_POINTS + NACA::wingStart - 1 - i; // -1 = těsně před koncem
 
       Primitive pv(cells.at(l).w);
       double mach = pv.U / pv.c;
       double cp = Scheme::computeCP(pv.p);
 
       // update cell's corners
-      updateCorners(res, l, mach, cp);
+      updateCorners(mp, res, l, mach, cp);
     }
   }
 
   // averaging values based on number of contributors
   averagePointValues(res);
+
+  // find bounds for good visualisation in ParaView
+  Instructions::getMinMaxValues(res);
 
   // return result
   return res;
@@ -261,9 +255,9 @@ void DataIO::averagePointValues (std::vector<Point> & points)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void DataIO::updateCorners (std::vector<Point> & points, int l, double mach, double cp)
+void DataIO::updateCorners (const MeshParams & mp, std::vector<Point> & points, int l, double mach, double cp)
 {
-  int pointIndex = Def::cellIndexToPointIndex(l);
+  int pointIndex = mp.cellIndexToPointIndex(l);
 
   // bottom l corner
   points.at(pointIndex).updateValues(mach, cp);
@@ -272,10 +266,10 @@ void DataIO::updateCorners (std::vector<Point> & points, int l, double mach, dou
   points.at(pointIndex + 1).updateValues(mach, cp);
 
   // top l corner
-  points.at(pointIndex + Def::xPoints).updateValues(mach, cp);
+  points.at(pointIndex + mp.X_POINTS).updateValues(mach, cp);
 
   // top r corner
-  points.at(pointIndex + Def::xPoints + 1).updateValues(mach, cp);
+  points.at(pointIndex + mp.X_POINTS + 1).updateValues(mach, cp);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

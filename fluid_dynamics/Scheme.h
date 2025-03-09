@@ -94,11 +94,11 @@ public:
     }
 
     // export point vertices for paraView
-    DataIO::exportPointsToCSV(mesh.cells, mesh.points,
+    DataIO::exportPointsToCSV(mesh.mp, mesh.cells, mesh.points,
                               Instructions::dataInput, Instructions::verticesName);
 
     // export points to see Ma and c_p along bottom wall
-    DataIO::exportPointsToDat(mesh.cells, mesh.points,
+    DataIO::exportPointsToDat(mesh.mp, mesh.cells, mesh.points,
                               Instructions::dataInput, Instructions::wallName);
 
     // export for rezi chart

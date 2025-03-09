@@ -28,20 +28,20 @@ public:
                int reps);
 
   static std::vector<Point>
-  updatePointValues (const std::vector<Cell> & cells, const std::vector<Point> & points);
+  updatePointValues (const MeshParams & mp, const std::vector<Cell> & cells, const std::vector<Point> & points);
 
   static void
-  exportPointsToCSV (const std::vector<Cell> & cells, std::vector<Point> points, const std::string & dir,
-                     const std::string & name);
+  exportPointsToCSV (const MeshParams & mp, const std::vector<Cell> & cells, std::vector<Point> & points,
+                     const std::string & dir, const std::string & name);
 
-  static void exportPointsToDat (const std::vector<Cell> & cells, std::vector<Point> & points, const std::string & dir,
-                                 const std::string & name);
+  static void exportPointsToDat (const MeshParams & mp, const std::vector<Cell> & cells, std::vector<Point> & points,
+                                 const std::string & dir, const std::string & name);
 
   static void exportVectorToDat (const std::vector<double> & vector, const std::string & dir, const std::string & name);
 
   static std::string getTime ();
 
-  static void updateCorners (std::vector<Point> & points, int l, double mach, double cp);
+  static void updateCorners (const MeshParams & mp, std::vector<Point> & points, int l, double mach, double cp);
 
   static void averagePointValues (std::vector<Point> & points);
 };

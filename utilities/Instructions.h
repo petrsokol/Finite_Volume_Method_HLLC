@@ -7,6 +7,7 @@
 
 
 #include <string>
+#include "../geometry/Point.h"
 
 class Instructions
 {
@@ -42,6 +43,8 @@ public:
   static void createName ();
 
   static void generateInstructions ();
+
+  static void getMinMaxValues (const std::vector<Point> & updatedPoints);
 
 };
 
