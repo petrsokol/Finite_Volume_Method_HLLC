@@ -5,7 +5,6 @@
 #include <ctime>
 #include <fstream>
 #include <chrono>
-#include <cmath>
 #include "DataIO.h"
 #include "../fluid_dynamics/Def.h"
 #include "../structures/Primitive.h"
@@ -71,23 +70,12 @@ void DataIO::exportPointsToCSV (const MeshParams & mp, const std::vector<Cell> &
   std::ofstream stream(dir + "\\" + name);
   stream << DataIO::CSV_HEADER;
 
-  // inner vertices - same as inner cells, plus one on each side
-  int innerVertices = (Def::xInner + 1) * (Def::yInner + 1);
-
   // input data from each point
-  for (int i = 0; i < innerVertices; ++i) {
-    int k = Def::innerPointIndex(i);
+  for (int i = 0; i < mp.TOTAL_INNER_POINTS; ++i) {
+    int k = mp.innerPointIndex(i);
 
-    // input point coordinates
-    stream << newPoints[k].x << ", " << newPoints[k].y << ", 1";
-
-    // input data entries
-    int dataEntries = newPoints[k].values.size();
-    for (int j = 0; j < dataEntries; ++j) {
-      stream << ", " << newPoints[k].values[j];
-    }
-
-    stream << std::endl;
+    stream << newPoints[k].x << ", " << newPoints[k].y << ", " << "1" << ", "
+           << newPoints[k].values[0] << ", " << newPoints[k].values[1] << std::endl;
   }
 
   // close the stream

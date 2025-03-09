@@ -75,7 +75,7 @@ int main ()
   // run experiments
 
   // exp 1
-  runExperiment(nacaMesh, Scheme::HLL, NACA::updateBounds, Def::wInitial, -4, 800, 0.7, false);
+  runExperiment(nacaMesh, Scheme::HLL, NACA::updateBounds, Def::wInitial, -4, 3000, 0.7, false);
   // exp 2
   // exp 3
 
