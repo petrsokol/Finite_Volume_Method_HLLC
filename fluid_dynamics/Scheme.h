@@ -68,57 +68,6 @@ public:
 
   /*------------------------------------------------------------------------------------------------------------------*/
 
-  template <typename NumericalScheme, typename BoundsIterator>
-  static void
-  runExperiment (Mesh & mesh, NumericalScheme scheme, BoundsIterator boundsIterator, const Conservative & wInitial,
-                 double epsilon, int repsMax, double CFL, bool useGlobalTimeStep)
-  {
-    int reps = 0;
-    double rezi = 1;
-    std::vector<double> reziVec{};
-
-    // set initial condition
-    Scheme::setInitialCondition(mesh.cells, wInitial);
-
-    // main iteration loop
-    while (rezi > epsilon && reps < repsMax) {
-      reps++;
-
-      Scheme::updateCellDT(mesh.cells, CFL, useGlobalTimeStep);
-      boundsIterator(mesh.mp, mesh.cells, mesh.faces);
-      Scheme::computeScheme(mesh.mp, mesh.cells, mesh.faces, scheme);
-
-      reziVec.push_back(rezi = Scheme::computeRezi(mesh.mp, mesh.cells));
-      Scheme::updateCells(mesh.mp, mesh.cells);
-
-      if (reps % 50 == 0) {
-        std::cout << "reps: " << reps << ", rezi: " << rezi << std::endl;
-      }
-    }
-
-    // export point vertices for paraView
-    DataIO::exportPointsToCSV(mesh.mp, mesh.points,
-                              Instructions::dataInput, Instructions::verticesName);
-
-    // export points to see Ma and c_p along bottom wall
-    DataIO::exportPointsToDat(mesh.points,
-                              Instructions::dataInput, Instructions::wallName);
-
-    // export for rezi chart
-    DataIO::exportVectorToDat(reziVec, Instructions::dataInput, Instructions::reziName);
-
-    // run post-processing python scripts
-    Instructions::generateInstructions();
-    std::system(R"(python C:\Users\petrs\Documents\CTU\BP\PYTHON-scripts\mach-cp-charts.py)");
-    std::system(R"(python C:\Users\petrs\Documents\CTU\BP\PYTHON-scripts\rezi-chart.py)");
-    std::system(
-            "cmd /c \"\"C:\\Program Files\\ParaView 5.10.1-Windows-Python3.9-msvc2017-AMD64\\bin\\"
-            "pvpython.exe\" \"C:\\Users\\petrs\\Documents\\CTU\\BP\\PYTHON-scripts\\paraView-macro-minimal.py\"\"");
-
-  }
-
-  /*------------------------------------------------------------------------------------------------------------------*/
-
 private:
   // support methods
   static Conservative flux (Interface face, Conservative w, double q, double p);
