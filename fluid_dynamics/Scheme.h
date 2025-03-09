@@ -13,6 +13,7 @@
 #include "../utilities/DataIO.h"
 #include "../utilities/Instructions.h"
 #include "../geometry/Mesh.h"
+#include "../structures/Primitive.h"
 
 class Scheme
 {
@@ -24,7 +25,9 @@ public:
 
   static double computeRezi (const MeshParams & mp, const std::vector<Cell> & cells);
 
-  static double computeCP (double p_inner);
+  static double computeCP (const Primitive & pv);
+
+  static double computeMach (const Primitive & pv);
 
   static void setInitialCondition (std::vector<Cell> & cells, const Conservative & wInitial);
 

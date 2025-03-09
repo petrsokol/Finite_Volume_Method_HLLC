@@ -133,6 +133,10 @@ void DataIO::exportVectorToDat (const std::vector<double> & vector, const std::s
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
+
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 std::vector<Point>
 DataIO::updatePointValues (const MeshParams & mp, const std::vector<Cell> & cells, const std::vector<Point> & points)
 {
@@ -144,8 +148,8 @@ DataIO::updatePointValues (const MeshParams & mp, const std::vector<Cell> & cell
 
     // compute mach number and cp
     Primitive pv(cells.at(k).w);
-    double mach = pv.U / pv.c;
-    double cp = Scheme::computeCP(pv.p);
+    double mach = Scheme::computeMach(pv);
+    double cp = Scheme::computeCP(pv);
 
     // update cell's corners
     updateCorners(mp, res, k, mach, cp);
@@ -159,8 +163,8 @@ DataIO::updatePointValues (const MeshParams & mp, const std::vector<Cell> & cell
       int l = mp.FIRST_INNER_POINT - mp.X_POINTS + mp.X_INNER - 1 - i;
 
       Primitive pv(cells.at(l).w);
-      double mach = pv.U / pv.c;
-      double cp = Scheme::computeCP(pv.p);
+      double mach = Scheme::computeMach(pv);
+      double cp = Scheme::computeCP(pv);
 
       // update cell's corners
       updateCorners(mp, res, l, mach, cp);
@@ -171,8 +175,8 @@ DataIO::updatePointValues (const MeshParams & mp, const std::vector<Cell> & cell
       int l = mp.FIRST_INNER_POINT - mp.X_POINTS + NACA::wingStart - 1 - i; // -1 = těsně před koncem
 
       Primitive pv(cells.at(l).w);
-      double mach = pv.U / pv.c;
-      double cp = Scheme::computeCP(pv.p);
+      double mach = Scheme::computeMach(pv);
+      double cp = Scheme::computeCP(pv);
 
       // update cell's corners
       updateCorners(mp, res, l, mach, cp);
@@ -188,6 +192,10 @@ DataIO::updatePointValues (const MeshParams & mp, const std::vector<Cell> & cell
   // return result
   return res;
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 

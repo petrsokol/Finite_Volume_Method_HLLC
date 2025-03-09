@@ -121,9 +121,9 @@ void Scheme::updateCells (const MeshParams & mp, std::vector<Cell> & cells)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-double Scheme::computeCP (double p_inner)
+double Scheme::computeCP (const Primitive & pv)
 {
-  return (p_inner - Bound::p_infty) /
+  return (pv.p - Bound::p_infty) /
          (0.5 * Bound::rho_infty * (Bound::u_infty * Bound::u_infty + Bound::v_infty * Bound::v_infty));
 }
 
@@ -243,6 +243,13 @@ void Scheme::setInitialCondition (std::vector<Cell> & cells, const Conservative 
 {
   for (auto & cell : cells)
     cell.w = wInitial;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+double Scheme::computeMach (const Primitive & pv)
+{
+  return pv.U / pv.c;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
