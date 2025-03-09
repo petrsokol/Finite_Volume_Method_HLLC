@@ -109,8 +109,8 @@ void DataIO::exportVectorToDat (const std::vector<double> & vector, const std::s
 {
   std::ofstream stream(dir + "\\" + name);
 
-  int vectorSize = vector.size();
-  for (int i = 0; i < vectorSize; ++i) {
+  size_t vectorSize = vector.size();
+  for (size_t i = 0; i < vectorSize; ++i) {
     stream << i << " " << vector[i] << std::endl;
   }
   stream.close();
