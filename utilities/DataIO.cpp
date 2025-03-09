@@ -59,6 +59,8 @@ std::string DataIO::getTime ()
   return formattedTime.str();
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 void
 DataIO::exportToCSV (const std::unordered_map<int, Cell> & cells, const std::string & dir, const std::string & name,
                      int reps)
@@ -74,6 +76,8 @@ DataIO::exportToCSV (const std::unordered_map<int, Cell> & cells, const std::str
   }
   stream.close();
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/
 
 void
 DataIO::exportToDAT (const std::unordered_map<int, Cell> & cells, const std::string & dir, const std::string & name,
@@ -93,6 +97,8 @@ DataIO::exportToDAT (const std::unordered_map<int, Cell> & cells, const std::str
 
   stream.close();
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/
 
 void DataIO::exportPointsToCSV (const std::vector<Cell> & cells, std::vector<Point> points, const std::string & dir,
                                 const std::string & name)
@@ -126,6 +132,8 @@ void DataIO::exportPointsToCSV (const std::vector<Cell> & cells, std::vector<Poi
   // close the stream
   stream.close();
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/
 
 /**
  * Used to input mach number and pressure coefficient along the aerodynamic profile (NACA) or bottom wall (GAMM)
@@ -161,6 +169,8 @@ void DataIO::exportPointsToDat (const std::vector<Cell> & cells, std::vector<Poi
   stream.close();
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 void DataIO::exportVectorToDat (const std::vector<double> & vector, const std::string & dir, const std::string & name)
 {
   std::ofstream stream(dir + "\\" + name);
@@ -171,6 +181,8 @@ void DataIO::exportVectorToDat (const std::vector<double> & vector, const std::s
   }
   stream.close();
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/
 
 std::vector<Point> DataIO::updatePointValues (const std::vector<Cell> & cells, const std::vector<Point> & points)
 {
@@ -247,12 +259,16 @@ void DataIO::averagePointValues (std::vector<Point> & points)
   }
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 void DataIO::updatePoint (Point & p, double mach, double cp)
 {
   p.values[0] += mach;
   p.values[1] += cp;
   p.contributors++;
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/
 
 void DataIO::updateCorners (std::vector<Point> & points, int l, double mach, double cp)
 {
@@ -271,3 +287,4 @@ void DataIO::updateCorners (std::vector<Point> & points, int l, double mach, dou
   updatePoint(points.at(pointIndex + Def::xPoints + 1), mach, cp);
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
