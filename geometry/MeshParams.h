@@ -10,7 +10,7 @@ class MeshParams
 {
 public:
   // constructor
-  MeshParams(int X_INNER, int Y_INNER, int GHOST_LAYERS);
+  MeshParams (int X_INNER, int Y_INNER, int GHOST_LAYERS, int WALL_START, int WALL_LENGTH);
 
   // how many inner cells there are
   const int X_INNER, Y_INNER, TOTAL_INNER;
@@ -29,6 +29,9 @@ public:
 
   // index of the first inner cell or first inner vertex
   const int FIRST_INNER, FIRST_INNER_POINT;
+
+  // start index and wall length
+  const int WALL_LENGTH, WALL_START;
 
   // functions for index conversion between points and cells
   int innerIndex (int i) const;

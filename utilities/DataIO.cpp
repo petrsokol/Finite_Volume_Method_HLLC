@@ -89,15 +89,13 @@ void DataIO::exportPointsToCSV (const MeshParams & mp, std::vector<Point> & upda
  * @param name
  */
 void
-DataIO::exportPointsToDat (std::vector<Point> & updatedPoints, const std::string & dir, const std::string & name)
+DataIO::exportWallPointsToDat (const MeshParams & mp, std::vector<Point> & updatedPoints, const std::string & dir,
+                               const std::string & name)
 {
   // open the stream
   std::ofstream stream(dir + "\\" + name);
 
-  int upperBound = Def::isNaca ? NACA::wingLength + 1 : Def::xInner + 1; // +1 -> vertices in row = points in row + 1
-  int offset = Def::isNaca ? Def::firstInnerPoint + NACA::wingStart : Def::firstInnerPoint;
-
-  for (int i = offset; i < offset + upperBound; ++i)
+  for (int i = mp.WALL_START; i < mp.WALL_START + mp.WALL_LENGTH; ++i)
     stream << updatedPoints[i].x << " " << updatedPoints[i].y << " " << "1" << " "
            << updatedPoints[i].values[0] << " " << updatedPoints[i].values[1] << std::endl;
 

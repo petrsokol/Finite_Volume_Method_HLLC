@@ -27,7 +27,8 @@ public:
                      const std::string & name);
 
   static void
-  exportPointsToDat (std::vector<Point> & updatedPoints, const std::string & dir, const std::string & name);
+  exportWallPointsToDat (const MeshParams & mp, std::vector<Point> & updatedPoints, const std::string & dir,
+                         const std::string & name);
 
   static void exportVectorToDat (const std::vector<double> & vector, const std::string & dir, const std::string & name);
 

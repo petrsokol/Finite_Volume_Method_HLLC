@@ -24,7 +24,7 @@ public:
 
   // constructor
   Mesh (const std::string & pointMeshDir, const std::string & pointMeshFileName, int X_INNER, int Y_INNER,
-        int GHOST_LAYERS);
+        int GHOST_LAYERS, int WALL_START, int WALL_LENGTH);
 
   // methods
   void produceParaViewPictures(const std::string & dir, const std::string & name);

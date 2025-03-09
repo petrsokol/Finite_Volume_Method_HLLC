@@ -2,6 +2,7 @@
 #include <vector>
 #include <unordered_map>
 #include <cmath>
+#include <lmaudit.h>
 #include "structures/Conservative.h"
 #include "fluid_dynamics/Def.h"
 #include "geometry/Point.h"
@@ -42,7 +43,7 @@ void runExperiment (Mesh & mesh, NumericalScheme scheme, BoundsIterator boundsIt
 
   DataIO::updatePointValues(mesh.mp, mesh.cells, mesh.points);
   DataIO::exportPointsToCSV(mesh.mp, mesh.points, Instructions::dataInput, Instructions::verticesName);
-  DataIO::exportPointsToDat(mesh.points, Instructions::dataInput, Instructions::wallName);
+  DataIO::exportWallPointsToDat(mesh.mp, mesh.points, Instructions::dataInput, Instructions::wallName);
   DataIO::exportVectorToDat(mesh.reziVec, Instructions::dataInput, Instructions::reziName);
 
   Instructions::generateInstructions();
@@ -71,12 +72,13 @@ int main ()
   // todo mach 0.8 nesymetricky, 0.5 symm
 
   // todo add boundsIterator as a mesh parameter, since it makes sense
-  Mesh nacaMesh(Instructions::geometryInput, "nacaMesh.dat", 260, 60, 2);
-  Mesh gammMesh(Instructions::geometryInput, "gammMesh.dat", 150, 50, 2); // will not work -> Def issues
+  Mesh nacaMesh(Instructions::geometryInput, "nacaMesh.dat", 260, 60, 2, NACA::wingStart, NACA::wingLength);
+  Mesh gammMesh(Instructions::geometryInput, "gammMesh.dat", 150, 50, 2, 0, 150); // will not work -> Def issues
   // run experiments
 
   // exp 1
-  runExperiment(nacaMesh, Scheme::HLL, NACA::updateBounds, Def::wInitial, -4, 3000, 0.7, false);
+  runExperiment(nacaMesh, Scheme::HLL, NACA::updateBounds, Def::wInitial,
+                -4, 1000, 0.7, false);
   // exp 2
   // exp 3
 

@@ -6,9 +6,9 @@
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-Mesh::Mesh (const std::string & pointMeshDir, const std::string & pointMeshFileName,
-            int X_INNER, int Y_INNER, int GHOST_LAYERS) :
-        mp(X_INNER, Y_INNER, GHOST_LAYERS)
+Mesh::Mesh (const std::string & pointMeshDir, const std::string & pointMeshFileName, int X_INNER, int Y_INNER,
+            int GHOST_LAYERS, int WALL_START, int WALL_LENGTH) :
+        mp(X_INNER, Y_INNER, GHOST_LAYERS, WALL_START, WALL_LENGTH)
 {
   // points
   Mesh::points = Point::loadPointsFromFile(pointMeshDir, pointMeshFileName, mp);
