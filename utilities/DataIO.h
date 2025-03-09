@@ -19,15 +19,15 @@ private:
 public:
   static std::string getDate ();
 
-  static std::vector<Point>
-  updatePointValues (const MeshParams & mp, const std::vector<Cell> & cells, const std::vector<Point> & points);
+  static void
+  updatePointValues (const MeshParams & mp, const std::vector<Cell> & cells, std::vector<Point> & points);
 
   static void
-  exportPointsToCSV (const MeshParams & mp, const std::vector<Cell> & cells, std::vector<Point> & points,
-                     const std::string & dir, const std::string & name);
+  exportPointsToCSV (const MeshParams & mp, std::vector<Point> & updatedPoints, const std::string & dir,
+                     const std::string & name);
 
-  static void exportPointsToDat (const MeshParams & mp, const std::vector<Cell> & cells, std::vector<Point> & points,
-                                 const std::string & dir, const std::string & name);
+  static void
+  exportPointsToDat (std::vector<Point> & updatedPoints, const std::string & dir, const std::string & name);
 
   static void exportVectorToDat (const std::vector<double> & vector, const std::string & dir, const std::string & name);
 

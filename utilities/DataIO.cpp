@@ -60,12 +60,9 @@ std::string DataIO::getTime ()
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void DataIO::exportPointsToCSV (const MeshParams & mp, const std::vector<Cell> & cells, std::vector<Point> & points,
-                                const std::string & dir, const std::string & name)
+void DataIO::exportPointsToCSV (const MeshParams & mp, std::vector<Point> & updatedPoints, const std::string & dir,
+                                const std::string & name)
 {
-  // prepare points with data from the simulation
-  std::vector<Point> newPoints = DataIO::updatePointValues(mp, cells, points);
-
   // open a stream and input a header
   std::ofstream stream(dir + "\\" + name);
   stream << DataIO::CSV_HEADER;
@@ -74,8 +71,8 @@ void DataIO::exportPointsToCSV (const MeshParams & mp, const std::vector<Cell> &
   for (int i = 0; i < mp.TOTAL_INNER_POINTS; ++i) {
     int k = mp.innerPointIndex(i);
 
-    stream << newPoints[k].x << ", " << newPoints[k].y << ", " << "1" << ", "
-           << newPoints[k].values[0] << ", " << newPoints[k].values[1] << std::endl;
+    stream << updatedPoints[k].x << ", " << updatedPoints[k].y << ", " << "1" << ", "
+           << updatedPoints[k].values[0] << ", " << updatedPoints[k].values[1] << std::endl;
   }
 
   // close the stream
@@ -87,16 +84,13 @@ void DataIO::exportPointsToCSV (const MeshParams & mp, const std::vector<Cell> &
 /**
  * Used to input mach number and pressure coefficient along the aerodynamic profile (NACA) or bottom wall (GAMM)
  * @param cells
- * @param points
+ * @param updatedPoints
  * @param dir
  * @param name
  */
-void DataIO::exportPointsToDat (const MeshParams & mp, const std::vector<Cell> & cells, std::vector<Point> & points,
-                                const std::string & dir, const std::string & name)
+void
+DataIO::exportPointsToDat (std::vector<Point> & updatedPoints, const std::string & dir, const std::string & name)
 {
-  // prepare points with data from the simulation
-  std::vector<Point> newPoints = DataIO::updatePointValues(mp, cells, points);
-
   // open the stream
   std::ofstream stream(dir + "\\" + name);
 
@@ -104,8 +98,8 @@ void DataIO::exportPointsToDat (const MeshParams & mp, const std::vector<Cell> &
   int offset = Def::isNaca ? Def::firstInnerPoint + NACA::wingStart : Def::firstInnerPoint;
 
   for (int i = offset; i < offset + upperBound; ++i)
-    stream << newPoints[i].x << " " << newPoints[i].y << " " << "1" << " "
-           << newPoints[i].values[0] << " " << newPoints[i].values[1] << std::endl;
+    stream << updatedPoints[i].x << " " << updatedPoints[i].y << " " << "1" << " "
+           << updatedPoints[i].values[0] << " " << updatedPoints[i].values[1] << std::endl;
 
   // close stream
   stream.close();
@@ -130,11 +124,9 @@ void DataIO::exportVectorToDat (const std::vector<double> & vector, const std::s
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-std::vector<Point>
-DataIO::updatePointValues (const MeshParams & mp, const std::vector<Cell> & cells, const std::vector<Point> & points)
+void
+DataIO::updatePointValues (const MeshParams & mp, const std::vector<Cell> & cells, std::vector<Point> & points)
 {
-  std::vector<Point> res = points;
-
   // iterate over inner cells
   for (int i = 0; i < mp.TOTAL_INNER; ++i) {
     int k = mp.innerIndex(i);
@@ -145,7 +137,7 @@ DataIO::updatePointValues (const MeshParams & mp, const std::vector<Cell> & cell
     double cp = Scheme::computeCP(pv);
 
     // update cell's corners
-    updateCorners(mp, res, k, mach, cp);
+    updateCorners(mp, points, k, mach, cp);
   }
 
   if (Def::isNaca) {
@@ -160,7 +152,7 @@ DataIO::updatePointValues (const MeshParams & mp, const std::vector<Cell> & cell
       double cp = Scheme::computeCP(pv);
 
       // update cell's corners
-      updateCorners(mp, res, l, mach, cp);
+      updateCorners(mp, points, l, mach, cp);
     }
 
     // periodicity - finish
@@ -172,18 +164,15 @@ DataIO::updatePointValues (const MeshParams & mp, const std::vector<Cell> & cell
       double cp = Scheme::computeCP(pv);
 
       // update cell's corners
-      updateCorners(mp, res, l, mach, cp);
+      updateCorners(mp, points, l, mach, cp);
     }
   }
 
   // averaging values based on number of contributors
-  averagePointValues(res);
+  averagePointValues(points);
 
   // find bounds for good visualisation in ParaView
-  Instructions::getMinMaxValues(res);
-
-  // return result
-  return res;
+  Instructions::getMinMaxValues(points);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

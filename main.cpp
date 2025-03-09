@@ -40,8 +40,9 @@ void runExperiment (Mesh & mesh, NumericalScheme scheme, BoundsIterator boundsIt
     }
   }
 
-  DataIO::exportPointsToCSV(mesh.mp, mesh.cells, mesh.points, Instructions::dataInput, Instructions::verticesName);
-  DataIO::exportPointsToDat(mesh.mp, mesh.cells, mesh.points, Instructions::dataInput, Instructions::wallName);
+  DataIO::updatePointValues(mesh.mp, mesh.cells, mesh.points);
+  DataIO::exportPointsToCSV(mesh.mp, mesh.points, Instructions::dataInput, Instructions::verticesName);
+  DataIO::exportPointsToDat(mesh.points, Instructions::dataInput, Instructions::wallName);
   DataIO::exportVectorToDat(mesh.reziVec, Instructions::dataInput, Instructions::reziName);
 
   Instructions::generateInstructions();
