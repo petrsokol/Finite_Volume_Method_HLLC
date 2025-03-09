@@ -103,16 +103,9 @@ void DataIO::exportPointsToDat (const MeshParams & mp, const std::vector<Cell> &
   int upperBound = Def::isNaca ? NACA::wingLength + 1 : Def::xInner + 1; // +1 -> vertices in row = points in row + 1
   int offset = Def::isNaca ? Def::firstInnerPoint + NACA::wingStart : Def::firstInnerPoint;
 
-  for (int i = 0; i < upperBound; ++i) {
-    int k = offset + i;
-    stream << newPoints[k].x << " " << newPoints[k].y << " 1";
-
-    // first: mach, second: cp
-    for (int j = 0; j < newPoints[k].values.size(); ++j) {
-      stream << " " << newPoints[k].values[j];
-    }
-    stream << std::endl;
-  }
+  for (int i = offset; i < offset + upperBound; ++i)
+    stream << newPoints[i].x << " " << newPoints[i].y << " " << "1" << " "
+           << newPoints[i].values[0] << " " << newPoints[i].values[1] << std::endl;
 
   // close stream
   stream.close();
