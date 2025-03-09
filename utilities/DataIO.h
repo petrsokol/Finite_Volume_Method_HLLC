@@ -19,14 +19,6 @@ private:
 public:
   static std::string getDate ();
 
-  static void
-  exportToCSV (const std::unordered_map<int, Cell> & cells, const std::string & dir, const std::string & name,
-               int reps);
-
-  static void
-  exportToDAT (const std::unordered_map<int, Cell> & cells, const std::string & dir, const std::string & name,
-               int reps);
-
   static std::vector<Point>
   updatePointValues (const MeshParams & mp, const std::vector<Cell> & cells, const std::vector<Point> & points);
 

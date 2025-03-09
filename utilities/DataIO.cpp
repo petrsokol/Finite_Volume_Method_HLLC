@@ -61,45 +61,6 @@ std::string DataIO::getTime ()
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void
-DataIO::exportToCSV (const std::unordered_map<int, Cell> & cells, const std::string & dir, const std::string & name,
-                     int reps)
-{
-  std::ofstream stream(dir + "\\" + name + "_" + getTime() + "_" + std::to_string(reps) + ".csv");
-  stream << DataIO::CSV_HEADER;
-
-  for (int i = 0; i < Def::inner; ++i) {
-    int k = Def::innerIndex(i);
-    Primitive pv(cells.at(k).w);
-    double mach = pv.U / pv.c;
-    stream << cells.at(k).tx << ", " << cells.at(k).ty << ", 1, " << mach << ", " << pv.p << "\n";
-  }
-  stream.close();
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-
-void
-DataIO::exportToDAT (const std::unordered_map<int, Cell> & cells, const std::string & dir, const std::string & name,
-                     int reps)
-{
-  std::ofstream stream(dir + "\\" + name + "_" + getTime() + "_" + std::to_string(reps) + ".dat");
-
-  int upperBound = Def::isNaca ? NACA::wingLength : Def::xInner;
-  int offset = Def::isNaca ? Def::firstInnerPoint + NACA::wingStart : Def::firstInnerPoint;
-
-  for (int i = 0; i < upperBound; ++i) {
-    int k = offset + i;
-    Primitive pv(cells.at(k).w);
-    double mach = pv.U / pv.c;
-    stream << cells.at(k).tx << " " << cells.at(k).ty << " " << mach << " " << pv.p << "\n";
-  }
-
-  stream.close();
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-
 void DataIO::exportPointsToCSV (const MeshParams & mp, const std::vector<Cell> & cells, std::vector<Point> & points,
                                 const std::string & dir, const std::string & name)
 {
