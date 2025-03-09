@@ -25,6 +25,8 @@ public:
   // Methods
   void toString () const;
 
+  void updateValues(double mach, double cp);
+
   // Overloaded operators
   Point operator+ (Point other) const;
 

@@ -261,30 +261,21 @@ void DataIO::averagePointValues (std::vector<Point> & points)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void DataIO::updatePoint (Point & p, double mach, double cp)
-{
-  p.values[0] += mach;
-  p.values[1] += cp;
-  p.contributors++;
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-
 void DataIO::updateCorners (std::vector<Point> & points, int l, double mach, double cp)
 {
   int pointIndex = Def::cellIndexToPointIndex(l);
 
   // bottom l corner
-  updatePoint(points.at(pointIndex), mach, cp);
+  points.at(pointIndex).updateValues(mach, cp);
 
   // bottom r corner
-  updatePoint(points.at(pointIndex + 1), mach, cp);
+  points.at(pointIndex + 1).updateValues(mach, cp);
 
   // top l corner
-  updatePoint(points.at(pointIndex + Def::xPoints), mach, cp);
+  points.at(pointIndex + Def::xPoints).updateValues(mach, cp);
 
   // top r corner
-  updatePoint(points.at(pointIndex + Def::xPoints + 1), mach, cp);
+  points.at(pointIndex + Def::xPoints + 1).updateValues(mach, cp);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

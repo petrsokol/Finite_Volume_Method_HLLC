@@ -41,8 +41,6 @@ public:
 
   static std::string getTime ();
 
-  static void updatePoint (Point & p, double mach, double cp);
-
   static void updateCorners (std::vector<Point> & points, int l, double mach, double cp);
 
   static void averagePointValues (std::vector<Point> & points);
