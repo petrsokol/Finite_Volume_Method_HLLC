@@ -16,8 +16,6 @@ add_executable(GAMM main.cpp
         structures/Conservative.h
         structures/Primitive.cpp
         structures/Primitive.h
-        utilities/Lines.h
-        utilities/Lines.cpp
         structures/Vector.cpp
         structures/Vector.h
         fluid_dynamics/Scheme.cpp

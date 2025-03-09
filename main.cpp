@@ -1,17 +1,10 @@
 #include <iostream>
-#include <vector>
-#include <unordered_map>
 #include <cmath>
-#include <lmaudit.h>
 #include "structures/Conservative.h"
 #include "fluid_dynamics/Def.h"
-#include "geometry/Point.h"
-#include "geometry/Interface.h"
-#include "geometry/Cell.h"
 #include "fluid_dynamics/Scheme.h"
 #include "fluid_dynamics/NACA.h"
 #include "utilities/DataIO.h"
-#include "fluid_dynamics/GAMM.h"
 #include "utilities/Instructions.h"
 #include "geometry/Mesh.h"
 

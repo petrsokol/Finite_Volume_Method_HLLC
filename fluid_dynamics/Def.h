@@ -20,26 +20,6 @@ public:
   static bool isSecOrd;
   static bool isSetByMach;
 
-  static const int xInner;
-  static const int yInner;
-  static const int inner;
-
-  static const int gl;
-
-  static const int xPoints;
-  static const int yPoints;
-  static const int points;
-  static const int firstInnerPoint;
-
-  static const int xCells, yCells, cells;
-  static const int firstInner;
-
-  static const double yLowerBound;
-  static const double yUpperBound;
-  static const double xLowerBound;
-  static const double xUpperBound;
-  static const double dx;
-
   static const double KAPPA;
 
   static double p_inlet;
@@ -47,9 +27,6 @@ public:
   static double rho_inlet;
   static double alpha_inlet;
   static double mach_infty;
-
-  static const double EPSILON;
-  static const double CFL;
 
   static const double rhoInitial;
   static const double uInitial;
@@ -60,20 +37,6 @@ public:
   static const Conservative wInitialSupersonic;
   static const Conservative wInitialSubsonic;
 
-  static int errorCount;
-
-
-  static bool error;
-
-  static int innerIndex (int i);
-
-  static int innerPointIndex (int i);
-
-  static int pointIndexToCellIndex(int k);
-
-  static int cellIndexToPointIndex(int k);
-
-  static void coordsToString (int i);
 
   static void setConditions (double mach_infinity, double alphaInletDegrees);
 
