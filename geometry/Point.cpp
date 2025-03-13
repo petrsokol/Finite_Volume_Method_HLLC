@@ -65,11 +65,10 @@ std::vector<Point> Point::loadPointsFromFile (const std::string & dir, const std
       double y;
       input >> x;
       input >> y;
-      int index = pointIndexToCellIndex(i, j, mp);
       res.emplace_back(x, y, k);
     }
   }
-  printf("Loaded %llu points.\n", res.size());
+  std::cout << "Loaded " << res.size() << "points." << std::endl;
   return res;
 }
 

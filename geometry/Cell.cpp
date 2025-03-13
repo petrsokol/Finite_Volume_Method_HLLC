@@ -42,7 +42,7 @@ std::vector<Cell> Cell::createCells (const std::vector<Point> & points, const Me
       res.push_back(curr);
     }
   }
-  printf("created %llu cells.\n", res.size());
+  std::cout << "Loaded " << res.size() << "cells." << std::endl;
   return res;
 }
 

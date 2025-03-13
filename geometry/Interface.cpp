@@ -4,6 +4,7 @@
 
 #include "Interface.h"
 #include <cmath>
+#include <iostream>
 
 void Interface::toString () const
 {
@@ -28,8 +29,7 @@ std::vector<Interface> Interface::createFaces (const std::vector<Point> & points
       res.emplace_back(horizontalFace(faceIndex, a, b, mp));
     }
   }
-
-  printf("Loaded %llu faces.\n", res.size());
+  std::cout << "Loaded " << res.size() << "faces." << std::endl;
   return res;
 }
 
