@@ -8,8 +8,8 @@
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-const int NACA::wingStart = 30;
-const int NACA::wingLength = 200; // previous tests with 200 - changed 240506
+const int NACA::WALL_START = 30;
+const int NACA::WALL_LENGTH = 200; // previous tests with 200 - changed 240506
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
@@ -58,8 +58,8 @@ void NACA::updateOutlet (const MeshParams & mp, std::vector<Cell> & cells)
 // part of bottom row of cells
 void NACA::updateWalls (const MeshParams & mp, std::vector<Cell> & cells, const std::vector<Interface> & faces)
 {
-  for (int i = 0; i < NACA::wingLength; ++i) {
-    int k = mp.FIRST_INNER + NACA::wingStart + i;
+  for (int i = 0; i < NACA::WALL_LENGTH; ++i) {
+    int k = mp.FIRST_INNER + NACA::WALL_START + i;
 
     Interface face = faces.at(2 * k + 1);
 
@@ -78,7 +78,7 @@ void NACA::updateWalls (const MeshParams & mp, std::vector<Cell> & cells, const 
 void NACA::updatePeriodicity (const MeshParams & mp, std::vector<Cell> & cells)
 {
   // start
-  for (int i = 0; i < NACA::wingStart; ++i) {
+  for (int i = 0; i < NACA::WALL_START; ++i) {
     int k1 = mp.FIRST_INNER + i;
     int k2 = mp.FIRST_INNER + i + mp.X_CELLS;
 
@@ -90,12 +90,12 @@ void NACA::updatePeriodicity (const MeshParams & mp, std::vector<Cell> & cells)
   }
 
   // finish
-  for (int i = 0; i < NACA::wingStart; ++i) {
-    int k1 = mp.FIRST_INNER + NACA::wingStart + NACA::wingLength + i;
-    int k2 = mp.FIRST_INNER + NACA::wingStart + NACA::wingLength + i + mp.X_CELLS;
+  for (int i = 0; i < NACA::WALL_START; ++i) {
+    int k1 = mp.FIRST_INNER + NACA::WALL_START + NACA::WALL_LENGTH + i;
+    int k2 = mp.FIRST_INNER + NACA::WALL_START + NACA::WALL_LENGTH + i + mp.X_CELLS;
 
-    int l1 = mp.FIRST_INNER - mp.X_CELLS + NACA::wingStart - 1 - i;
-    int l2 = mp.FIRST_INNER - 2 * mp.X_CELLS + NACA::wingStart - 1 - i;
+    int l1 = mp.FIRST_INNER - mp.X_CELLS + NACA::WALL_START - 1 - i;
+    int l2 = mp.FIRST_INNER - 2 * mp.X_CELLS + NACA::WALL_START - 1 - i;
 
     cells.at(l1).w = cells.at(k1).w;
     cells.at(l2).w = cells.at(k2).w;

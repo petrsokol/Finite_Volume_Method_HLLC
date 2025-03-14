@@ -14,8 +14,9 @@ class NACA
 {
 
 public:
-  static const int wingStart;
-  static const int wingLength;
+  static const int WALL_START;
+  static const int WALL_LENGTH;
+  // todo parallel
 
   static void updateInlet (const MeshParams & mp, std::vector<Cell> & cells);
 

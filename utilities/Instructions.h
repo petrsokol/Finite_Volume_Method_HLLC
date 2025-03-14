@@ -46,6 +46,8 @@ public:
 
   static void getMinMaxValues (const std::vector<Point> & updatedPoints);
 
+  // todo ParaView python script needs different aspect ratio for exporting images for gamm channel
+
 };
 
 

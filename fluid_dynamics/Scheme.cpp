@@ -12,6 +12,7 @@
 
 void Scheme::updateCellDT (std::vector<Cell> & cells, double CFL, bool useGlobalTimeStep)
 {
+  // todo paralelizace
   double globalDT = 1e9;
 
   for (auto & cell: cells) {
@@ -256,8 +257,8 @@ double Scheme::computeMach (const Primitive & pv)
 
 /*
    if (test && Def::isNaca) {
-    for (int i = 0; i < NACA::wingLength; ++i) {
-      int k = Def::firstInnerPoint + NACA::wingStart + i;
+    for (int i = 0; i < NACA::WALL_LENGTH; ++i) {
+      int k = Def::firstInnerPoint + NACA::WALL_START + i;
       // there are two faces for every cell - horizontal indices are even
       Interface face = faces.at(2 * k + 1);
 

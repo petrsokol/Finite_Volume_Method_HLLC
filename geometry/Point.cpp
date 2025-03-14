@@ -57,7 +57,7 @@ Point Point::operator/ (double scalar) const
 std::vector<Point> Point::loadPointsFromFile (const std::string & dir, const std::string & file, const MeshParams & mp)
 {
   std::vector<Point> res;
-  std::ifstream input(dir + "\\" + file);
+  std::ifstream input(dir + "/" + file);
   for (int j = 0; j < mp.Y_POINTS; ++j) {
     for (int i = 0; i < mp.X_POINTS; ++i) {
       int k = i + j * mp.X_POINTS;

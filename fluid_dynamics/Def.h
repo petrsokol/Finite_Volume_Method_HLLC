@@ -12,8 +12,6 @@ class Def
 {
 
 public:
-  static const std::string defaultPath;
-  static const std::string defaultExtension;
 
   static bool isNaca;
   static bool isHLLC;

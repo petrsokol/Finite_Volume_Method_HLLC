@@ -64,7 +64,7 @@ void DataIO::exportPointsToCSV (const MeshParams & mp, std::vector<Point> & upda
                                 const std::string & name)
 {
   // open a stream and input a header
-  std::ofstream stream(dir + "\\" + name);
+  std::ofstream stream(dir + name);
   stream << DataIO::CSV_HEADER;
 
   // input data from each point
@@ -93,7 +93,7 @@ DataIO::exportWallPointsToDat (const MeshParams & mp, std::vector<Point> & updat
                                const std::string & name)
 {
   // open the stream
-  std::ofstream stream(dir + "\\" + name);
+  std::ofstream stream(dir + name);
 
   for (int i = mp.WALL_START; i < mp.WALL_START + mp.WALL_LENGTH; ++i)
     stream << updatedPoints[i].x << " " << updatedPoints[i].y << " " << "1" << " "
@@ -107,7 +107,7 @@ DataIO::exportWallPointsToDat (const MeshParams & mp, std::vector<Point> & updat
 
 void DataIO::exportVectorToDat (const std::vector<double> & vector, const std::string & dir, const std::string & name)
 {
-  std::ofstream stream(dir + "\\" + name);
+  std::ofstream stream(dir + name);
 
   size_t vectorSize = vector.size();
   for (size_t i = 0; i < vectorSize; ++i) {
@@ -141,7 +141,7 @@ DataIO::updatePointValues (const MeshParams & mp, const std::vector<Cell> & cell
   if (Def::isNaca) {
     // taken from NACA::updatePeriodicity(...)
     // periodicity - start
-    for (int i = 0; i < NACA::wingStart; ++i) {
+    for (int i = 0; i < NACA::WALL_START; ++i) {
       //o řadu níž, poslední index - jede v protisměru // l viz BP, p. 13
       int l = mp.FIRST_INNER_POINT - mp.X_POINTS + mp.X_INNER - 1 - i;
 
@@ -154,8 +154,8 @@ DataIO::updatePointValues (const MeshParams & mp, const std::vector<Cell> & cell
     }
 
     // periodicity - finish
-    for (int i = 0; i < NACA::wingStart; ++i) {
-      int l = mp.FIRST_INNER_POINT - mp.X_POINTS + NACA::wingStart - 1 - i; // -1 = těsně před koncem
+    for (int i = 0; i < NACA::WALL_START; ++i) {
+      int l = mp.FIRST_INNER_POINT - mp.X_POINTS + NACA::WALL_START - 1 - i; // -1 = těsně před koncem
 
       Primitive pv(cells.at(l).w);
       double mach = Scheme::computeMach(pv);

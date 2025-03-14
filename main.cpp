@@ -7,11 +7,14 @@
 #include "utilities/DataIO.h"
 #include "utilities/Instructions.h"
 #include "geometry/Mesh.h"
+#include "fluid_dynamics/GAMM.h"
 
 template <typename NumericalScheme, typename BoundsIterator>
 void runExperiment (Mesh & mesh, NumericalScheme scheme, BoundsIterator boundsIterator, const Conservative & wInitial,
                     double epsilon, int repsMax, double CFL, bool useGlobalTimeStep)
 {
+
+  std::cout << "runExperiment() STARTED" << std::endl;
   int reps = 0;
   double rezi = 1;
 
@@ -34,17 +37,24 @@ void runExperiment (Mesh & mesh, NumericalScheme scheme, BoundsIterator boundsIt
     }
   }
 
+  /*
+   * todo
+   *  nepředávej tolik parametrů
+   *  zkus paralelizovat co jde
+   *  ať funguje cmake
+   *
+   */
+
   DataIO::updatePointValues(mesh.mp, mesh.cells, mesh.points);
   DataIO::exportPointsToCSV(mesh.mp, mesh.points, Instructions::dataInput, Instructions::verticesName);
   DataIO::exportWallPointsToDat(mesh.mp, mesh.points, Instructions::dataInput, Instructions::wallName);
   DataIO::exportVectorToDat(mesh.reziVec, Instructions::dataInput, Instructions::reziName);
 
   Instructions::generateInstructions();
-  std::system(R"(python C:\Users\petrs\Documents\CTU\BP\PYTHON-scripts\mach-cp-charts.py)");
-  std::system(R"(python C:\Users\petrs\Documents\CTU\BP\PYTHON-scripts\rezi-chart.py)");
+  std::system("python3 ../post_processing_python_scripts/mach-cp-charts.py");
+  std::system("python3 ../post_processing_python_scripts/rezi-chart.py");
   std::system(
-          "cmd /c \"\"C:\\Program Files\\ParaView 5.10.1-Windows-Python3.9-msvc2017-AMD64\\bin\\"
-          "pvpython.exe\" \"C:\\Users\\petrs\\Documents\\CTU\\BP\\PYTHON-scripts\\paraView-macro-minimal.py\"\"");
+          "python3 ../post_processing_python_scripts/paraView-macro-minimal.py\"\"");
 
 }
 
@@ -65,13 +75,15 @@ int main ()
   // todo mach 0.8 nesymetricky, 0.5 symm
 
   // todo add boundsIterator as a mesh parameter, since it makes sense
-  Mesh nacaMesh(Instructions::geometryInput, "nacaMesh.dat", 260, 60, 2, NACA::wingStart, NACA::wingLength);
+  Mesh nacaMesh(Instructions::geometryInput, "nacaMesh.dat", 260, 60, 2, NACA::WALL_START, NACA::WALL_LENGTH);
   Mesh gammMesh(Instructions::geometryInput, "gammMesh.dat", 150, 50, 2, 0, 150); // will not work -> Def issues
   // run experiments
 
   // exp 1
-  runExperiment(nacaMesh, Scheme::HLL, NACA::updateBounds, Def::wInitial,
-                -4, 1000, 0.7, false);
+  // todo jeden parametr - struct
+  runExperiment(nacaMesh, Scheme::HLLC, NACA::updateBounds, Def::wInitial,
+                -4, 1000, 0.5, false);
+
   // exp 2
   // exp 3
 

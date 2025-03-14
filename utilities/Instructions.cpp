@@ -12,9 +12,9 @@
 
 // todo move all relevant files closer to project files to dedicated diretories
 
-std::string Instructions::geometryInput = R"(C:\Users\petrs\Documents\CTU\BP\FVM_Geometry)";
-std::string Instructions::dataInput = R"(C:\Users\petrs\Documents\CTU\BP\FVM_Data\)";
-std::string Instructions::outputDir = R"(C:\Users\petrs\Documents\CTU\BP\FVM_Charts\)";
+std::string Instructions::geometryInput = "../files/";
+std::string Instructions::dataInput = "../output_dir/";
+std::string Instructions::outputDir = "../output_dir/";
 
 double Instructions::machUB = 5;
 double Instructions::machLB = 5;
@@ -32,12 +32,23 @@ std::string Instructions::outputParaView2 = name + "_2";
 std::string Instructions::outputRezi = name + "_rezi";
 std::string Instructions::outputWall = name + "_wall";
 
+
+std::string cleanString(const std::string& input) {
+  std::string result;
+  for (char c : input) {
+    if (c >= 32 && c <= 126) { // Keep only printable ASCII characters
+      result += c;
+    }
+  }
+  return result;
+}
+
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 void Instructions::generateInstructions ()
 {
   // creates a file in a folder with the rest of the data
-  std::ofstream stream(dataInput + "\\" + "instructions.dat");
+  std::ofstream stream(dataInput + "instructions.dat");
 
   stream << dataInput << std::endl; // 0 - folder with data
   stream << outputDir << std::endl; // 1 - destination for charts and figures
@@ -67,12 +78,11 @@ void Instructions::createName ()
   std::string geometry = Def::isNaca ? "NACA" : "GAMM";
   std::string scheme = Def::isHLLC ? "HLLC" : "HLL";
   std::string order = Def::isSecOrd ? "2nd" : "1st";
-  Instructions::name =
-          geometry + "___" + scheme + "___" + order + "___" + DataIO::getDate() + "___" + DataIO::getTime();
+  Instructions::name = geometry + "_" + scheme + "_" + order + "_" + DataIO::getDate() + "_" + DataIO::getTime();
 
-  Instructions::verticesName = name + "_vertices.csv";
-  Instructions::wallName = name + "_wall.dat";
-  Instructions::reziName = name + "_rezi.dat";
+  Instructions::verticesName = cleanString(name) + "_vertices.csv";
+  Instructions::wallName = cleanString(name) + "_wall.dat";
+  Instructions::reziName = cleanString(name) + "_rezi.dat";
 
   Instructions::outputParaView1 = name + "_1";
   Instructions::outputParaView2 = name + "_2";
@@ -80,8 +90,6 @@ void Instructions::createName ()
   Instructions::outputWall = name + "_wall";
 
   Instructions::overlayName = Def::isNaca ? "only-naca.csv" : "only-gamm.csv";
-
-
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

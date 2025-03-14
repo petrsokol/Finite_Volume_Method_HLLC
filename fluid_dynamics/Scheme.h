@@ -53,6 +53,7 @@ public:
     for (int j = 0; j < mp.Y_INNER; ++j) {
       for (int i = 0; i < xLim; ++i) {
         int k = 2 * (mp.FIRST_INNER + j * mp.X_CELLS) + i;
+        //todo statická funkce
         updateInterface(cells, faces.at(k), scheme);
       }
     }

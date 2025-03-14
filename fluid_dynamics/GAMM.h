@@ -10,6 +10,9 @@ class GAMM
 {
 
 public:
+  static const int WALL_START;
+  static const int WALL_LENGTH;
+
   static void updateInlet (const MeshParams & mp, std::vector<Cell> & cells);
 
   static void updateOutlet (const MeshParams & mp, std::vector<Cell> & cells);
