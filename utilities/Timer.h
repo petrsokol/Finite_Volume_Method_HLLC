@@ -15,6 +15,7 @@ public:
   static std::vector<double> updateCellsTimer;
   static std::vector<double> cellDtTimer;
   static std::vector<double> computeSchemeTimer;
+  static std::vector<double> boundsIteratorTimer;
 };
 
 

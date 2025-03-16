@@ -50,9 +50,6 @@ public:
   static void computeScheme (const MeshParams & mp, std::vector<Cell> & cells,
                              const std::vector<Interface> & faces, NumericalScheme scheme)
   {
-    // timer start
-    auto start = std::chrono::high_resolution_clock::now();
-
     // iterate over all *inner* interfaces
     int xLim = 2 * mp.X_INNER + 1;
     for (int j = 0; j < mp.Y_INNER; ++j) {
@@ -70,10 +67,6 @@ public:
     }
 
     // place for alternative wall flux
-
-    // timer stop
-    auto finish = std::chrono::high_resolution_clock::now();
-    Timer::computeSchemeTimer.push_back(std::chrono::duration<double, std::milli>(finish - start).count());
   }
 
   /*------------------------------------------------------------------------------------------------------------------*/
@@ -95,13 +88,42 @@ public:
       reps++;
 
       // advance by one timestep in the simulation
+
+      // timer 1
+      auto t1 = std::chrono::high_resolution_clock::now();
+
       Scheme::updateCellDT(mesh.cells, CFL, useGlobalTimeStep);
+
+      // timer 2
+      auto t2 = std::chrono::high_resolution_clock::now();
+
       boundsIterator(mesh.mp, mesh.cells, mesh.faces);
+
+      // timer 3
+      auto t3 = std::chrono::high_resolution_clock::now();
+
       Scheme::computeScheme(mesh.mp, mesh.cells, mesh.faces, scheme);
 
+      // timer 4
+      auto t4 = std::chrono::high_resolution_clock::now();
+
       rezi = Scheme::computeRezi(mesh.mp, mesh.cells);
+
+      // timer 5
+      auto t5 = std::chrono::high_resolution_clock::now();
+
       mesh.reziVec.push_back(rezi);
       Scheme::updateCells(mesh.mp, mesh.cells);
+
+      // timer 6
+      auto t6 = std::chrono::high_resolution_clock::now();
+
+      // push back vectors
+      Timer::cellDtTimer.push_back(std::chrono::duration<double, std::milli>(t2 - t1).count());
+      Timer::boundsIteratorTimer.push_back(std::chrono::duration<double, std::milli>(t3 - t2).count());
+      Timer::computeSchemeTimer.push_back(std::chrono::duration<double, std::milli>(t4 - t3).count());
+      Timer::reziTimer.push_back(std::chrono::duration<double, std::milli>(t5 - t4).count());
+      Timer::updateCellsTimer.push_back(std::chrono::duration<double, std::milli>(t6 - t5).count());
 
       if (reps % 50 == 0) std::cout << "reps: " << reps << ", rezi: " << rezi << std::endl;
     }
@@ -128,6 +150,7 @@ public:
     DataIO::exportVectorToDat(Timer::computeSchemeTimer, Instructions::dataInput, "computeSchemeTimer.dat");
     DataIO::exportVectorToDat(Timer::cellDtTimer, Instructions::dataInput, "cellDtTimer.dat");
     DataIO::exportVectorToDat(Timer::updateCellsTimer, Instructions::dataInput, "updateCellsTimer.dat");
+    DataIO::exportVectorToDat(Timer::boundsIteratorTimer, Instructions::dataInput, "boundsIteratorTimer.dat");
 
     Instructions::generateInstructions();
     std::system("python3 ../post_processing_python_scripts/mach-cp-charts.py");

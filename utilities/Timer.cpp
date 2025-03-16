@@ -8,3 +8,4 @@ std::vector<double> Timer::reziTimer{};
 std::vector<double> Timer::updateCellsTimer{};
 std::vector<double> Timer::cellDtTimer{};
 std::vector<double> Timer::computeSchemeTimer{};
+std::vector<double> Timer::boundsIteratorTimer{};
