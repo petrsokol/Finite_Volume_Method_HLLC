@@ -9,6 +9,8 @@
 #include "geometry/Mesh.h"
 #include "fluid_dynamics/GAMM.h"
 
+std::vector<double> timerUpdateCellDT, timerUpdateCells, timerComputeRezi, timerComputeScheme;
+
 int main ()
 {
   Instructions::createName();

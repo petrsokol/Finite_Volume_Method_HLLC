@@ -7,6 +7,7 @@
 
 
 #include <unordered_map>
+#include <chrono>
 #include "../structures/Conservative.h"
 #include "../geometry/Cell.h"
 #include "../geometry/Interface.h"
@@ -14,6 +15,7 @@
 #include "../utilities/Instructions.h"
 #include "../geometry/Mesh.h"
 #include "../structures/Primitive.h"
+#include "../utilities/Timer.h"
 
 class Scheme
 {
@@ -48,6 +50,9 @@ public:
   static void computeScheme (const MeshParams & mp, std::vector<Cell> & cells,
                              const std::vector<Interface> & faces, NumericalScheme scheme)
   {
+    // timer start
+    auto start = std::chrono::high_resolution_clock::now();
+
     // iterate over all *inner* interfaces
     int xLim = 2 * mp.X_INNER + 1;
     for (int j = 0; j < mp.Y_INNER; ++j) {
@@ -65,6 +70,10 @@ public:
     }
 
     // place for alternative wall flux
+
+    // timer stop
+    auto finish = std::chrono::high_resolution_clock::now();
+    Timer::computeSchemeTimer.push_back(std::chrono::duration<double, std::milli>(finish - start).count());
   }
 
   /*------------------------------------------------------------------------------------------------------------------*/
@@ -76,6 +85,8 @@ public:
   {
     int reps = 0;
     double rezi = 1;
+
+    auto start = std::chrono::high_resolution_clock::now();
 
     // set initial condition
     Scheme::setInitialCondition(mesh.cells, wInitial);
@@ -95,6 +106,10 @@ public:
       if (reps % 50 == 0) std::cout << "reps: " << reps << ", rezi: " << rezi << std::endl;
     }
 
+    auto end = std::chrono::high_resolution_clock::now();
+    double totalTime = std::chrono::duration<double, std::milli>(end - start).count() / 1000.0;
+    std::cout << "total time passed: " << totalTime << " s." << std::endl;
+
     /*
      * todo
      *  nepředávej tolik parametrů
@@ -108,9 +123,16 @@ public:
     DataIO::exportWallPointsToDat(mesh.mp, mesh.points, Instructions::dataInput, Instructions::wallName);
     DataIO::exportVectorToDat(mesh.reziVec, Instructions::dataInput, Instructions::reziName);
 
+    // export timers
+    DataIO::exportVectorToDat(Timer::reziTimer, Instructions::dataInput, "reziTimer.dat");
+    DataIO::exportVectorToDat(Timer::computeSchemeTimer, Instructions::dataInput, "computeSchemeTimer.dat");
+    DataIO::exportVectorToDat(Timer::cellDtTimer, Instructions::dataInput, "cellDtTimer.dat");
+    DataIO::exportVectorToDat(Timer::updateCellsTimer, Instructions::dataInput, "updateCellsTimer.dat");
+
     Instructions::generateInstructions();
     std::system("python3 ../post_processing_python_scripts/mach-cp-charts.py");
     std::system("python3 ../post_processing_python_scripts/rezi-chart.py");
+    std::system("python3 ../post_processing_python_scripts/timer-chart.py");
     std::system("python3 ../post_processing_python_scripts/paraView-macro-minimal.py");
 
   }

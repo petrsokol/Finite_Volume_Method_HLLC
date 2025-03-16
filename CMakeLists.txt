@@ -34,4 +34,6 @@ add_executable(GAMM main.cpp
         geometry/Mesh.h
         geometry/MeshParams.cpp
         geometry/MeshParams.h
+        utilities/Timer.cpp
+        utilities/Timer.h
 )

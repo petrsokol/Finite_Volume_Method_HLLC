@@ -4,7 +4,6 @@
 
 #include <cmath>
 #include "Scheme.h"
-#include "../structures/Primitive.h"
 #include "Def.h"
 #include "Bound.h"
 
@@ -12,6 +11,9 @@
 
 void Scheme::updateCellDT (std::vector<Cell> & cells, double CFL, bool useGlobalTimeStep)
 {
+  // timer start
+  auto start = std::chrono::high_resolution_clock::now();
+
   // todo paralelizace
   double globalDT = 1e9;
 
@@ -37,6 +39,10 @@ void Scheme::updateCellDT (std::vector<Cell> & cells, double CFL, bool useGlobal
   if (useGlobalTimeStep)
     for (auto & cell: cells)
       cell.dt = globalDT;
+
+  // timer stop
+  auto finish = std::chrono::high_resolution_clock::now();
+  Timer::cellDtTimer.push_back(std::chrono::duration<double, std::milli>(finish - start).count());
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -97,6 +103,9 @@ void Scheme::computeW (Conservative & wl, Conservative & wr,
 
 double Scheme::computeRezi (const MeshParams & mp, const std::vector<Cell> & cells)
 {
+  // timer start
+  auto start = std::chrono::high_resolution_clock::now();
+
   double res = 0;
 
   for (int j = 0; j < mp.Y_INNER; ++j) {
@@ -106,6 +115,10 @@ double Scheme::computeRezi (const MeshParams & mp, const std::vector<Cell> & cel
     }
   }
 
+  // timer stop
+  auto finish = std::chrono::high_resolution_clock::now();
+  Timer::reziTimer.push_back(std::chrono::duration<double, std::milli>(finish - start).count());
+
   return log(sqrt(res));
 }
 
@@ -113,11 +126,19 @@ double Scheme::computeRezi (const MeshParams & mp, const std::vector<Cell> & cel
 
 void Scheme::updateCells (const MeshParams & mp, std::vector<Cell> & cells)
 {
+  // timer start
+  auto start = std::chrono::high_resolution_clock::now();
+
   for (int i = 0; i < mp.TOTAL_INNER; ++i) {
     int k = mp.innerIndex(i);
     cells.at(k).w += cells.at(k).rezi;
     cells.at(k).rezi = 0;
   }
+
+  // timer stop
+  auto finish = std::chrono::high_resolution_clock::now();
+  Timer::updateCellsTimer.push_back(std::chrono::duration<double, std::milli>(finish - start).count());
+
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
