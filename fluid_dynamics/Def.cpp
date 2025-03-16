@@ -30,7 +30,7 @@ const Conservative Def::wInitialSupersonic = Conservative(1, 2.2, 0, 4.42);
 // subsonic initial condition
 const Conservative Def::wInitialSubsonic = Conservative(1, 1, 0, 2.42);
 
-Conservative Def::wInitial = Def::wInitialSubsonic;
+Conservative Def::wInitial;
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
@@ -63,6 +63,13 @@ void Def::setConditions (double mach_infinity, double alphaInletDegrees)
   double p_2 = Def::p_inlet * pow(1 + (Def::KAPPA - 1) /
                                       2 * pow(Def::mach_infty, 2), -1 * (Def::KAPPA / (Def::KAPPA - 1)));
   std::cout << "vystupni tlak p_2 = " << p_2 << std::endl;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+void Def::setInitialCondition (const Conservative & wInit)
+{
+  Def::wInitial = wInit;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

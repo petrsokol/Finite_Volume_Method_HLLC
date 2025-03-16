@@ -42,6 +42,7 @@ public:
 
   static double degreesToRadians (double degrees);
 
+  static void setInitialCondition (const Conservative & wInit);
 };
 
 

@@ -69,6 +69,55 @@ public:
 
   /*------------------------------------------------------------------------------------------------------------------*/
 
+  template <typename NumericalScheme, typename BoundsIterator>
+  static void
+  runExperiment (Mesh & mesh, NumericalScheme scheme, BoundsIterator boundsIterator, const Conservative & wInitial,
+                      double epsilon, int repsMax, double CFL, bool useGlobalTimeStep)
+  {
+    int reps = 0;
+    double rezi = 1;
+
+    // set initial condition
+    Scheme::setInitialCondition(mesh.cells, wInitial);
+
+    while (rezi > epsilon && reps < repsMax) {
+      reps++;
+
+      // advance by one timestep in the simulation
+      Scheme::updateCellDT(mesh.cells, CFL, useGlobalTimeStep);
+      boundsIterator(mesh.mp, mesh.cells, mesh.faces);
+      Scheme::computeScheme(mesh.mp, mesh.cells, mesh.faces, scheme);
+
+      rezi = Scheme::computeRezi(mesh.mp, mesh.cells);
+      mesh.reziVec.push_back(rezi);
+      Scheme::updateCells(mesh.mp, mesh.cells);
+
+      if (reps % 50 == 0) std::cout << "reps: " << reps << ", rezi: " << rezi << std::endl;
+    }
+
+    /*
+     * todo
+     *  nepředávej tolik parametrů
+     *  zkus paralelizovat co jde
+     *  ať funguje cmake
+     *
+     */
+
+    DataIO::updatePointValues(mesh.mp, mesh.cells, mesh.points);
+    DataIO::exportPointsToCSV(mesh.mp, mesh.points, Instructions::dataInput, Instructions::verticesName);
+    DataIO::exportWallPointsToDat(mesh.mp, mesh.points, Instructions::dataInput, Instructions::wallName);
+    DataIO::exportVectorToDat(mesh.reziVec, Instructions::dataInput, Instructions::reziName);
+
+    Instructions::generateInstructions();
+    std::system("python3 ../post_processing_python_scripts/mach-cp-charts.py");
+    std::system("python3 ../post_processing_python_scripts/rezi-chart.py");
+    std::system("python3 ../post_processing_python_scripts/paraView-macro-minimal.py");
+
+  }
+
+  /*------------------------------------------------------------------------------------------------------------------*/
+
+
 private:
   // support methods
   static Conservative flux (Interface face, Conservative w, double q, double p);
@@ -106,7 +155,6 @@ private:
   }
 
   /*------------------------------------------------------------------------------------------------------------------*/
-
 };
 
 
