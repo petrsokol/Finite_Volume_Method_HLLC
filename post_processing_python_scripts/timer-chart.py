@@ -38,4 +38,4 @@ plt.grid(True)
 plt.savefig(address + 'timerChart.pdf')
 
 # Show plot
-plt.show()
+# plt.show()

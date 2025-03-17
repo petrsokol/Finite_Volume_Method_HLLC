@@ -81,6 +81,73 @@ void DataIO::exportPointsToCSV (const MeshParams & mp, std::vector<Point> & upda
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
+void
+DataIO::exportMachWallToDat (std::vector<Point> & updatedPoints, const std::string & dir, const std::string & name,
+                             int bottomStart, int topStart, int len)
+{
+  // open the stream
+  std::ofstream stream(dir + name);
+
+  // BOTTOM WALL
+
+  // pass header
+  stream << "boundaryField\n"
+            "{\n"
+            "    emptyPlanes\n"
+            "    {\n"
+            "        type            empty;\n"
+            "    }\n"
+            "    lowerWall\n"
+            "    {\n"
+            "        type            calculated;\n"
+            "        value           nonuniform List<scalar> \n";
+  // pass points count
+  stream << len << std::endl;
+  stream << "(" << std::endl;
+
+  // pass data
+  for (int i = bottomStart; i < bottomStart + len; ++i)
+    stream << updatedPoints[i].values[0] << std::endl;
+
+  // pass footer
+  stream << ")\n"
+            ";\n"
+            "    }"
+            << std::endl;
+
+  // TOP WALL
+
+  // pass header
+  stream << "boundaryField\n"
+            "{\n"
+            "    emptyPlanes\n"
+            "    {\n"
+            "        type            empty;\n"
+            "    }\n"
+            "    upperWall\n"
+            "    {\n"
+            "        type            calculated;\n"
+            "        value           nonuniform List<scalar> \n";
+  // pass points count
+  stream << len << std::endl;
+  stream << "(" << std::endl;
+
+  // pass data
+  for (int i = topStart; i < topStart + len; ++i)
+    stream << updatedPoints[i].values[0] << std::endl;
+
+  // pass footer
+  stream << ")\n"
+            ";\n"
+            "    }"
+         << std::endl;
+
+  // close stream
+  stream.close();
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 /**
  * Used to input mach number and pressure coefficient along the aerodynamic profile (NACA) or bottom wall (GAMM)
  * @param cells

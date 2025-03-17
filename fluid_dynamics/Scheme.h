@@ -140,9 +140,16 @@ public:
      *
      */
 
+    // update points
     DataIO::updatePointValues(mesh.mp, mesh.cells, mesh.points);
+
+    // export data for ParaView
     DataIO::exportPointsToCSV(mesh.mp, mesh.points, Instructions::dataInput, Instructions::verticesName);
+
+    // export data for Mach and c_p along bottom wall
     DataIO::exportWallPointsToDat(mesh.mp, mesh.points, Instructions::dataInput, Instructions::wallName);
+
+    // export data for rezi chart
     DataIO::exportVectorToDat(mesh.reziVec, Instructions::dataInput, Instructions::reziName);
 
     // export timers
@@ -151,6 +158,11 @@ public:
     DataIO::exportVectorToDat(Timer::cellDtTimer, Instructions::dataInput, "cellDtTimer.dat");
     DataIO::exportVectorToDat(Timer::updateCellsTimer, Instructions::dataInput, "updateCellsTimer.dat");
     DataIO::exportVectorToDat(Timer::boundsIteratorTimer, Instructions::dataInput, "boundsIteratorTimer.dat");
+
+    // export Mach values along both walls (GAMM)
+    int topWallStart = mesh.mp.WALL_START + mesh.mp.X_POINTS * (mesh.mp.Y_INNER_POINTS - 1);
+    DataIO::exportMachWallToDat(mesh.points, Instructions::dataInput, "GAMM_bot_wall.dat",
+                                mesh.mp.WALL_START, topWallStart, mesh.mp.WALL_LENGTH);
 
     Instructions::generateInstructions();
     std::system("python3 ../post_processing_python_scripts/mach-cp-charts.py");

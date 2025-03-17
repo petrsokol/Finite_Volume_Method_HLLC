@@ -29,6 +29,10 @@ public:
   exportWallPointsToDat (const MeshParams & mp, std::vector<Point> & updatedPoints, const std::string & dir,
                          const std::string & name);
 
+  static void
+  exportMachWallToDat (std::vector<Point> & updatedPoints, const std::string & dir, const std::string & name,
+                       int bottomStart, int topStart, int len);
+
   static void exportVectorToDat (const std::vector<double> & vector, const std::string & dir, const std::string & name);
 
   static std::string getTime ();

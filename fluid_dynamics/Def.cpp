@@ -5,9 +5,9 @@
 #include <cmath>
 #include "Def.h"
 
-bool Def::isNaca = true;
-bool Def::isHLLC = false;
-bool Def::isSecOrd = false;
+bool Def::isNaca = false;
+bool Def::isHLLC = true;
+bool Def::isSecOrd = true;
 bool Def::isSetByMach = false;
 
 const double Def::KAPPA = 1.4;

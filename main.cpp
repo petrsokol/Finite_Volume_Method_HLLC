@@ -9,8 +9,6 @@
 #include "geometry/Mesh.h"
 #include "fluid_dynamics/GAMM.h"
 
-std::vector<double> timerUpdateCellDT, timerUpdateCells, timerComputeRezi, timerComputeScheme;
-
 int main ()
 {
   Instructions::createName();
@@ -22,7 +20,7 @@ int main ()
   // todo mach 0.8 nesymetricky, 0.5 symm
 
   // set conditions by mach number and angle of attack
-  Def::setConditions(0.8, 0);
+  Def::setConditions(0.737, 0);
 
   /*------------------------------------------------------------------------------------------------------------------*/
   // INITIAL CONDITIONS
@@ -32,14 +30,14 @@ int main ()
   // PREPARE MESH
   // todo add boundsIterator as a mesh parameter, since it makes sense
   Mesh nacaMesh(Instructions::geometryInput, "nacaMesh.dat", 260, 60, 2, NACA::WALL_START, NACA::WALL_LENGTH);
-  // Mesh gammMesh(Instructions::geometryInput, "gammMesh.dat", 150, 50, 2, 0, 150);
+  Mesh gammMesh(Instructions::geometryInput, "gammMesh.dat", 150, 50, 2, 0, 150);
   // run experiments
 
   /*------------------------------------------------------------------------------------------------------------------*/
   // RUN EXPERIMENT
   // todo jeden parametr - struct
-  Scheme::runExperiment(nacaMesh, Scheme::HLLC, NACA::updateBounds, Def::wInitial,
-                -4, 1000, 0.5, false);
+  Scheme::runExperiment(gammMesh, Scheme::HLLC, GAMM::updateBounds, Def::wInitial,
+                -12, 15000, 0.7, false);
 
   /*------------------------------------------------------------------------------------------------------------------*/
 
