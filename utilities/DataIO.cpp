@@ -29,7 +29,7 @@ std::string DataIO::getDate ()
   // string stream for formatted date string
   std::ostringstream formattedDate;
   formattedDate << std::setfill('0')
-                << std::setw(4) << lt->tm_year << "_"
+                << std::setw(4) << lt->tm_year + 1900 << "_"
                 << std::setw(2) << lt->tm_mon + 1 << "_"
                 << std::setw(2) << lt->tm_mday;
 
@@ -67,33 +67,35 @@ std::string DataIO::getTimeStamp ()
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void DataIO::exportPointsToCSV (const MeshParams & mp, std::vector<Point> & updatedPoints, const std::string & dir,
-                                const std::string & name)
-{
-  // open a stream and input a header
-  std::ofstream stream(dir + name);
-  stream << DataIO::CSV_HEADER;
+void DataIO::exportPointsToCSV(const MeshParams &mp, std::vector<Point> &updatedPoints,
+                               const std::filesystem::path & dir, const std::string &name) {
+    // Open the file stream
+    std::filesystem::path filePath = dir / name;
+    std::ofstream stream(filePath);
 
-  // input data from each point
-  for (int i = 0; i < mp.TOTAL_INNER_POINTS; ++i) {
-    int k = mp.innerPointIndex(i);
+    // Write the header
+    stream << DataIO::CSV_HEADER;
 
-    stream << updatedPoints[k].x << ", " << updatedPoints[k].y << ", " << "1" << ", "
-           << updatedPoints[k].values[0] << ", " << updatedPoints[k].values[1] << std::endl;
-  }
+    // Write the data
+    for (int i = 0; i < mp.TOTAL_INNER_POINTS; ++i) {
+      int k = mp.innerPointIndex(i);
 
-  // close the stream
-  stream.close();
+      stream << updatedPoints[k].x << ", " << updatedPoints[k].y << ", " << "1" << ", "
+             << updatedPoints[k].values[0] << ", " << updatedPoints[k].values[1] << '\n';
+    }
+
+    stream.close();
+    std::cout << "Exported CSV to: " << filePath << "\n";
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 void
-DataIO::exportMachWallToDat (std::vector<Point> & updatedPoints, const std::string & dir, const std::string & name,
+DataIO::exportMachWallToDat (std::vector<Point> & updatedPoints, const std::filesystem::path & dir, const std::string & name,
                              int bottomStart, int topStart, int len)
 {
   // open the stream
-  std::ofstream stream(dir + name);
+  std::ofstream stream(dir / name);
 
   // BOTTOM WALL
 
@@ -163,11 +165,12 @@ DataIO::exportMachWallToDat (std::vector<Point> & updatedPoints, const std::stri
  * @param name
  */
 void
-DataIO::exportWallPointsToDat (const MeshParams & mp, std::vector<Point> & updatedPoints, const std::string & dir,
+DataIO::exportWallPointsToDat (const MeshParams & mp, std::vector<Point> & updatedPoints, const std::filesystem::path & dir,
                                const std::string & name)
 {
   // open the stream
-  std::ofstream stream(dir + name);
+  std::filesystem::path filePath = dir / name;
+  std::ofstream stream(filePath);
 
   for (int i = mp.WALL_START; i < mp.WALL_START + mp.WALL_LENGTH; ++i)
     stream << updatedPoints[i].x << " " << updatedPoints[i].y << " " << "1" << " "
@@ -179,16 +182,19 @@ DataIO::exportWallPointsToDat (const MeshParams & mp, std::vector<Point> & updat
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void DataIO::exportVectorToDat (const std::vector<double> & vector, const std::string & dir, const std::string & name)
+void DataIO::exportVectorToDat (const std::vector<double> & vector, const std::filesystem::path & dir, const std::string & name)
 {
-  std::cout << "DataIO::exportVectorToDat - exporting " << name << " to " << dir << std::endl;
-  std::ofstream stream(dir + name);
+    // Open the file stream
+    std::filesystem::path filePath = dir / name;
+    std::ofstream stream(filePath);
 
-  size_t len = vector.size();
-  for (size_t i = 0; i < len; ++i) {
-    stream << i << " " << vector[i] << std::endl;
-  }
-  stream.close();
+    size_t len = vector.size();
+    for (size_t i = 0; i < len; ++i) {
+      stream << i << " " << vector[i] << std::endl;
+    }
+    stream.close();
+
+    std::cout << "DataIO::exportVectorToDat - Exported dat files to: " << filePath << "\n";
 }
 
 

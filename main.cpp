@@ -32,18 +32,20 @@ int main ()
 
   // naca mesh
   MeshParams nacaMP(260, 60, NACA::WALL_START, NACA::WALL_LENGTH);
-  Mesh naca("naca", "files/nacaMesh.dat", nacaMP);
+  Mesh naca("naca", "../files/nacaMesh.dat", nacaMP);
 
   // gamm mesh
   MeshParams gammMP(150, 50, GAMM::WALL_START, GAMM::WALL_LENGTH);
-  Mesh gamm("gamm", "files/gammMesh.dat", gammMP);
-  // run experiments
+  Mesh gamm("gamm", "../files/gammMesh.dat", gammMP);
+
 
   /*------------------------------------------------------------------------------------------------------------------*/
   // RUN EXPERIMENT
   // todo jeden parametr - struct
   Scheme::runExperiment(gamm, Scheme::HLL, GAMM::updateBounds, Def::wInitial,
                 -15, 2000, 0.7, false);
+
+  gamm.exportResults("../../GAMM_results");
 
   /*------------------------------------------------------------------------------------------------------------------*/
 

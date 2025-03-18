@@ -7,15 +7,14 @@
 
 
 #include <string>
+#include <filesystem>
 #include "../geometry/Cell.h"
 
 class DataIO
 {
-
-private:
+public:
   static const std::string CSV_HEADER;
 
-public:
   static std::string getDate ();
 
   static std::string getTime ();
@@ -26,18 +25,18 @@ public:
   updatePointValues (const MeshParams & mp, const std::vector<Cell> & cells, std::vector<Point> & points);
 
   static void
-  exportPointsToCSV (const MeshParams & mp, std::vector<Point> & updatedPoints, const std::string & dir,
+  exportPointsToCSV (const MeshParams & mp, std::vector<Point> & updatedPoints, const std::filesystem::path & dir,
                      const std::string & name);
 
   static void
-  exportWallPointsToDat (const MeshParams & mp, std::vector<Point> & updatedPoints, const std::string & dir,
+  exportWallPointsToDat (const MeshParams & mp, std::vector<Point> & updatedPoints, const std::filesystem::path & dir,
                          const std::string & name);
 
   static void
-  exportMachWallToDat (std::vector<Point> & updatedPoints, const std::string & dir, const std::string & name,
+  exportMachWallToDat (std::vector<Point> & updatedPoints, const std::filesystem::path & dir, const std::string & name,
                        int bottomStart, int topStart, int len);
 
-  static void exportVectorToDat (const std::vector<double> & vector, const std::string & dir, const std::string & name);
+  static void exportVectorToDat (const std::vector<double> & vector, const std::filesystem::path & dir, const std::string & name);
 
   static void updateCorners (const MeshParams & mp, std::vector<Point> & points, int l, double mach, double cp);
 
