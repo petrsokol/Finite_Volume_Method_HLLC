@@ -29,7 +29,7 @@ std::string DataIO::getDate ()
   // string stream for formatted date string
   std::ostringstream formattedDate;
   formattedDate << std::setfill('0')
-                << std::setw(2) << lt->tm_year % 100 << "_"
+                << std::setw(4) << lt->tm_year << "_"
                 << std::setw(2) << lt->tm_mon + 1 << "_"
                 << std::setw(2) << lt->tm_mday;
 
@@ -56,6 +56,13 @@ std::string DataIO::getTime ()
 
   // Return the formatted time string
   return formattedTime.str();
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+std::string DataIO::getTimeStamp ()
+{
+  return getDate() + "_" + getTime();
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -184,9 +191,9 @@ void DataIO::exportVectorToDat (const std::vector<double> & vector, const std::s
   stream.close();
 }
 
+
+
 /*--------------------------------------------------------------------------------------------------------------------*/
-
-
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
@@ -241,9 +248,9 @@ DataIO::updatePointValues (const MeshParams & mp, const std::vector<Cell> & cell
   Instructions::getMinMaxValues(points);
 }
 
+
+
 /*--------------------------------------------------------------------------------------------------------------------*/
-
-
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 

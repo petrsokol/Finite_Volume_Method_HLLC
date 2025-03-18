@@ -18,6 +18,10 @@ private:
 public:
   static std::string getDate ();
 
+  static std::string getTime ();
+
+  static std::string getTimeStamp ();
+
   static void
   updatePointValues (const MeshParams & mp, const std::vector<Cell> & cells, std::vector<Point> & points);
 
@@ -34,8 +38,6 @@ public:
                        int bottomStart, int topStart, int len);
 
   static void exportVectorToDat (const std::vector<double> & vector, const std::string & dir, const std::string & name);
-
-  static std::string getTime ();
 
   static void updateCorners (const MeshParams & mp, std::vector<Point> & points, int l, double mach, double cp);
 
