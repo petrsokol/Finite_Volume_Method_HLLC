@@ -15,16 +15,19 @@
 class Mesh
 {
 public:
-  // attributes
+
+// attributes
   const MeshParams mp;
   std::vector<Point> points;
   std::vector<Cell> cells;
   std::vector<Interface> faces;
   std::vector<double> reziVec;
 
-  // constructor
+  // constructors
   Mesh (const std::string & pointMeshDir, const std::string & pointMeshFileName, int X_INNER, int Y_INNER,
         int GHOST_LAYERS, int WALL_START, int WALL_LENGTH);
+
+  Mesh (const std::string & completeDir, const MeshParams & mp);
 
   // methods
   void produceParaViewPictures(const std::string & dir, const std::string & name);

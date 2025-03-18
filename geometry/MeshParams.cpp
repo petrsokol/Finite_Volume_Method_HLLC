@@ -32,6 +32,14 @@ MeshParams::MeshParams (int X_INNER, int Y_INNER, int GHOST_LAYERS, int WALL_STA
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
+MeshParams::MeshParams (int X_INNER, int Y_INNER, int WALL_START, int WALL_LEN)
+        : MeshParams(X_INNER, Y_INNER, 2, WALL_START, WALL_LEN)
+{
+
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 int MeshParams::pointIndexToCellIndex (int k) const
 {
   return k % X_POINTS + (k / X_POINTS) * X_CELLS;

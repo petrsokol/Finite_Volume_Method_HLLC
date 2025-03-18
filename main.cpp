@@ -29,14 +29,20 @@ int main ()
   /*------------------------------------------------------------------------------------------------------------------*/
   // PREPARE MESH
   // todo add boundsIterator as a mesh parameter, since it makes sense
-  Mesh nacaMesh(Instructions::geometryInput, "nacaMesh.dat", 260, 60, 2, NACA::WALL_START, NACA::WALL_LENGTH);
-  Mesh gammMesh(Instructions::geometryInput, "gammMesh.dat", 150, 50, 2, 0, 150);
+
+  // naca mesh
+  MeshParams nacaMP(260, 60, NACA::WALL_START, NACA::WALL_LENGTH);
+  Mesh naca("files/nacaMesh.dat", nacaMP);
+
+  // gamm mesh
+  MeshParams gammMP(150, 50, GAMM::WALL_START, GAMM::WALL_LENGTH);
+  Mesh gamm("files/gammMesh.dat", gammMP);
   // run experiments
 
   /*------------------------------------------------------------------------------------------------------------------*/
   // RUN EXPERIMENT
   // todo jeden parametr - struct
-  Scheme::runExperiment(gammMesh, Scheme::HLL, GAMM::updateBounds, Def::wInitial,
+  Scheme::runExperiment(gamm, Scheme::HLL, GAMM::updateBounds, Def::wInitial,
                 -15, 2000, 0.7, false);
 
   /*------------------------------------------------------------------------------------------------------------------*/

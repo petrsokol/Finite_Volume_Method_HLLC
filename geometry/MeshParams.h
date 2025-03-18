@@ -12,6 +12,8 @@ public:
   // constructor
   MeshParams (int X_INNER, int Y_INNER, int GHOST_LAYERS, int WALL_START, int WALL_LENGTH);
 
+  MeshParams (int X_INNER, int Y_INNER, int WALL_START, int WALL_LEN);
+
   // how many inner cells there are
   const int X_INNER, Y_INNER, TOTAL_INNER;
 

@@ -22,6 +22,25 @@ Mesh::Mesh (const std::string & pointMeshDir, const std::string & pointMeshFileN
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
+Mesh::Mesh (const std::string & completeDir, const MeshParams & mp) :
+        mp(mp)
+{
+  Mesh::points = Point::loadPointsFromFile(completeDir, mp);
+  Mesh::faces = Interface::createFaces(points, mp);
+  Mesh::cells = Cell::createCells(points, mp);
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+template <typename BoundsIterator>
+Mesh::Mesh (const std::string & completeDir, const MeshParams & mp, BoundsIterator boundsIterator)
+: mp(mp)
+{
+
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 void Mesh::centroidsToVertices ()
 {
 

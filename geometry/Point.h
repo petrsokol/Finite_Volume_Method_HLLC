@@ -41,6 +41,9 @@ public:
   static std::vector<Point>
   loadPointsFromFile (const std::string & dir, const std::string & file, const MeshParams & mp);
 
+  static std::vector<Point>
+  loadPointsFromFile (const std::string & completeDir, const MeshParams & mp);
+
   static int pointIndexToCellIndex (int i, int j, const MeshParams & mp);
 };
 
