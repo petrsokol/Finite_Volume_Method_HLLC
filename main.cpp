@@ -16,11 +16,11 @@ int main ()
   /*------------------------------------------------------------------------------------------------------------------*/
   // BOUNDARY CONDITIONS
   // set conditions by rho, p_in, alpha, p_out
-  // Def::setConditions(1, 1, 1.25, 0.623512);
+  Def::setConditions(1, 1, 0, 0.737);
   // todo mach 0.8 nesymetricky, 0.5 symm
 
   // set conditions by mach number and angle of attack
-  Def::setConditions(0.737, 0);
+  //  Def::setConditions(0.85, 0);
 
   /*------------------------------------------------------------------------------------------------------------------*/
   // INITIAL CONDITIONS
@@ -36,8 +36,8 @@ int main ()
   /*------------------------------------------------------------------------------------------------------------------*/
   // RUN EXPERIMENT
   // todo jeden parametr - struct
-  Scheme::runExperiment(gammMesh, Scheme::HLLC, GAMM::updateBounds, Def::wInitial,
-                -12, 15000, 0.7, false);
+  Scheme::runExperiment(gammMesh, Scheme::HLL, GAMM::updateBounds, Def::wInitial,
+                -15, 2000, 0.7, false);
 
   /*------------------------------------------------------------------------------------------------------------------*/
 

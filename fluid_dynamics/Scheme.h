@@ -118,14 +118,14 @@ public:
       // timer 6
       auto t6 = std::chrono::high_resolution_clock::now();
 
-      // push back vectors
-      Timer::cellDtTimer.push_back(std::chrono::duration<double, std::milli>(t2 - t1).count());
-      Timer::boundsIteratorTimer.push_back(std::chrono::duration<double, std::milli>(t3 - t2).count());
-      Timer::computeSchemeTimer.push_back(std::chrono::duration<double, std::milli>(t4 - t3).count());
-      Timer::reziTimer.push_back(std::chrono::duration<double, std::milli>(t5 - t4).count());
-      Timer::updateCellsTimer.push_back(std::chrono::duration<double, std::milli>(t6 - t5).count());
+      // mark time steps
+      Timer::cellDtTimer.         push_back(std::chrono::duration<double, std::milli>(t2 - t1).count());
+      Timer::boundsIteratorTimer. push_back(std::chrono::duration<double, std::milli>(t3 - t2).count());
+      Timer::computeSchemeTimer.  push_back(std::chrono::duration<double, std::milli>(t4 - t3).count());
+      Timer::reziTimer.           push_back(std::chrono::duration<double, std::milli>(t5 - t4).count());
+      Timer::updateCellsTimer.    push_back(std::chrono::duration<double, std::milli>(t6 - t5).count());
 
-      if (reps % 50 == 0) std::cout << "reps: " << reps << ", rezi: " << rezi << std::endl;
+      if (reps % 50 == 0) std::cout << "reps: " << std::setw(5) << reps << ", rezi: " << rezi << std::endl;
     }
 
     auto end = std::chrono::high_resolution_clock::now();
@@ -165,11 +165,15 @@ public:
                                 mesh.mp.WALL_START, topWallStart, mesh.mp.WALL_LENGTH);
 
     Instructions::generateInstructions();
-    std::system("python3 ../post_processing_python_scripts/mach-cp-charts.py");
-    std::system("python3 ../post_processing_python_scripts/rezi-chart.py");
-    std::system("python3 ../post_processing_python_scripts/timer-chart.py");
-    std::system("python3 ../post_processing_python_scripts/paraView-macro-minimal.py");
-
+    int val;
+    val = std::system("python3 ../post_processing_python_scripts/mach-cp-charts.py");
+    val = std::system("python3 ../post_processing_python_scripts/rezi-chart.py");
+    val = std::system("python3 ../post_processing_python_scripts/timer-chart.py");
+    val = std::system("python3 ../post_processing_python_scripts/paraView-macro-minimal.py");
+    val = std::system("python3 /mnt/c/python/BP_Python_Charts/OpenFoam-multiple-wall-visualiser.py "
+                      "/mnt/c/cpp/BP/GAMM/output_dir/ "
+                      "/home/sokolpe1/OpenFOAM/myFoam/tutorials/myLusgsFoam/transonicChannel/20000/Ma "
+                      "/mnt/c/cpp/BP/GAMM/output_dir/GAMM_bot_wall.dat");
   }
 
   /*------------------------------------------------------------------------------------------------------------------*/

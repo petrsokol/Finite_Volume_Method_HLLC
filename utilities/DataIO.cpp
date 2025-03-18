@@ -174,10 +174,11 @@ DataIO::exportWallPointsToDat (const MeshParams & mp, std::vector<Point> & updat
 
 void DataIO::exportVectorToDat (const std::vector<double> & vector, const std::string & dir, const std::string & name)
 {
+  std::cout << "DataIO::exportVectorToDat - exporting " << name << " to " << dir << std::endl;
   std::ofstream stream(dir + name);
 
-  size_t vectorSize = vector.size();
-  for (size_t i = 0; i < vectorSize; ++i) {
+  size_t len = vector.size();
+  for (size_t i = 0; i < len; ++i) {
     stream << i << " " << vector[i] << std::endl;
   }
   stream.close();
@@ -205,7 +206,7 @@ DataIO::updatePointValues (const MeshParams & mp, const std::vector<Cell> & cell
     updateCorners(mp, points, k, mach, cp);
   }
 
-  if (Def::isNaca) {
+  if (Def::isNaca && false) {
     // taken from NACA::updatePeriodicity(...)
     // periodicity - start
     for (int i = 0; i < NACA::WALL_START; ++i) {

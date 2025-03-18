@@ -30,7 +30,7 @@ const Conservative Def::wInitialSupersonic = Conservative(1, 2.2, 0, 4.42);
 // subsonic initial condition
 const Conservative Def::wInitialSubsonic = Conservative(1, 1, 0, 2.42);
 
-Conservative Def::wInitial;
+Conservative Def::wInitial = wInitialSubsonic;
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
