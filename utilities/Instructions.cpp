@@ -47,8 +47,18 @@ std::string cleanString(const std::string& input) {
 
 void Instructions::generateInstructions ()
 {
+  generateInstructions(dataInput);
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+void Instructions::generateInstructions (const std::filesystem::path & dir)
+{
+  std::string fileName = "instructions.dat";
+  std::filesystem::path filePath = dir / fileName;
+
   // creates a file in a folder with the rest of the data
-  std::ofstream stream(dataInput + "instructions.dat");
+  std::ofstream stream(filePath);
 
   stream << dataInput << std::endl; // 0 - folder with data
   stream << outputDir << std::endl; // 1 - destination for charts and figures

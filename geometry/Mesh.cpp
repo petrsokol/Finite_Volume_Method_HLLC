@@ -127,7 +127,7 @@ void Mesh::exportResults (const std::string & parentDir, const std::string & chi
   DataIO::exportMachWallToDat(points, childDir, "GAMM_bot_wall.dat",
                               mp.WALL_START, topWallStart, mp.WALL_LENGTH);
 
-  Instructions::generateInstructions();
+  Instructions::generateInstructions(childDir);
   int val;
   val = std::system("python3 ../post_processing_python_scripts/mach-cp-charts.py");
   val = std::system("python3 ../post_processing_python_scripts/rezi-chart.py");
