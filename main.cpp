@@ -32,11 +32,11 @@ int main ()
 
   // naca mesh
   MeshParams nacaMP(260, 60, NACA::WALL_START, NACA::WALL_LENGTH);
-  Mesh naca("files/nacaMesh.dat", nacaMP);
+  Mesh naca("naca", "files/nacaMesh.dat", nacaMP);
 
   // gamm mesh
   MeshParams gammMP(150, 50, GAMM::WALL_START, GAMM::WALL_LENGTH);
-  Mesh gamm("files/gammMesh.dat", gammMP);
+  Mesh gamm("gamm", "files/gammMesh.dat", gammMP);
   // run experiments
 
   /*------------------------------------------------------------------------------------------------------------------*/
@@ -56,4 +56,9 @@ int main ()
  * UŽITEČNÝ KLÁVESOVÝ ZKRATKY V CLION
  * ctrl + shift + V - historie vkládání
  * ctrl + p - nápověda parametrů funkce
+ *
+ * todo
+ *    better naming system for different cases
+ *    save data to folders instead of the current dumpsterfire mess
+ *    paralellize
  */

@@ -17,6 +17,7 @@ class Mesh
 public:
 
 // attributes
+  const std::string name;
   const MeshParams mp;
   std::vector<Point> points;
   std::vector<Cell> cells;
@@ -28,6 +29,8 @@ public:
         int GHOST_LAYERS, int WALL_START, int WALL_LENGTH);
 
   Mesh (const std::string & completeDir, const MeshParams & mp);
+
+  Mesh (const std::string & name, const std::string & completeDir, const MeshParams & mp);
 
   // methods
   void produceParaViewPictures(const std::string & dir, const std::string & name);

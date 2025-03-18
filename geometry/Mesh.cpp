@@ -22,8 +22,8 @@ Mesh::Mesh (const std::string & pointMeshDir, const std::string & pointMeshFileN
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-Mesh::Mesh (const std::string & completeDir, const MeshParams & mp) :
-        mp(mp)
+Mesh::Mesh (const std::string & name, const std::string & completeDir, const MeshParams & mp) :
+        mp(mp), name(name)
 {
   Mesh::points = Point::loadPointsFromFile(completeDir, mp);
   Mesh::faces = Interface::createFaces(points, mp);
@@ -32,9 +32,7 @@ Mesh::Mesh (const std::string & completeDir, const MeshParams & mp) :
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-template <typename BoundsIterator>
-Mesh::Mesh (const std::string & completeDir, const MeshParams & mp, BoundsIterator boundsIterator)
-: mp(mp)
+Mesh::Mesh (const std::string & completeDir, const MeshParams & mp) : Mesh("unnamedMesh", completeDir, mp)
 {
 
 }
