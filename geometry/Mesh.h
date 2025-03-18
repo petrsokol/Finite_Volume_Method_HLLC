@@ -33,6 +33,10 @@ public:
   Mesh (const std::string & name, const std::string & completeDir, const MeshParams & mp);
 
   // methods
+  void exportResults (const std::string & parentDir);
+
+  void exportResults (const std::string & parentDir, const std::string & childDir);
+
   void produceParaViewPictures(const std::string & dir, const std::string & name);
 
   void produceWallChart();
@@ -54,7 +58,7 @@ private:
 
   void centroidsToVertices();
 
-  void exportPoints (const std::string & dir, const std::string & name);
+  void exportPointsToCSV (const std::filesystem::path & dir, const std::string & name);
 };
 
 
