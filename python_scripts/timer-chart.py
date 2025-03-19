@@ -1,8 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
 
 # specify the data address
-address = '../output_dir/'
+address = sys.argv[1] + "/"
 
 # Load data from four .dat files
 data1 = np.loadtxt(address + 'computeSchemeTimer.dat')

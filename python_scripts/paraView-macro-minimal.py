@@ -1,5 +1,6 @@
 # trace generated using paraview version 5.10.1
 import paraview
+import sys
 paraview.compatibility.major = 5
 paraview.compatibility.minor = 10
 
@@ -7,8 +8,11 @@ paraview.compatibility.minor = 10
 
 #### USER EDITS ####
 
+# get folder address
+address = sys.argv[1] + "/"
+
 # Specify the full path of the .dat file
-instructionFilePath = "../output_dir/instructions.dat"
+instructionFilePath = address + "instructions.dat"
 
 # Initialize an empty list to store the string variables
 string_variables = []

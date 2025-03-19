@@ -74,7 +74,7 @@ public:
   template <typename NumericalScheme, typename BoundsIterator>
   static void
   runExperiment (Mesh & mesh, NumericalScheme scheme, BoundsIterator boundsIterator, const Conservative & wInitial,
-                      double epsilon, int repsMax, double CFL, bool useGlobalTimeStep)
+                 double epsilon, int repsMax, double CFL, bool useGlobalTimeStep)
   {
     int reps = 0;
     double rezi = 1;
@@ -119,11 +119,11 @@ public:
       auto t6 = std::chrono::high_resolution_clock::now();
 
       // mark time steps
-      Timer::cellDtTimer.         push_back(std::chrono::duration<double, std::milli>(t2 - t1).count());
-      Timer::boundsIteratorTimer. push_back(std::chrono::duration<double, std::milli>(t3 - t2).count());
-      Timer::computeSchemeTimer.  push_back(std::chrono::duration<double, std::milli>(t4 - t3).count());
-      Timer::reziTimer.           push_back(std::chrono::duration<double, std::milli>(t5 - t4).count());
-      Timer::updateCellsTimer.    push_back(std::chrono::duration<double, std::milli>(t6 - t5).count());
+      Timer::cellDtTimer.push_back(std::chrono::duration<double, std::milli>(t2 - t1).count());
+      Timer::boundsIteratorTimer.push_back(std::chrono::duration<double, std::milli>(t3 - t2).count());
+      Timer::computeSchemeTimer.push_back(std::chrono::duration<double, std::milli>(t4 - t3).count());
+      Timer::reziTimer.push_back(std::chrono::duration<double, std::milli>(t5 - t4).count());
+      Timer::updateCellsTimer.push_back(std::chrono::duration<double, std::milli>(t6 - t5).count());
 
       if (reps % 50 == 0) std::cout << "reps: " << std::setw(5) << reps << ", rezi: " << rezi << std::endl;
     }
@@ -150,26 +150,26 @@ public:
     DataIO::exportWallPointsToDat(mesh.mp, mesh.points, Instructions::dataInput, Instructions::wallName);
 
     // export data for rezi chart
-    DataIO::exportVectorToDat(mesh.reziVec, Instructions::dataInput, Instructions::reziName);
+    DataIO::exportVector(mesh.reziVec, Instructions::dataInput, Instructions::reziName);
 
     // export timers
-    DataIO::exportVectorToDat(Timer::reziTimer, Instructions::dataInput, "reziTimer.dat");
-    DataIO::exportVectorToDat(Timer::computeSchemeTimer, Instructions::dataInput, "computeSchemeTimer.dat");
-    DataIO::exportVectorToDat(Timer::cellDtTimer, Instructions::dataInput, "cellDtTimer.dat");
-    DataIO::exportVectorToDat(Timer::updateCellsTimer, Instructions::dataInput, "updateCellsTimer.dat");
-    DataIO::exportVectorToDat(Timer::boundsIteratorTimer, Instructions::dataInput, "boundsIteratorTimer.dat");
+    DataIO::exportVector(Timer::reziTimer, Instructions::dataInput, "reziTimer.dat");
+    DataIO::exportVector(Timer::computeSchemeTimer, Instructions::dataInput, "computeSchemeTimer.dat");
+    DataIO::exportVector(Timer::cellDtTimer, Instructions::dataInput, "cellDtTimer.dat");
+    DataIO::exportVector(Timer::updateCellsTimer, Instructions::dataInput, "updateCellsTimer.dat");
+    DataIO::exportVector(Timer::boundsIteratorTimer, Instructions::dataInput, "boundsIteratorTimer.dat");
 
     // export Mach values along both walls (GAMM)
     int topWallStart = mesh.mp.WALL_START + mesh.mp.X_POINTS * (mesh.mp.Y_INNER_POINTS - 1);
-    DataIO::exportMachWallToDat(mesh.points, Instructions::dataInput, "GAMM_bot_wall.dat",
-                                mesh.mp.WALL_START, topWallStart, mesh.mp.WALL_LENGTH);
+    DataIO::exportMachWallToDat(mesh.points, Instructions::dataInput, mesh.mp.WALL_START, topWallStart,
+                                mesh.mp.WALL_LENGTH, "GAMM_bot_wall.dat");
 
     Instructions::generateInstructions();
     int val;
-    val = std::system("python3 ../post_processing_python_scripts/mach-cp-charts.py");
-    val = std::system("python3 ../post_processing_python_scripts/rezi-chart.py");
-    val = std::system("python3 ../post_processing_python_scripts/timer-chart.py");
-    val = std::system("python3 ../post_processing_python_scripts/paraView-macro-minimal.py");
+    val = std::system("python3 ../python_scripts/mach-cp-charts.py");
+    val = std::system("python3 ../python_scripts/rezi-chart.py");
+    val = std::system("python3 ../python_scripts/timer-chart.py");
+    val = std::system("python3 ../python_scripts/paraView-macro-minimal.py");
     val = std::system("python3 /mnt/c/python/BP_Python_Charts/OpenFoam-multiple-wall-visualiser.py "
                       "/mnt/c/cpp/BP/GAMM/output_dir/ "
                       "/home/sokolpe1/OpenFOAM/myFoam/tutorials/myLusgsFoam/transonicChannel/20000/Ma "

@@ -32,17 +32,6 @@ std::string Instructions::outputParaView2 = name + "_2";
 std::string Instructions::outputRezi = name + "_rezi";
 std::string Instructions::outputWall = name + "_wall";
 
-
-std::string cleanString(const std::string& input) {
-  std::string result;
-  for (char c : input) {
-    if (c >= 32 && c <= 126) { // Keep only printable ASCII characters
-      result += c;
-    }
-  }
-  return result;
-}
-
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 void Instructions::generateInstructions ()
@@ -90,9 +79,9 @@ void Instructions::createName ()
   std::string order = Def::isSecOrd ? "2nd" : "1st";
   Instructions::name = geometry + "_" + scheme + "_" + order + "_" + DataIO::getDate() + "_" + DataIO::getTime();
 
-  Instructions::verticesName = cleanString(name) + "_vertices.csv";
-  Instructions::wallName = cleanString(name) + "_wall.dat";
-  Instructions::reziName = cleanString(name) + "_rezi.dat";
+  Instructions::verticesName = name + "_vertices.csv";
+  Instructions::wallName = name + "_wall.dat";
+  Instructions::reziName = name + "_rezi.dat";
 
   Instructions::outputParaView1 = name + "_1";
   Instructions::outputParaView2 = name + "_2";

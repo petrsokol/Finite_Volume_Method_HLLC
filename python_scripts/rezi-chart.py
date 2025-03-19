@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import sys
 
 
 def create_chart_from_dat_file(dat_file_path, output_folder, file_name):
@@ -27,8 +28,11 @@ def create_chart_from_dat_file(dat_file_path, output_folder, file_name):
 
 
 if __name__ == "__main__":
+    # get folder address
+    address = sys.argv[1] + "/"
+
     # Specify the full path of the .dat file
-    instructionFilePath = "../output_dir/instructions.dat"
+    instructionFilePath = address + "instructions.dat"
 
     # Initialize an empty list to store the string variables
     string_variables = []
