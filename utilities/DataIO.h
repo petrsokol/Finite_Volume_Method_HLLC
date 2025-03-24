@@ -25,18 +25,20 @@ public:
   updatePointValues (const MeshParams & mp, const std::vector<Cell> & cells, std::vector<Point> & points);
 
   static void
-  exportPointsToCSV (const MeshParams & mp, std::vector<Point> & updatedPoints, const std::filesystem::path & dir,
-                     const std::string & name);
+  exportPointsToCSV (const MeshParams & mp, std::vector<Point> & updatedPoints, const std::string & name,
+                     const std::filesystem::path & dir = "");
 
   static void
-  exportWallPointsToDat (const MeshParams & mp, std::vector<Point> & updatedPoints, const std::filesystem::path & dir,
-                         const std::string & name);
+  exportWallPointsToDat (const MeshParams & mp, std::vector<Point> & updatedPoints, const std::string & name,
+                         const std::filesystem::path & dir = "");
 
   static void
-  exportMachWallToDat (std::vector<Point> & updatedPoints, const std::filesystem::path & dir, const std::string & name,
-                       int bottomStart, int topStart, int len);
+  exportMachWallToDat (std::vector<Point> & updatedPoints, const std::string & name, int bottomStart,
+                       int topStart, int len, const std::filesystem::path & dir = "");
 
-  static void exportVectorToDat (const std::vector<double> & vector, const std::filesystem::path & dir, const std::string & name);
+  static void
+  exportVector (const std::vector<double> & vector, const std::string & name,
+                const std::filesystem::path & dir = "");
 
   static void updateCorners (const MeshParams & mp, std::vector<Point> & points, int l, double mach, double cp);
 

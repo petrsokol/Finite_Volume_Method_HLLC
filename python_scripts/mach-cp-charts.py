@@ -1,8 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
+
+# get address
+address = sys.argv[1] + "/"
 
 # Specify the full path of the .dat file
-instructionFilePath = "../output_dir/instructions.dat"
+instructionFilePath = address + "instructions.dat"
 
 # Initialize an empty list to store the string variables
 string_variables = []

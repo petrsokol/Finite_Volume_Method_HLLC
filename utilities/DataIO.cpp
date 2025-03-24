@@ -67,8 +67,9 @@ std::string DataIO::getTimeStamp ()
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void DataIO::exportPointsToCSV(const MeshParams &mp, std::vector<Point> &updatedPoints,
-                               const std::filesystem::path & dir, const std::string &name) {
+void DataIO::exportPointsToCSV (const MeshParams & mp, std::vector<Point> & updatedPoints, const std::string & name,
+                                const std::filesystem::path & dir)
+{
     // Open the file stream
     std::filesystem::path filePath = dir / name;
     std::ofstream stream(filePath);
@@ -91,8 +92,8 @@ void DataIO::exportPointsToCSV(const MeshParams &mp, std::vector<Point> &updated
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 void
-DataIO::exportMachWallToDat (std::vector<Point> & updatedPoints, const std::filesystem::path & dir, const std::string & name,
-                             int bottomStart, int topStart, int len)
+DataIO::exportMachWallToDat (std::vector<Point> & updatedPoints, const std::string & name, int bottomStart,
+                             int topStart, int len, const std::filesystem::path & dir)
 {
   // open the stream
   std::ofstream stream(dir / name);
@@ -165,8 +166,8 @@ DataIO::exportMachWallToDat (std::vector<Point> & updatedPoints, const std::file
  * @param name
  */
 void
-DataIO::exportWallPointsToDat (const MeshParams & mp, std::vector<Point> & updatedPoints, const std::filesystem::path & dir,
-                               const std::string & name)
+DataIO::exportWallPointsToDat (const MeshParams & mp, std::vector<Point> & updatedPoints, const std::string & name,
+                               const std::filesystem::path & dir)
 {
   // open the stream
   std::filesystem::path filePath = dir / name;
@@ -182,7 +183,8 @@ DataIO::exportWallPointsToDat (const MeshParams & mp, std::vector<Point> & updat
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void DataIO::exportVectorToDat (const std::vector<double> & vector, const std::filesystem::path & dir, const std::string & name)
+void DataIO::exportVector (const std::vector<double> & vector, const std::string & name,
+                           const std::filesystem::path & dir)
 {
     // Open the file stream
     std::filesystem::path filePath = dir / name;
@@ -194,7 +196,7 @@ void DataIO::exportVectorToDat (const std::vector<double> & vector, const std::f
     }
     stream.close();
 
-    std::cout << "DataIO::exportVectorToDat - Exported dat files to: " << filePath << "\n";
+    std::cout << "DataIO::exportVector - Exported dat files to: " << filePath << "\n";
 }
 
 

@@ -4,6 +4,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <utility>
 #include "Mesh.h"
 #include "../utilities/DataIO.h"
 #include "../utilities/Instructions.h"
@@ -27,8 +28,8 @@ Mesh::Mesh (const std::string & pointMeshDir, const std::string & pointMeshFileN
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-Mesh::Mesh (const std::string & name, const std::string & completeDir, const MeshParams & mp) :
-        mp(mp), name(name)
+Mesh::Mesh (std::string  name, const std::string & completeDir, const MeshParams & mp) :
+        mp(mp), name(std::move(name))
 {
   Mesh::points = Point::loadPointsFromFile(completeDir, mp);
   Mesh::faces = Interface::createFaces(points, mp);
@@ -39,7 +40,6 @@ Mesh::Mesh (const std::string & name, const std::string & completeDir, const Mes
 
 Mesh::Mesh (const std::string & completeDir, const MeshParams & mp) : Mesh("unnamedMesh", completeDir, mp)
 {
-
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -51,24 +51,11 @@ void Mesh::centroidsToVertices ()
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void Mesh::exportPointsToCSV (const std::filesystem::path & dir, const std::string & name)
+void Mesh::exportPoints (const std::filesystem::path & dir, const std::string & fileName)
 {
-  try {
-    // Ensure the directory exists
-    if (!std::filesystem::exists(dir)) {
-      // Create parent directories if needed
-      std::cerr << "Mesh::exportPointsToCSV - directory does not exist, creating..." << std::endl;
-      std::filesystem::create_directories(dir);
-    }
-
     // Create the full file path
-    std::filesystem::path filePath = dir / name;
-
-    // Open the file stream
+    std::filesystem::path filePath = dir / fileName;
     std::ofstream stream(filePath);
-    if (!stream) {
-      throw std::ios_base::failure("Failed to open file: " + filePath.string());
-    }
 
     // Write the header
     stream << DataIO::CSV_HEADER;
@@ -83,15 +70,11 @@ void Mesh::exportPointsToCSV (const std::filesystem::path & dir, const std::stri
 
     stream.close();
     std::cout << "Exported CSV to: " << filePath << "\n";
-
-  } catch (const std::exception &e) {
-    std::cerr << "Error exporting CSV: " << e.what() << "\n";
-  }
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void Mesh::exportResults (const std::string & parentDir, const std::string & childDir)
+void Mesh::getResults (const std::string & parentDir, const std::string & childDir)
 {
   // navigate to directory and create a subdirectory
   try {
@@ -105,38 +88,61 @@ void Mesh::exportResults (const std::string & parentDir, const std::string & chi
   } catch (const std::filesystem::filesystem_error &e) {
     std::cerr << "Filesystem error: " << e.what() << "\n";
   }
+  // set current path to child directory
+  std::filesystem::current_path(childDir);
 
   // export data for ParaView
-  exportPointsToCSV(childDir, Instructions::verticesName);
+  exportPoints(childDir, Instructions::verticesName);
 
   // export data for Mach and c_p along bottom wall
-  DataIO::exportWallPointsToDat(mp, points, childDir, Instructions::wallName);
+  DataIO::exportWallPointsToDat(mp, points, Instructions::wallName);
 
   // export data for rezi chart
-  DataIO::exportVectorToDat(reziVec, childDir, Instructions::reziName);
+  DataIO::exportVector(reziVec, Instructions::reziName);
 
   // export timers
-  DataIO::exportVectorToDat(Timer::reziTimer, childDir, "reziTimer.dat");
-  DataIO::exportVectorToDat(Timer::computeSchemeTimer, childDir, "computeSchemeTimer.dat");
-  DataIO::exportVectorToDat(Timer::cellDtTimer, childDir, "cellDtTimer.dat");
-  DataIO::exportVectorToDat(Timer::updateCellsTimer, childDir, "updateCellsTimer.dat");
-  DataIO::exportVectorToDat(Timer::boundsIteratorTimer, childDir, "boundsIteratorTimer.dat");
+  DataIO::exportVector(Timer::reziTimer, "reziTimer.dat");
+  DataIO::exportVector(Timer::computeSchemeTimer, "computeSchemeTimer.dat");
+  DataIO::exportVector(Timer::cellDtTimer, "cellDtTimer.dat");
+  DataIO::exportVector(Timer::updateCellsTimer, "updateCellsTimer.dat");
+  DataIO::exportVector(Timer::boundsIteratorTimer, "boundsIteratorTimer.dat");
 
   // export Mach values along both walls (GAMM)
   int topWallStart = mp.WALL_START + mp.X_POINTS * (mp.Y_INNER_POINTS - 1);
-  DataIO::exportMachWallToDat(points, childDir, "GAMM_bot_wall.dat",
+  DataIO::exportMachWallToDat(points, "GAMM_bot_wall.dat",
                               mp.WALL_START, topWallStart, mp.WALL_LENGTH);
 
-  Instructions::generateInstructions(childDir);
+
+  auto path = std::filesystem::current_path();
+
+  // todo needs to be redone
+  Instructions::generateInstructions(path);
+
+  /*
+   * python3 path/generate_results.py {path of child dir} {json s názvama, schématama, rychlostma, ...}
+   * generate_results.py -> soubor subskriptů / funkcí na různý grafy
+   */
+
+  /*
   int val;
-  val = std::system("python3 ../post_processing_python_scripts/mach-cp-charts.py");
-  val = std::system("python3 ../post_processing_python_scripts/rezi-chart.py");
-  val = std::system("python3 ../post_processing_python_scripts/timer-chart.py");
-  val = std::system("python3 ../post_processing_python_scripts/paraView-macro-minimal.py");
-  val = std::system("python3 /mnt/c/python/BP_Python_Charts/OpenFoam-multiple-wall-visualiser.py "
-                    "/mnt/c/cpp/BP/GAMM/output_dir/ "
-                    "/home/sokolpe1/OpenFOAM/myFoam/tutorials/myLusgsFoam/transonicChannel/20000/Ma "
-                    "/mnt/c/cpp/BP/GAMM/output_dir/GAMM_bot_wall.dat");
+  std::string c1 = "python3 ../../GAMM/python_scripts/mach-cp-charts.py " + path.string();
+  val = std::system(c1.c_str());
+
+  std::string c2 = "python3 ../../GAMM/python_scripts/rezi-chart.py " + path.string();
+  val = std::system(c2.c_str());
+
+  std::string c3 = "python3 ../../GAMM/python_scripts/timer-chart.py " + path.string();
+  val = std::system(c3.c_str());
+
+  std::string c4 = "python3 ../../GAMM/python_scripts/paraView-macro-minimal.py " + path.string();
+  val = std::system(c4.c_str());
+
+  std::string c5 = "python3 /mnt/c/python/BP_Python_Charts/OpenFoam-multiple-wall-visualiser.py "
+                   "/mnt/c/cpp/BP/GAMM/output_dir/ "
+                   "/home/sokolpe1/OpenFOAM/myFoam/tutorials/myLusgsFoam/transonicChannel/20000/Ma "
+                   "/mnt/c/cpp/BP/GAMM/output_dir/GAMM_bot_wall.dat";
+  val = std::system(c5.c_str());
+   */
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -144,7 +150,7 @@ void Mesh::exportResults (const std::string & parentDir, const std::string & chi
 void Mesh::exportResults (const std::string & parentDir)
 {
   std::string timeStamp = DataIO::getTimeStamp();
-  exportResults(parentDir, timeStamp);
+  getResults(parentDir, timeStamp);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
