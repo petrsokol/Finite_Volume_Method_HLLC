@@ -184,6 +184,7 @@ CMakeFiles/GAMM.dir/main.cpp.o: /mnt/c/cpp/BP/GAMM/main.cpp \
  /usr/include/c++/13/tr1/poly_hermite.tcc \
  /usr/include/c++/13/tr1/poly_laguerre.tcc \
  /usr/include/c++/13/tr1/riemann_zeta.tcc \
+ /usr/lib/gcc/x86_64-linux-gnu/13/include/omp.h \
  /mnt/c/cpp/BP/GAMM/structures/Conservative.h \
  /mnt/c/cpp/BP/GAMM/fluid_dynamics/Def.h \
  /mnt/c/cpp/BP/GAMM/fluid_dynamics/../structures/Conservative.h \

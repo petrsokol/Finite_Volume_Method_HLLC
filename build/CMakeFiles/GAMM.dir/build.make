@@ -352,6 +352,8 @@ GAMM: CMakeFiles/GAMM.dir/geometry/MeshParams.cpp.o
 GAMM: CMakeFiles/GAMM.dir/utilities/Timer.cpp.o
 GAMM: CMakeFiles/GAMM.dir/build.make
 GAMM: CMakeFiles/GAMM.dir/compiler_depend.ts
+GAMM: /usr/lib/gcc/x86_64-linux-gnu/13/libgomp.so
+GAMM: /usr/lib/x86_64-linux-gnu/libpthread.a
 GAMM: CMakeFiles/GAMM.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/mnt/c/cpp/BP/GAMM/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Linking CXX executable GAMM"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/GAMM.dir/link.txt --verbose=$(VERBOSE)

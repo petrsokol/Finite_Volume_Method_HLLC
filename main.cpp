@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath>
+#include <omp.h>
 #include "structures/Conservative.h"
 #include "fluid_dynamics/Def.h"
 #include "fluid_dynamics/Scheme.h"
@@ -11,6 +12,18 @@
 
 int main ()
 {
+  // parallel testing section
+  #pragma omp parallel default(none) shared(std::cout)
+  {
+    std::cout << "pragma testing, thread num: " << omp_get_thread_num() << " of " << omp_get_num_threads() << "threads" <<  std::endl;
+  }
+
+  #if DEBUG_MODE
+  std::cout << "running in debug mode." << std::endl;
+  #endif
+
+
+
   Instructions::createName();
 
   /*------------------------------------------------------------------------------------------------------------------*/
@@ -42,8 +55,8 @@ int main ()
   /*------------------------------------------------------------------------------------------------------------------*/
   // RUN EXPERIMENT
   // todo jeden parametr - struct
-  Scheme::runExperiment(gamm, Scheme::HLL, GAMM::updateBounds, Def::wInitial,
-                -15, 2000, 0.7, false);
+  Scheme::runExperiment(naca, Scheme::HLL, NACA::updateBounds, Def::wInitial,
+                -15, 30000, 0.7, false);
 
   gamm.exportResults("../../GAMM_results");
 
@@ -51,6 +64,7 @@ int main ()
 
   std::cout << "program ended at " << DataIO::getTime() << std::endl;
   std::cout << "nashledanou" << std::endl;
+
   return 0;
 }
 

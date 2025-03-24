@@ -5,7 +5,7 @@
 #include <cmath>
 #include "Def.h"
 
-bool Def::isNaca = false;
+bool Def::isNaca = true;
 bool Def::isHLLC = true;
 bool Def::isSecOrd = true;
 bool Def::isSetByMach = false;

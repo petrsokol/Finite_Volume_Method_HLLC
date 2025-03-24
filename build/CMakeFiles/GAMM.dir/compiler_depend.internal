@@ -1273,6 +1273,7 @@ CMakeFiles/GAMM.dir/fluid_dynamics/Scheme.cpp.o
  /usr/include/x86_64-linux-gnu/sys/select.h
  /usr/include/x86_64-linux-gnu/sys/single_threaded.h
  /usr/include/x86_64-linux-gnu/sys/types.h
+ /usr/lib/gcc/x86_64-linux-gnu/13/include/omp.h
  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h
  /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h
  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
@@ -2573,6 +2574,7 @@ CMakeFiles/GAMM.dir/main.cpp.o
  /usr/include/x86_64-linux-gnu/sys/select.h
  /usr/include/x86_64-linux-gnu/sys/single_threaded.h
  /usr/include/x86_64-linux-gnu/sys/types.h
+ /usr/lib/gcc/x86_64-linux-gnu/13/include/omp.h
  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h
  /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h
  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
@@ -3867,8 +3869,10 @@ GAMM
  /usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o
  /usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a
  /usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so
+ /usr/lib/gcc/x86_64-linux-gnu/13/libgomp.so
  /usr/lib/gcc/x86_64-linux-gnu/13/libstdc++.so
  /usr/lib/x86_64-linux-gnu/libc_nonshared.a
+ /usr/lib/x86_64-linux-gnu/libpthread.a
  /mnt/c/cpp/BP/GAMM/build/CMakeFiles/GAMM.dir/fluid_dynamics/Bound.cpp.o
  /mnt/c/cpp/BP/GAMM/build/CMakeFiles/GAMM.dir/fluid_dynamics/Def.cpp.o
  /mnt/c/cpp/BP/GAMM/build/CMakeFiles/GAMM.dir/fluid_dynamics/GAMM.cpp.o

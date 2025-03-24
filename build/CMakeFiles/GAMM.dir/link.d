@@ -19,6 +19,8 @@ GAMM: \
   CMakeFiles/GAMM.dir/geometry/Mesh.cpp.o \
   CMakeFiles/GAMM.dir/geometry/MeshParams.cpp.o \
   CMakeFiles/GAMM.dir/utilities/Timer.cpp.o \
+  /usr/lib/gcc/x86_64-linux-gnu/13/libgomp.so \
+  /usr/lib/x86_64-linux-gnu/libpthread.a \
   /usr/lib/gcc/x86_64-linux-gnu/13/libstdc++.so \
   /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libm.so \
   /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libm.so \
@@ -86,6 +88,10 @@ CMakeFiles/GAMM.dir/geometry/Mesh.cpp.o:
 CMakeFiles/GAMM.dir/geometry/MeshParams.cpp.o:
 
 CMakeFiles/GAMM.dir/utilities/Timer.cpp.o:
+
+/usr/lib/gcc/x86_64-linux-gnu/13/libgomp.so:
+
+/usr/lib/x86_64-linux-gnu/libpthread.a:
 
 /usr/lib/gcc/x86_64-linux-gnu/13/libstdc++.so:
 

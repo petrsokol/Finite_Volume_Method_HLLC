@@ -1268,6 +1268,7 @@ CMakeFiles/GAMM.dir/fluid_dynamics/Scheme.cpp.o: /mnt/c/cpp/BP/GAMM/fluid_dynami
   /usr/include/x86_64-linux-gnu/sys/select.h \
   /usr/include/x86_64-linux-gnu/sys/single_threaded.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/omp.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
@@ -2562,6 +2563,7 @@ CMakeFiles/GAMM.dir/main.cpp.o: /mnt/c/cpp/BP/GAMM/main.cpp \
   /usr/include/x86_64-linux-gnu/sys/select.h \
   /usr/include/x86_64-linux-gnu/sys/single_threaded.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/omp.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
@@ -3849,8 +3851,10 @@ GAMM: /lib/x86_64-linux-gnu/libc.so.6 \
   /usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o \
   /usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a \
   /usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so \
+  /usr/lib/gcc/x86_64-linux-gnu/13/libgomp.so \
   /usr/lib/gcc/x86_64-linux-gnu/13/libstdc++.so \
   /usr/lib/x86_64-linux-gnu/libc_nonshared.a \
+  /usr/lib/x86_64-linux-gnu/libpthread.a \
   CMakeFiles/GAMM.dir/fluid_dynamics/Bound.cpp.o \
   CMakeFiles/GAMM.dir/fluid_dynamics/Def.cpp.o \
   CMakeFiles/GAMM.dir/fluid_dynamics/GAMM.cpp.o \
@@ -3894,11 +3898,17 @@ CMakeFiles/GAMM.dir/fluid_dynamics/Def.cpp.o:
 
 CMakeFiles/GAMM.dir/fluid_dynamics/Bound.cpp.o:
 
+/usr/lib/x86_64-linux-gnu/libpthread.a:
+
 /usr/lib/gcc/x86_64-linux-gnu/13/libstdc++.so:
+
+/usr/lib/gcc/x86_64-linux-gnu/13/libgomp.so:
 
 /usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so:
 
 /usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o:
+
+/usr/lib/x86_64-linux-gnu/libc.so:
 
 /usr/include/x86_64-linux-gnu/bits/fp-fast.h:
 
@@ -4536,6 +4546,8 @@ CMakeFiles/GAMM.dir/utilities/Timer.cpp.o:
 
 /usr/include/x86_64-linux-gnu/c++/13/bits/time_members.h:
 
+/usr/lib/gcc/x86_64-linux-gnu/13/include/omp.h:
+
 /usr/include/c++/13/bits/requires_hosted.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h:
@@ -4589,5 +4601,3 @@ CMakeFiles/GAMM.dir/structures/Conservative.cpp.o:
 /lib/x86_64-linux-gnu/libm.so.6:
 
 /lib64/ld-linux-x86-64.so.2:
-
-/usr/lib/x86_64-linux-gnu/libc.so:

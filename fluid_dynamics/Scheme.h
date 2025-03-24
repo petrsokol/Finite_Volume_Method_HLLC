@@ -52,15 +52,17 @@ public:
   {
     // iterate over all *inner* interfaces
     int xLim = 2 * mp.X_INNER + 1;
+    #pragma omp parallel for collapse(2) default(none) shared(mp, cells, faces, scheme, xLim)
     for (int j = 0; j < mp.Y_INNER; ++j) {
       for (int i = 0; i < xLim; ++i) {
         int k = 2 * (mp.FIRST_INNER + j * mp.X_CELLS) + i;
-        //todo statická funkce
+        // todo šablony?
         updateInterface(cells, faces.at(k), scheme);
       }
     }
 
     // iterate over top row - only horizontal interfaces
+    #pragma omp parallel for default(none) shared(mp, cells, faces, scheme)
     for (int i = 0; i < mp.X_INNER; ++i) {
       int k = 2 * (mp.FIRST_INNER + mp.Y_INNER * mp.X_CELLS + i) + 1;
       updateInterface(cells, faces.at(k), scheme);
@@ -125,7 +127,7 @@ public:
       Timer::reziTimer.           push_back(std::chrono::duration<double, std::milli>(t5 - t4).count());
       Timer::updateCellsTimer.    push_back(std::chrono::duration<double, std::milli>(t6 - t5).count());
 
-      if (reps % 50 == 0) std::cout << "reps: " << std::setw(5) << reps << ", rezi: " << rezi << std::endl;
+      if (reps % 200 == 0) std::cout << "reps: " << std::setw(5) << reps << ", rezi: " << rezi << std::endl;
     }
 
     auto end = std::chrono::high_resolution_clock::now();
@@ -135,9 +137,6 @@ public:
     /*
      * todo
      *  nepředávej tolik parametrů
-     *  zkus paralelizovat co jde
-     *  ať funguje cmake
-     *
      */
 
     // update points

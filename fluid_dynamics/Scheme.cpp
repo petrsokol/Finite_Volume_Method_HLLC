@@ -3,6 +3,7 @@
 //
 
 #include <cmath>
+#include <omp.h>
 #include "Scheme.h"
 #include "Def.h"
 #include "Bound.h"
@@ -11,9 +12,10 @@
 
 void Scheme::updateCellDT (std::vector<Cell> & cells, double CFL, bool useGlobalTimeStep)
 {
-  // todo paralelizace
+
   double globalDT = 1e9;
 
+  #pragma omp parallel for default(none) shared(cells, CFL, useGlobalTimeStep, globalDT)
   for (auto & cell: cells) {
     Primitive pv(cell.w);
 
@@ -98,6 +100,7 @@ double Scheme::computeRezi (const MeshParams & mp, const std::vector<Cell> & cel
 {
   double res = 0;
 
+  #pragma omp parallel for reduction(+:res) collapse(2) default(none) shared(mp, cells)
   for (int j = 0; j < mp.Y_INNER; ++j) {
     for (int i = 0; i < mp.X_INNER; ++i) {
       int k = mp.FIRST_INNER + i + j * mp.X_CELLS;
@@ -112,6 +115,7 @@ double Scheme::computeRezi (const MeshParams & mp, const std::vector<Cell> & cel
 
 void Scheme::updateCells (const MeshParams & mp, std::vector<Cell> & cells)
 {
+  #pragma omp parallel for default(none) shared (mp, cells)
   for (int i = 0; i < mp.TOTAL_INNER; ++i) {
     int k = mp.innerIndex(i);
     cells.at(k).w += cells.at(k).rezi;
@@ -241,7 +245,7 @@ double Scheme::centroidDistance (const Cell & c1, const Cell & c2)
 
 void Scheme::setInitialCondition (std::vector<Cell> & cells, const Conservative & wInitial)
 {
-  for (auto & cell : cells)
+  for (auto & cell: cells)
     cell.w = wInitial;
 }
 
