@@ -12,7 +12,6 @@
 #include "../geometry/Cell.h"
 #include "../geometry/Interface.h"
 #include "../utilities/DataIO.h"
-#include "../utilities/Instructions.h"
 #include "../geometry/Mesh.h"
 #include "../structures/Primitive.h"
 #include "../utilities/Timer.h"
@@ -141,38 +140,6 @@ public:
 
     // update points
     DataIO::updatePointValues(mesh.mp, mesh.cells, mesh.points);
-
-    // export data for ParaView
-    DataIO::exportPointsToCSV(mesh.mp, mesh.points, Instructions::dataInput, Instructions::verticesName);
-
-    // export data for Mach and c_p along bottom wall
-    DataIO::exportWallPointsToDat(mesh.mp, mesh.points, Instructions::dataInput, Instructions::wallName);
-
-    // export data for rezi chart
-    DataIO::exportVector(mesh.reziVec, Instructions::dataInput, Instructions::reziName);
-
-    // export timers
-    DataIO::exportVector(Timer::reziTimer, Instructions::dataInput, "reziTimer.dat");
-    DataIO::exportVector(Timer::computeSchemeTimer, Instructions::dataInput, "computeSchemeTimer.dat");
-    DataIO::exportVector(Timer::cellDtTimer, Instructions::dataInput, "cellDtTimer.dat");
-    DataIO::exportVector(Timer::updateCellsTimer, Instructions::dataInput, "updateCellsTimer.dat");
-    DataIO::exportVector(Timer::boundsIteratorTimer, Instructions::dataInput, "boundsIteratorTimer.dat");
-
-    // export Mach values along both walls (GAMM)
-    int topWallStart = mesh.mp.WALL_START + mesh.mp.X_POINTS * (mesh.mp.Y_INNER_POINTS - 1);
-    DataIO::exportMachWallToDat(mesh.points, Instructions::dataInput, mesh.mp.WALL_START, topWallStart,
-                                mesh.mp.WALL_LENGTH, "GAMM_bot_wall.dat");
-
-    Instructions::generateInstructions();
-    int val;
-    val = std::system("python3 ../python_scripts/mach-cp-charts.py");
-    val = std::system("python3 ../python_scripts/rezi-chart.py");
-    val = std::system("python3 ../python_scripts/timer-chart.py");
-    val = std::system("python3 ../python_scripts/paraView-macro-minimal.py");
-    val = std::system("python3 /mnt/c/python/BP_Python_Charts/OpenFoam-multiple-wall-visualiser.py "
-                      "/mnt/c/cpp/BP/GAMM/output_dir/ "
-                      "/home/sokolpe1/OpenFOAM/myFoam/tutorials/myLusgsFoam/transonicChannel/20000/Ma "
-                      "/mnt/c/cpp/BP/GAMM/output_dir/GAMM_bot_wall.dat");
   }
 
   /*------------------------------------------------------------------------------------------------------------------*/

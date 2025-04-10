@@ -240,8 +240,6 @@ CMakeFiles/GAMM.dir/main.cpp.o: /mnt/c/cpp/BP/GAMM/main.cpp \
  /usr/include/c++/13/bits/fs_path.h /usr/include/c++/13/codecvt \
  /usr/include/c++/13/bits/fs_dir.h /usr/include/c++/13/bits/fs_ops.h \
  /mnt/c/cpp/BP/GAMM/fluid_dynamics/../utilities/../geometry/Cell.h \
- /mnt/c/cpp/BP/GAMM/fluid_dynamics/../utilities/Instructions.h \
- /mnt/c/cpp/BP/GAMM/fluid_dynamics/../utilities/../geometry/Point.h \
  /mnt/c/cpp/BP/GAMM/fluid_dynamics/../geometry/Mesh.h \
  /mnt/c/cpp/BP/GAMM/fluid_dynamics/../geometry/Cell.h \
  /mnt/c/cpp/BP/GAMM/fluid_dynamics/../geometry/Interface.h \
@@ -250,7 +248,5 @@ CMakeFiles/GAMM.dir/main.cpp.o: /mnt/c/cpp/BP/GAMM/main.cpp \
  /mnt/c/cpp/BP/GAMM/fluid_dynamics/../structures/Conservative.h \
  /mnt/c/cpp/BP/GAMM/fluid_dynamics/../utilities/Timer.h \
  /mnt/c/cpp/BP/GAMM/fluid_dynamics/NACA.h \
- /mnt/c/cpp/BP/GAMM/utilities/DataIO.h \
- /mnt/c/cpp/BP/GAMM/utilities/Instructions.h \
- /mnt/c/cpp/BP/GAMM/geometry/Mesh.h \
+ /mnt/c/cpp/BP/GAMM/utilities/DataIO.h /mnt/c/cpp/BP/GAMM/geometry/Mesh.h \
  /mnt/c/cpp/BP/GAMM/fluid_dynamics/GAMM.h

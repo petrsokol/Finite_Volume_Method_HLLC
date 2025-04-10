@@ -211,6 +211,4 @@ CMakeFiles/GAMM.dir/geometry/Mesh.cpp.o: \
  /usr/include/c++/13/iostream /mnt/c/cpp/BP/GAMM/geometry/Interface.h \
  /mnt/c/cpp/BP/GAMM/geometry/../utilities/DataIO.h \
  /mnt/c/cpp/BP/GAMM/geometry/../utilities/../geometry/Cell.h \
- /mnt/c/cpp/BP/GAMM/geometry/../utilities/Instructions.h \
- /mnt/c/cpp/BP/GAMM/geometry/../utilities/../geometry/Point.h \
  /mnt/c/cpp/BP/GAMM/geometry/../utilities/Timer.h

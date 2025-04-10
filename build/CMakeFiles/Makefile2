@@ -85,12 +85,12 @@ clean: CMakeFiles/GAMM.dir/clean
 CMakeFiles/GAMM.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/GAMM.dir/build.make CMakeFiles/GAMM.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/GAMM.dir/build.make CMakeFiles/GAMM.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/mnt/c/cpp/BP/GAMM/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18 "Built target GAMM"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/mnt/c/cpp/BP/GAMM/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17 "Built target GAMM"
 .PHONY : CMakeFiles/GAMM.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/GAMM.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/cpp/BP/GAMM/build/CMakeFiles 18
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/cpp/BP/GAMM/build/CMakeFiles 17
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/GAMM.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/cpp/BP/GAMM/build/CMakeFiles 0
 .PHONY : CMakeFiles/GAMM.dir/rule
@@ -102,7 +102,7 @@ GAMM: CMakeFiles/GAMM.dir/rule
 # codegen rule for target.
 CMakeFiles/GAMM.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/GAMM.dir/build.make CMakeFiles/GAMM.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/mnt/c/cpp/BP/GAMM/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18 "Finished codegen for target GAMM"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/mnt/c/cpp/BP/GAMM/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17 "Finished codegen for target GAMM"
 .PHONY : CMakeFiles/GAMM.dir/codegen
 
 # clean rule for target.
