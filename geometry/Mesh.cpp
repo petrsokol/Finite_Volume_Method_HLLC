@@ -7,7 +7,6 @@
 #include <utility>
 #include "Mesh.h"
 #include "../utilities/DataIO.h"
-#include "../utilities/Instructions.h"
 #include "../utilities/Timer.h"
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -104,13 +103,13 @@ void Mesh::exportResults (const std::string & parentDir, const std::string & chi
   auto childDirPath = std::filesystem::current_path();
 
   // export data for ParaView
-  exportPoints(Instructions::verticesName);
+  exportPoints("paraview_vertices.csv");
 
   // export data for Mach and c_p along bottom wall
-  DataIO::exportWallPointsToDat(mp, points, Instructions::wallName);
+  DataIO::exportWallPointsToDat(mp, points, "wall_points.dat");
 
   // export data for rezi chart
-  DataIO::exportVector(reziVec, Instructions::reziName);
+  DataIO::exportVector(reziVec, "rezi_vector.dat");
 
   // export timers
   DataIO::exportVector(Timer::reziTimer, "reziTimer.dat");
@@ -123,16 +122,6 @@ void Mesh::exportResults (const std::string & parentDir, const std::string & chi
   int topWallStart = mp.WALL_START + mp.X_POINTS * (mp.Y_INNER_POINTS - 1);
   DataIO::exportMachWallToDat(points, "GAMM_bot_wall.dat",
                               mp.WALL_START, topWallStart, mp.WALL_LENGTH);
-
-
-  std::filesystem::path pythonScriptsPath = "/mnt/c/cpp/BP/GAMM/python_scripts";
-
-
-
-
-
-  // todo needs to be redone
-  // Instructions::generateInstructions(path);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

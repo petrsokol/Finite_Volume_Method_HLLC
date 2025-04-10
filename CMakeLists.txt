@@ -33,8 +33,6 @@ add_executable(GAMM main.cpp
         utilities/DataIO.h
         fluid_dynamics/GAMM.cpp
         fluid_dynamics/GAMM.h
-        utilities/Instructions.cpp
-        utilities/Instructions.h
         geometry/Mesh.cpp
         geometry/Mesh.h
         geometry/MeshParams.cpp

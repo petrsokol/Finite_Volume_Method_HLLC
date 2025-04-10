@@ -5,7 +5,6 @@
 #include "fluid_dynamics/Scheme.h"
 #include "fluid_dynamics/NACA.h"
 #include "utilities/DataIO.h"
-#include "utilities/Instructions.h"
 #include "geometry/Mesh.h"
 #include "fluid_dynamics/GAMM.h"
 
@@ -27,8 +26,6 @@ int main ()
   std::filesystem::path fullInputPath = "/mnt/c/cpp/BP/GAMM/files";
   std::filesystem::path fullOutputPath = "/mnt/c/cpp/BP/GAMM_results";
 
-  Instructions::createName();
-
   // BOUNDARY CONDITIONS
   // set conditions by rho, p_in, alpha, p_out
   Def::setConditions(1, 1, 0, 0.737);
@@ -41,15 +38,15 @@ int main ()
   Mesh naca("naca", fullInputPath / "nacaMesh.dat", nacaMP);
 
   // gamm mesh
-  MeshParams gammMP(150, 50, GAMM::WALL_START, GAMM::WALL_LENGTH);
-  Mesh gamm("gamm", fullInputPath / "gammMesh.dat", gammMP);
+  // MeshParams gammMP(150, 50, GAMM::WALL_START, GAMM::WALL_LENGTH);
+  // Mesh gamm("gamm", fullInputPath / "gammMesh.dat", gammMP);
 
 
   // RUN EXPERIMENT
-  Scheme::runExperiment(naca, Scheme::HLL, NACA::updateBounds, Def::wInitial, -15, 2000, 0.7, false);
+  Scheme::runExperiment(naca, Scheme::HLL, NACA::updateBounds, Def::wInitial, -15, 10000, 0.7, false);
 
   // export results
-  gamm.exportResults(fullOutputPath.string());
+  naca.exportResults(fullOutputPath.string());
 
 
   /*------------------------------------------------------------------------------------------------------------------*/

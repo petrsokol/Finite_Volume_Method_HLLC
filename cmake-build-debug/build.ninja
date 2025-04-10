@@ -127,12 +127,6 @@ build CMakeFiles/GAMM.dir/fluid_dynamics/GAMM.cpp.obj: CXX_COMPILER__GAMM_unscan
   OBJECT_DIR = CMakeFiles\GAMM.dir
   OBJECT_FILE_DIR = CMakeFiles\GAMM.dir\fluid_dynamics
 
-build CMakeFiles/GAMM.dir/utilities/Instructions.cpp.obj: CXX_COMPILER__GAMM_unscanned_Debug C$:/cpp/BP/GAMM/utilities/Instructions.cpp || cmake_object_order_depends_target_GAMM
-  DEP_FILE = CMakeFiles\GAMM.dir\utilities\Instructions.cpp.obj.d
-  FLAGS = -Wall -O3 -fopenmp -g -DDEBUG_MODE -fopenmp -std=gnu++23 -fdiagnostics-color=always -fopenmp
-  OBJECT_DIR = CMakeFiles\GAMM.dir
-  OBJECT_FILE_DIR = CMakeFiles\GAMM.dir\utilities
-
 build CMakeFiles/GAMM.dir/geometry/Mesh.cpp.obj: CXX_COMPILER__GAMM_unscanned_Debug C$:/cpp/BP/GAMM/geometry/Mesh.cpp || cmake_object_order_depends_target_GAMM
   DEP_FILE = CMakeFiles\GAMM.dir\geometry\Mesh.cpp.obj.d
   FLAGS = -Wall -O3 -fopenmp -g -DDEBUG_MODE -fopenmp -std=gnu++23 -fdiagnostics-color=always -fopenmp
@@ -159,7 +153,7 @@ build CMakeFiles/GAMM.dir/utilities/Timer.cpp.obj: CXX_COMPILER__GAMM_unscanned_
 #############################################
 # Link the executable GAMM.exe
 
-build GAMM.exe: CXX_EXECUTABLE_LINKER__GAMM_Debug CMakeFiles/GAMM.dir/main.cpp.obj CMakeFiles/GAMM.dir/geometry/Point.cpp.obj CMakeFiles/GAMM.dir/geometry/Cell.cpp.obj CMakeFiles/GAMM.dir/geometry/Interface.cpp.obj CMakeFiles/GAMM.dir/fluid_dynamics/Def.cpp.obj CMakeFiles/GAMM.dir/structures/Conservative.cpp.obj CMakeFiles/GAMM.dir/structures/Primitive.cpp.obj CMakeFiles/GAMM.dir/structures/Vector.cpp.obj CMakeFiles/GAMM.dir/fluid_dynamics/Scheme.cpp.obj CMakeFiles/GAMM.dir/fluid_dynamics/Bound.cpp.obj CMakeFiles/GAMM.dir/fluid_dynamics/NACA.cpp.obj CMakeFiles/GAMM.dir/utilities/DataIO.cpp.obj CMakeFiles/GAMM.dir/fluid_dynamics/GAMM.cpp.obj CMakeFiles/GAMM.dir/utilities/Instructions.cpp.obj CMakeFiles/GAMM.dir/geometry/Mesh.cpp.obj CMakeFiles/GAMM.dir/geometry/MeshParams.cpp.obj CMakeFiles/GAMM.dir/utilities/Timer.cpp.obj
+build GAMM.exe: CXX_EXECUTABLE_LINKER__GAMM_Debug CMakeFiles/GAMM.dir/main.cpp.obj CMakeFiles/GAMM.dir/geometry/Point.cpp.obj CMakeFiles/GAMM.dir/geometry/Cell.cpp.obj CMakeFiles/GAMM.dir/geometry/Interface.cpp.obj CMakeFiles/GAMM.dir/fluid_dynamics/Def.cpp.obj CMakeFiles/GAMM.dir/structures/Conservative.cpp.obj CMakeFiles/GAMM.dir/structures/Primitive.cpp.obj CMakeFiles/GAMM.dir/structures/Vector.cpp.obj CMakeFiles/GAMM.dir/fluid_dynamics/Scheme.cpp.obj CMakeFiles/GAMM.dir/fluid_dynamics/Bound.cpp.obj CMakeFiles/GAMM.dir/fluid_dynamics/NACA.cpp.obj CMakeFiles/GAMM.dir/utilities/DataIO.cpp.obj CMakeFiles/GAMM.dir/fluid_dynamics/GAMM.cpp.obj CMakeFiles/GAMM.dir/geometry/Mesh.cpp.obj CMakeFiles/GAMM.dir/geometry/MeshParams.cpp.obj CMakeFiles/GAMM.dir/utilities/Timer.cpp.obj
   FLAGS = -Wall -O3 -fopenmp -g -DDEBUG_MODE -fopenmp
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\GAMM.dir

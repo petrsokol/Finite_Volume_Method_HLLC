@@ -10,7 +10,6 @@
 #include "../structures/Primitive.h"
 #include "../fluid_dynamics/NACA.h"
 #include "../fluid_dynamics/Scheme.h"
-#include "Instructions.h"
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
@@ -199,8 +198,6 @@ void DataIO::exportVector (const std::vector<double> & vector, const std::string
     std::cout << "DataIO::exportVector - Exported dat files to: " << filePath << "\n";
 }
 
-
-
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -251,9 +248,6 @@ DataIO::updatePointValues (const MeshParams & mp, const std::vector<Cell> & cell
 
   // averaging values based on number of contributors
   averagePointValues(points);
-
-  // find bounds for good visualisation in ParaView
-  Instructions::getMinMaxValues(points);
 }
 
 
