@@ -1,7 +1,6 @@
 #include <iostream>
 #include <cmath>
 #include <omp.h>
-#include "structures/Conservative.h"
 #include "fluid_dynamics/Def.h"
 #include "fluid_dynamics/Scheme.h"
 #include "fluid_dynamics/NACA.h"
@@ -15,50 +14,43 @@ int main ()
   // parallel testing section
   #pragma omp parallel default(none) shared(std::cout)
   {
-    std::cout << "pragma testing, thread num: " << omp_get_thread_num() << " of " << omp_get_num_threads() << "threads" <<  std::endl;
+    std::cout << "pragma testing, thread num: "
+              << omp_get_thread_num() << " of "
+              << omp_get_num_threads() << "threads"
+              << std::endl;
   }
 
   #if DEBUG_MODE
-  std::cout << "running in debug mode." << std::endl;
+    std::cout << "running in debug mode." << std::endl;
   #endif
 
-
+  std::filesystem::path fullInputPath = "/mnt/c/cpp/BP/GAMM/files";
+  std::filesystem::path fullOutputPath = "/mnt/c/cpp/BP/GAMM_results";
 
   Instructions::createName();
 
-  /*------------------------------------------------------------------------------------------------------------------*/
   // BOUNDARY CONDITIONS
   // set conditions by rho, p_in, alpha, p_out
   Def::setConditions(1, 1, 0, 0.737);
-  // todo mach 0.8 nesymetricky, 0.5 symm
 
-  // set conditions by mach number and angle of attack
-  //  Def::setConditions(0.85, 0);
-
-  /*------------------------------------------------------------------------------------------------------------------*/
   // INITIAL CONDITIONS
   Def::setInitialCondition(Def::wInitialSubsonic);
 
-  /*------------------------------------------------------------------------------------------------------------------*/
-  // PREPARE MESH
-  // todo add boundsIterator as a mesh parameter, since it makes sense
-
   // naca mesh
   MeshParams nacaMP(260, 60, NACA::WALL_START, NACA::WALL_LENGTH);
-  Mesh naca("naca", "../files/nacaMesh.dat", nacaMP);
+  Mesh naca("naca", fullInputPath / "nacaMesh.dat", nacaMP);
 
   // gamm mesh
   MeshParams gammMP(150, 50, GAMM::WALL_START, GAMM::WALL_LENGTH);
-  Mesh gamm("gamm", "../files/gammMesh.dat", gammMP);
+  Mesh gamm("gamm", fullInputPath / "gammMesh.dat", gammMP);
 
 
-  /*------------------------------------------------------------------------------------------------------------------*/
   // RUN EXPERIMENT
-  // todo jeden parametr - struct
-  Scheme::runExperiment(naca, Scheme::HLL, NACA::updateBounds, Def::wInitial,
-                -15, 30000, 0.7, false);
+  Scheme::runExperiment(naca, Scheme::HLL, NACA::updateBounds, Def::wInitial, -15, 2000, 0.7, false);
 
-  gamm.exportResults("../../GAMM_results");
+  // export results
+  gamm.exportResults(fullOutputPath.string());
+
 
   /*------------------------------------------------------------------------------------------------------------------*/
 
@@ -69,12 +61,18 @@ int main ()
 }
 
 /*
- * UŽITEČNÝ KLÁVESOVÝ ZKRATKY V CLION
+ * UŽITEČNÝ KLÁVESOVÝ ZKRATKY V CLIONu
  * ctrl + shift + V - historie vkládání
  * ctrl + p - nápověda parametrů funkce
+ * ctrl + w - označování větší a větší části kódu
+ *
+ *   // set conditions by mach number and angle of attack
+ *   //  Def::setConditions(0.85, 0);
  *
  * todo
  *    better naming system for different cases
  *    save data to folders instead of the current dumpsterfire mess
- *    paralellize
+ *    add boundsIterator as a mesh parameter, since it makes sense
+ *    mach 0.8 nesymetricky, 0.5 symm
+ *    jeden parametr - struct
  */

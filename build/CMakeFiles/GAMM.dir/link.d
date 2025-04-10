@@ -2,6 +2,7 @@ GAMM: \
   /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/Scrt1.o \
   /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/crti.o \
   /usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o \
+  /usr/lib/gcc/x86_64-linux-gnu/13/crtoffloadbegin.o \
   CMakeFiles/GAMM.dir/main.cpp.o \
   CMakeFiles/GAMM.dir/geometry/Point.cpp.o \
   CMakeFiles/GAMM.dir/geometry/Cell.cpp.o \
@@ -27,12 +28,14 @@ GAMM: \
   /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libm.so \
   /lib/x86_64-linux-gnu/libm.so.6 \
   /lib/x86_64-linux-gnu/libmvec.so.1 \
+  /usr/lib/gcc/x86_64-linux-gnu/13/libgomp.so \
   /usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so \
   /usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so \
   /usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so \
   /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libgcc_s.so.1 \
   /usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a \
   /usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a \
+  /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libpthread.a \
   /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libc.so \
   /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libc.so \
   /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libc.so \
@@ -47,6 +50,7 @@ GAMM: \
   /usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a \
   /usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o \
   /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/crtn.o \
+  /usr/lib/gcc/x86_64-linux-gnu/13/crtoffloadend.o \
   /lib64/ld-linux-x86-64.so.2
 
 /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/Scrt1.o:
@@ -54,6 +58,8 @@ GAMM: \
 /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/crti.o:
 
 /usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o:
+
+/usr/lib/gcc/x86_64-linux-gnu/13/crtoffloadbegin.o:
 
 CMakeFiles/GAMM.dir/main.cpp.o:
 
@@ -105,6 +111,8 @@ CMakeFiles/GAMM.dir/utilities/Timer.cpp.o:
 
 /lib/x86_64-linux-gnu/libmvec.so.1:
 
+/usr/lib/gcc/x86_64-linux-gnu/13/libgomp.so:
+
 /usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so:
 
 /usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so:
@@ -116,6 +124,8 @@ CMakeFiles/GAMM.dir/utilities/Timer.cpp.o:
 /usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a:
 
 /usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a:
+
+/usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libpthread.a:
 
 /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libc.so:
 
@@ -144,5 +154,7 @@ CMakeFiles/GAMM.dir/utilities/Timer.cpp.o:
 /usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o:
 
 /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/crtn.o:
+
+/usr/lib/gcc/x86_64-linux-gnu/13/crtoffloadend.o:
 
 /lib64/ld-linux-x86-64.so.2:

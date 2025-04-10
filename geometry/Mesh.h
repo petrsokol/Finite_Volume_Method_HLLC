@@ -30,12 +30,14 @@ public:
 
   Mesh (const std::string & completeDir, const MeshParams & mp);
 
-  Mesh (std::string  name, const std::string & completeDir, const MeshParams & mp);
+  Mesh (const std::string & name, const std::string & completeDir, const MeshParams & mp);
+
+  Mesh (const std::string & name, const std::filesystem::path & path, const MeshParams & mp);
 
   // methods
   void exportResults (const std::string & parentDir);
 
-  void getResults (const std::string & parentDir, const std::string & childDir);
+  void exportResults (const std::string & parentDir, const std::string & childDir);
 
   void produceParaViewPictures(const std::string & dir, const std::string & name);
 
@@ -58,7 +60,7 @@ private:
 
   void centroidsToVertices();
 
-  void exportPoints (const std::filesystem::path & dir, const std::string & fileName);
+  void exportPoints (const std::string & fileName, const std::filesystem::path & dir = "");
 };
 
 

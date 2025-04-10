@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = 
 
-CXX_FLAGS = -Wall -O3 -O3 -DNDEBUG -std=gnu++23 -fopenmp
+CXX_FLAGS = -Wall -O3 -fopenmp -O3 -DNDEBUG -std=gnu++23 -fopenmp
 

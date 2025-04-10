@@ -28,12 +28,19 @@ Mesh::Mesh (const std::string & pointMeshDir, const std::string & pointMeshFileN
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-Mesh::Mesh (std::string  name, const std::string & completeDir, const MeshParams & mp) :
-        mp(mp), name(std::move(name))
+Mesh::Mesh (const std::string & name, const std::string & completeDir, const MeshParams & mp) :
+        mp(mp), name(name)
 {
   Mesh::points = Point::loadPointsFromFile(completeDir, mp);
   Mesh::faces = Interface::createFaces(points, mp);
   Mesh::cells = Cell::createCells(points, mp);
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+Mesh::Mesh (const std::string & name, const std::filesystem::path & path, const MeshParams & mp)
+ : Mesh(name, path.string(), mp)
+{
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -51,7 +58,7 @@ void Mesh::centroidsToVertices ()
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void Mesh::exportPoints (const std::filesystem::path & dir, const std::string & fileName)
+void Mesh::exportPoints (const std::string & fileName, const std::filesystem::path & dir)
 {
     // Create the full file path
     std::filesystem::path filePath = dir / fileName;
@@ -74,8 +81,11 @@ void Mesh::exportPoints (const std::filesystem::path & dir, const std::string & 
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void Mesh::getResults (const std::string & parentDir, const std::string & childDir)
+void Mesh::exportResults (const std::string & parentDir, const std::string & childDir)
 {
+  // get the path this program is running in
+  auto programPath = std::filesystem::current_path();
+
   // navigate to directory and create a subdirectory
   try {
     // Change the working directory
@@ -88,11 +98,13 @@ void Mesh::getResults (const std::string & parentDir, const std::string & childD
   } catch (const std::filesystem::filesystem_error &e) {
     std::cerr << "Filesystem error: " << e.what() << "\n";
   }
+
   // set current path to child directory
   std::filesystem::current_path(childDir);
+  auto childDirPath = std::filesystem::current_path();
 
   // export data for ParaView
-  exportPoints(childDir, Instructions::verticesName);
+  exportPoints(Instructions::verticesName);
 
   // export data for Mach and c_p along bottom wall
   DataIO::exportWallPointsToDat(mp, points, Instructions::wallName);
@@ -113,36 +125,14 @@ void Mesh::getResults (const std::string & parentDir, const std::string & childD
                               mp.WALL_START, topWallStart, mp.WALL_LENGTH);
 
 
-  auto path = std::filesystem::current_path();
+  std::filesystem::path pythonScriptsPath = "/mnt/c/cpp/BP/GAMM/python_scripts";
+
+
+
+
 
   // todo needs to be redone
-  Instructions::generateInstructions(path);
-
-  /*
-   * python3 path/generate_results.py {path of child dir} {json s názvama, schématama, rychlostma, ...}
-   * generate_results.py -> soubor subskriptů / funkcí na různý grafy
-   */
-
-  /*
-  int val;
-  std::string c1 = "python3 ../../GAMM/python_scripts/mach-cp-charts.py " + path.string();
-  val = std::system(c1.c_str());
-
-  std::string c2 = "python3 ../../GAMM/python_scripts/rezi-chart.py " + path.string();
-  val = std::system(c2.c_str());
-
-  std::string c3 = "python3 ../../GAMM/python_scripts/timer-chart.py " + path.string();
-  val = std::system(c3.c_str());
-
-  std::string c4 = "python3 ../../GAMM/python_scripts/paraView-macro-minimal.py " + path.string();
-  val = std::system(c4.c_str());
-
-  std::string c5 = "python3 /mnt/c/python/BP_Python_Charts/OpenFoam-multiple-wall-visualiser.py "
-                   "/mnt/c/cpp/BP/GAMM/output_dir/ "
-                   "/home/sokolpe1/OpenFOAM/myFoam/tutorials/myLusgsFoam/transonicChannel/20000/Ma "
-                   "/mnt/c/cpp/BP/GAMM/output_dir/GAMM_bot_wall.dat";
-  val = std::system(c5.c_str());
-   */
+  // Instructions::generateInstructions(path);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -150,7 +140,7 @@ void Mesh::getResults (const std::string & parentDir, const std::string & childD
 void Mesh::exportResults (const std::string & parentDir)
 {
   std::string timeStamp = DataIO::getTimeStamp();
-  getResults(parentDir, timeStamp);
+  exportResults(parentDir, timeStamp);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
