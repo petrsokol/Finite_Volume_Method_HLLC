@@ -5,6 +5,8 @@
 #include <cmath>
 #include "Cell.h"
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 Cell::Cell (const Point & a, const Point & b, const Point & c, const Point & d)
 {
   double x1 = 1.0 / 3 * (a.x + b.x + c.x);
@@ -28,6 +30,8 @@ Cell::Cell (const Point & a, const Point & b, const Point & c, const Point & d)
   Cell::eta = Vector((c + d) / 2, (a + b) / 2);
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 std::vector<Cell> Cell::createCells (const std::vector<Point> & points, const MeshParams & mp)
 {
   std::vector<Cell> res;
@@ -46,8 +50,12 @@ std::vector<Cell> Cell::createCells (const std::vector<Point> & points, const Me
   return res;
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 void Cell::toString () const
 {
   std::cout << "Cell"  << ": area = " << area << ", T = [" << tx << ";" << ty << "], W = ";
   w.toString();
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/
