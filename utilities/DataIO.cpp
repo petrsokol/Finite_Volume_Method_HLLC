@@ -262,8 +262,9 @@ void DataIO::averagePointValues (std::vector<Point> & points)
   for (auto & point: points) {
     if (point.contributors == 0)
       continue;
-    for (auto & value: point.values)
+    for (auto & value: point.values) {
       value = value / point.contributors;
+    }
   }
 }
 
