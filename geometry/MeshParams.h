@@ -32,7 +32,7 @@ public:
   // index of the first inner cell or first inner vertex
   const int FIRST_INNER, FIRST_INNER_POINT;
 
-  // start index and wall length
+  // start index and wall len
   const int WALL_LENGTH, WALL_START;
 
   // functions for index conversion between points and cells

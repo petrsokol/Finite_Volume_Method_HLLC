@@ -23,8 +23,8 @@ MeshParams::MeshParams (int X_INNER, int Y_INNER, int GHOST_LAYERS, int WALL_STA
         FIRST_INNER(GHOST_LAYERS * X_CELLS + GHOST_LAYERS),
         FIRST_INNER_POINT(GHOST_LAYERS * X_POINTS + GHOST_LAYERS),
 
-        // initialize wall start index and wall length
-        // wall length is set by the number of cells -> + 1 converts it to a number of points
+        // initialize wall start index and wall len
+        // wall len is set by the number of cells -> + 1 converts it to a number of points
         WALL_START(FIRST_INNER_POINT + WALL_START), WALL_LENGTH(WALL_LENGTH + 1)
 {
 

@@ -22,8 +22,8 @@ void Scheme::updateCellDT (std::vector<Cell> & cells, double CFL, bool useGlobal
     double u_xi = fabs(pv.u * cell.xi.ux + pv.v * cell.xi.uy);
     double u_eta = fabs(pv.u * cell.eta.ux + pv.v * cell.eta.uy);
 
-    double d_xi = (u_xi + pv.c) / cell.xi.length;
-    double d_eta = (u_eta + pv.c) / cell.eta.length;
+    double d_xi = (u_xi + pv.c) / cell.xi.len;
+    double d_eta = (u_eta + pv.c) / cell.eta.len;
 
     double res = CFL / (d_xi + d_eta);
 

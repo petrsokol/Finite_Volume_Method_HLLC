@@ -5,10 +5,7 @@
 #include <cmath>
 #include "Vector.h"
 
-Vector::Vector(Point a, Point b) {
-    Vector::x = b.x - a.x;
-    Vector::y = b.y - a.y;
-    Vector::length = sqrt(pow(x, 2) + pow(y, 2));
-    ux = x / length;
-    uy = y / length;
+Vector::Vector (Point a, Point b)
+        : x(b.x - a.x), y(b.y - a.y), len(hypot(x, y)), ux(x / len), uy(y / len)
+{
 }

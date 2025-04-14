@@ -12,7 +12,7 @@ class Vector
 {
 
 public:
-  double x, y, length, ux, uy;
+  double x, y, len, ux, uy;
 
   // Constructors
   Vector () = default;
