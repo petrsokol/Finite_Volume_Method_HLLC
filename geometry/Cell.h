@@ -11,24 +11,39 @@
 #include "../structures/Conservative.h"
 #include "Point.h"
 
+struct GeometryData
+{
+  double area = 0;
+  double tx = 0;
+  double ty = 0;
+  Vector xi{}, eta{};
+};
+
 class Cell
 {
 
 public:
-  // todo make const attributes truly const
-  Conservative w, rezi;
-  double area, tx, ty;
+  // const attributes
+  const double area;
+  const double tx, ty;
+  const Vector xi{}, eta{};
+
+  // variable attributes
+  Conservative w;
+  Conservative rezi;
   double dt;
-  Vector xi{}, eta{};
 
   // Constructor
-  Cell () = default;
-
   Cell (const Point & a, const Point & b, const Point & c, const Point & d);
+
+  explicit Cell (GeometryData gd);
 
   static std::vector<Cell> createCells (const std::vector<Point> & points, const MeshParams & mp);
 
   void toString () const;
+
+private:
+  static GeometryData computeGeometry(const Point & a, const Point & b, const Point & c, const Point & d);
 };
 
 

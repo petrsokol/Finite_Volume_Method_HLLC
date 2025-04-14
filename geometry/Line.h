@@ -12,11 +12,9 @@ class Line
 {
 public:
   // attributes
-  double len, nx, ny;
+  const double len, nx, ny;
 
   // constructors
-  Line () = default;
-
   Line (double len, double nx, double ny);
 
   Line (const Point & a, const Point & b);

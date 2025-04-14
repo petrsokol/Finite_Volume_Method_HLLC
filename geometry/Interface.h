@@ -14,12 +14,10 @@ class Interface
 {
 
 public:
-  Line line;
-  int ll, l, r, rr;
+  const Line line;
+  const int ll, l, r, rr;
 
   // Constructors
-  Interface () = default;
-
   Interface (double len, double nx, double ny, int ll, int l, int r, int rr);
 
   // methods
