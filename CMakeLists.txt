@@ -39,6 +39,8 @@ add_executable(GAMM main.cpp
         geometry/MeshParams.h
         utilities/Timer.cpp
         utilities/Timer.h
+        geometry/Line.h
+        geometry/Line.cpp
 )
 
 set(TARGETS

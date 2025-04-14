@@ -6,10 +6,14 @@
 #include <cmath>
 #include <iostream>
 
-void Interface::toString () const
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+Interface::Interface (double len, double nx, double ny, int ll, int l, int r, int rr)
+        : line(len, nx, ny), ll(ll), l(l), r(r), rr(rr)
 {
-  printf("face between cells [ %d : %d : %d : %d ], len = %f, normal vector (%f, %f)\n", ll, l, r, rr, len, nx, ny);
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/
 
 std::vector<Interface> Interface::createFaces (const std::vector<Point> & points, const MeshParams & mp)
 {
@@ -33,6 +37,8 @@ std::vector<Interface> Interface::createFaces (const std::vector<Point> & points
   return res;
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 Interface Interface::horizontalFace (int k, const Point & a, const Point & b, const MeshParams & mp)
 {
   // prepare indices for horizontal face (vertical stack of cells)
@@ -53,6 +59,8 @@ Interface Interface::horizontalFace (int k, const Point & a, const Point & b, co
   // construct result
   return {len, nx, ny, ll, l, r, rr};
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/
 
 Interface Interface::verticalFace (int k, const Point & a, const Point & c)
 {
@@ -75,6 +83,32 @@ Interface Interface::verticalFace (int k, const Point & a, const Point & c)
   return {len, nx, ny, ll, l, r, rr};
 }
 
-Interface::Interface (double len, double nx, double ny, int ll, int l, int r, int rr)
-        : len(len), nx(nx), ny(ny), ll(ll), l(l), r(r), rr(rr)
-{}
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+const double & Interface::len () const
+{
+  return line.len;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+const double & Interface::nx () const
+{
+  return line.nx;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+const double & Interface::ny () const
+{
+  return line.ny;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+void Interface::toString () const
+{
+  printf("face between cells [ %d : %d : %d : %d ], len = %f, normal vector (%f, %f)\n", ll, l, r, rr, len(), nx(), ny());
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/

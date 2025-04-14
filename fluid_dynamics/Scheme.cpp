@@ -49,8 +49,8 @@ Conservative Scheme::HLL (const Interface & f, Conservative & wl, Conservative &
   Primitive pvl(wl);
   Primitive pvr(wr);
 
-  double ql = pvl.u * f.nx + pvl.v * f.ny;
-  double qr = pvr.u * f.nx + pvr.v * f.ny;
+  double ql = pvl.u * f.nx() + pvl.v * f.ny();
+  double qr = pvr.u * f.nx() + pvr.v * f.ny();
 
   double SL = fmin(ql - pvl.c, qr - pvr.c);
   double SR = fmax(ql + pvl.c, qr + pvr.c);
@@ -138,8 +138,8 @@ Conservative Scheme::HLLC (const Interface & f, Conservative & wl, Conservative 
   Primitive pvl(wl);
   Primitive pvr(wr);
 
-  double ql = pvl.u * f.nx + pvl.v * f.ny; // normálová rychlost
-  double qr = pvr.u * f.nx + pvr.v * f.ny; // DP - \tilde u
+  double ql = pvl.u * f.nx() + pvl.v * f.ny(); // normálová rychlost
+  double qr = pvr.u * f.nx() + pvr.v * f.ny(); // DP - \tilde u
 
   double q_bar = Scheme::bar(pvl.rho, pvr.rho, ql, qr); // viz Toro
   double h_bar = Scheme::bar(pvl.rho, pvr.rho, pvl.h, pvr.h);
@@ -181,8 +181,8 @@ Conservative Scheme::flux (Interface face, Conservative w, double q, double p)
   Conservative res{};
 
   res.r1 = w.r1 * q;
-  res.r2 = w.r2 * q + p * face.nx;
-  res.r3 = w.r3 * q + p * face.ny;
+  res.r2 = w.r2 * q + p * face.nx();
+  res.r3 = w.r3 * q + p * face.ny();
   res.r4 = (w.r4 + p) * q;
   return res;
 }
@@ -194,8 +194,8 @@ Conservative Scheme::fluxStar (Interface face, Conservative w, double q, double 
   Conservative res{};
 
   res.r1 = w.r1 * (S - q) + 0;
-  res.r2 = w.r2 * (S - q) + (p_star - p) * face.nx;
-  res.r3 = w.r3 * (S - q) + (p_star - p) * face.ny;
+  res.r2 = w.r2 * (S - q) + (p_star - p) * face.nx();
+  res.r3 = w.r3 * (S - q) + (p_star - p) * face.ny();
   res.r4 = w.r4 * (S - q) + p_star * SM - p * q;
   return res;
 }
@@ -275,7 +275,7 @@ double Scheme::computeMach (const Primitive & pv)
       cells.at(face.rr).rezi -= cells.at(face.rr).dt / cells.at(face.rr).area * flux * face.len;
 
       // create new flux
-      Conservative updatedFlux = Conservative(0, face.nx, face.ny, 0);
+      Conservative updatedFlux = Conservative(0, face.nx(), face.ny(), 0);
       double p_1 = Primitive::computePV(cells.at(k).w).p;
       double p_2 = Primitive::computePV(cells.at(k + Def::xCells).w).p;
       double p_w = 1.5 * p_1 - 0.5 * p_2;

@@ -297,6 +297,30 @@ geometry/Interface.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/GAMM.dir/build.make CMakeFiles/GAMM.dir/geometry/Interface.cpp.s
 .PHONY : geometry/Interface.cpp.s
 
+geometry/Line.o: geometry/Line.cpp.o
+.PHONY : geometry/Line.o
+
+# target to build an object file
+geometry/Line.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/GAMM.dir/build.make CMakeFiles/GAMM.dir/geometry/Line.cpp.o
+.PHONY : geometry/Line.cpp.o
+
+geometry/Line.i: geometry/Line.cpp.i
+.PHONY : geometry/Line.i
+
+# target to preprocess a source file
+geometry/Line.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/GAMM.dir/build.make CMakeFiles/GAMM.dir/geometry/Line.cpp.i
+.PHONY : geometry/Line.cpp.i
+
+geometry/Line.s: geometry/Line.cpp.s
+.PHONY : geometry/Line.s
+
+# target to generate assembly for a file
+geometry/Line.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/GAMM.dir/build.make CMakeFiles/GAMM.dir/geometry/Line.cpp.s
+.PHONY : geometry/Line.cpp.s
+
 geometry/Mesh.o: geometry/Mesh.cpp.o
 .PHONY : geometry/Mesh.o
 
@@ -543,6 +567,9 @@ help:
 	@echo "... geometry/Interface.o"
 	@echo "... geometry/Interface.i"
 	@echo "... geometry/Interface.s"
+	@echo "... geometry/Line.o"
+	@echo "... geometry/Line.i"
+	@echo "... geometry/Line.s"
 	@echo "... geometry/Mesh.o"
 	@echo "... geometry/Mesh.i"
 	@echo "... geometry/Mesh.s"

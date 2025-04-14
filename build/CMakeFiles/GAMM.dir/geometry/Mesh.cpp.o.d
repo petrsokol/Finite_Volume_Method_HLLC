@@ -209,6 +209,7 @@ CMakeFiles/GAMM.dir/geometry/Mesh.cpp.o: \
  /mnt/c/cpp/BP/GAMM/geometry/../structures/../geometry/Point.h \
  /mnt/c/cpp/BP/GAMM/geometry/../structures/Conservative.h \
  /usr/include/c++/13/iostream /mnt/c/cpp/BP/GAMM/geometry/Interface.h \
+ /mnt/c/cpp/BP/GAMM/geometry/Line.h \
  /mnt/c/cpp/BP/GAMM/geometry/../utilities/DataIO.h \
  /mnt/c/cpp/BP/GAMM/geometry/../utilities/../geometry/Cell.h \
  /mnt/c/cpp/BP/GAMM/geometry/../utilities/Timer.h

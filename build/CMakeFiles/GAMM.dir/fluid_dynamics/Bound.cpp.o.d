@@ -205,6 +205,7 @@ CMakeFiles/GAMM.dir/fluid_dynamics/Bound.cpp.o: \
  /usr/include/c++/13/bits/istream.tcc \
  /mnt/c/cpp/BP/GAMM/fluid_dynamics/../geometry/Point.h \
  /mnt/c/cpp/BP/GAMM/fluid_dynamics/../geometry/Interface.h \
+ /mnt/c/cpp/BP/GAMM/fluid_dynamics/../geometry/Line.h \
  /mnt/c/cpp/BP/GAMM/fluid_dynamics/Def.h \
  /mnt/c/cpp/BP/GAMM/fluid_dynamics/../structures/Conservative.h \
  /mnt/c/cpp/BP/GAMM/fluid_dynamics/../structures/Primitive.h \

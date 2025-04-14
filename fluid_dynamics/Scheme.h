@@ -177,8 +177,8 @@ private:
     Conservative flux = scheme(face, wl, wr);
 
     // add flux to cells neighboring the interface
-    cl.rezi -= cl.dt / cl.area * flux * face.len;
-    cr.rezi += cr.dt / cr.area * flux * face.len;
+    cl.rezi -= cl.dt / cl.area * flux * face.len();
+    cr.rezi += cr.dt / cr.area * flux * face.len();
   }
 
   /*------------------------------------------------------------------------------------------------------------------*/

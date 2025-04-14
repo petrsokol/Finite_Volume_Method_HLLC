@@ -77,8 +77,8 @@ Conservative Bound::updateWallCell (const Conservative & innerW, const Interface
 {
   double uInner = innerW.r2 / innerW.r1;
   double vInner = innerW.r3 / innerW.r1;
-  double nx = face.nx;
-  double ny = face.ny;
+  double nx = face.nx();
+  double ny = face.ny();
 
   Conservative outerW;
   outerW.r1 = innerW.r1;

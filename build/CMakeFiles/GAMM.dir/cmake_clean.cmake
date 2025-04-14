@@ -13,6 +13,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/GAMM.dir/geometry/Cell.cpp.o.d"
   "CMakeFiles/GAMM.dir/geometry/Interface.cpp.o"
   "CMakeFiles/GAMM.dir/geometry/Interface.cpp.o.d"
+  "CMakeFiles/GAMM.dir/geometry/Line.cpp.o"
+  "CMakeFiles/GAMM.dir/geometry/Line.cpp.o.d"
   "CMakeFiles/GAMM.dir/geometry/Mesh.cpp.o"
   "CMakeFiles/GAMM.dir/geometry/Mesh.cpp.o.d"
   "CMakeFiles/GAMM.dir/geometry/MeshParams.cpp.o"

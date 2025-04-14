@@ -140,7 +140,8 @@ CMakeFiles/GAMM.dir/geometry/Interface.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/types/error_t.h \
  /usr/include/c++/13/bits/charconv.h \
  /usr/include/c++/13/bits/basic_string.tcc \
- /mnt/c/cpp/BP/GAMM/geometry/MeshParams.h /usr/include/c++/13/cmath \
+ /mnt/c/cpp/BP/GAMM/geometry/MeshParams.h \
+ /mnt/c/cpp/BP/GAMM/geometry/Line.h /usr/include/c++/13/cmath \
  /usr/include/math.h /usr/include/x86_64-linux-gnu/bits/math-vector.h \
  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
