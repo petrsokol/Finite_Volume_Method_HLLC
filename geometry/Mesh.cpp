@@ -27,8 +27,8 @@ Mesh::Mesh (const std::string & pointMeshDir, const std::string & pointMeshFileN
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-Mesh::Mesh (const std::string & name, const std::string & completeDir, const MeshParams & mp) :
-        mp(mp), name(name)
+Mesh::Mesh (std::string  name, const std::string & completeDir, const MeshParams & mp) :
+        name(std::move(name)), mp(mp)
 {
   Mesh::points = Point::loadPointsFromFile(completeDir, mp);
   Mesh::faces = Interface::createFaces(points, mp);

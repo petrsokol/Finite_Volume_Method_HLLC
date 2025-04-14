@@ -30,7 +30,7 @@ public:
 
   Mesh (const std::string & completeDir, const MeshParams & mp);
 
-  Mesh (const std::string & name, const std::string & completeDir, const MeshParams & mp);
+  Mesh (std::string name, const std::string & completeDir, const MeshParams & mp);
 
   Mesh (const std::string & name, const std::filesystem::path & path, const MeshParams & mp);
 
