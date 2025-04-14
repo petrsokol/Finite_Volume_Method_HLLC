@@ -6,9 +6,9 @@
 #define GAMM_INTERFACE_H
 
 
-#include <unordered_map>
 #include "Point.h"
 #include "Line.h"
+#include "Cell.h"
 
 class Interface
 {

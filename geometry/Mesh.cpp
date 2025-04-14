@@ -18,11 +18,11 @@ Mesh::Mesh (const std::string & pointMeshDir, const std::string & pointMeshFileN
   // points
   Mesh::points = Point::loadPointsFromFile(pointMeshDir, pointMeshFileName, mp);
 
-  // faces
-  Mesh::faces = Interface::createFaces(points, mp);
-
   // cells
   Mesh::cells = Cell::createCells(points, mp);
+
+  // faces
+  Mesh::faces = Interface::createFaces(points, mp);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -31,8 +31,8 @@ Mesh::Mesh (std::string  name, const std::string & completeDir, const MeshParams
         name(std::move(name)), mp(mp)
 {
   Mesh::points = Point::loadPointsFromFile(completeDir, mp);
-  Mesh::faces = Interface::createFaces(points, mp);
   Mesh::cells = Cell::createCells(points, mp);
+  Mesh::faces = Interface::createFaces(points, mp);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

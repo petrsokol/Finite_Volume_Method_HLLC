@@ -24,7 +24,12 @@ GeometryData Cell::computeGeometry (const Point & a, const Point & b, const Poin
   Vector xi = Vector((a + d) / 2, (b + c) / 2);
   Vector eta = Vector((c + d) / 2, (a + b) / 2);
 
-  return {area, tx, ty, xi, eta};
+  Line l1(a.x, a.y, tx, ty);
+  Line l2(b.x, b.y, tx, ty);
+  Line l3(tx, ty, c.x, c.y);
+  Line l4(tx, ty, d.x, d.y);
+
+  return {area, tx, ty, xi, eta, l1, l2, l3, l4};
   // struct created according to chatgpt recommendation
 }
 
@@ -37,8 +42,9 @@ Cell::Cell (const Point & a, const Point & b, const Point & c, const Point & d)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-Cell::Cell (GeometryData gd)
-        : area(gd.area), tx(gd.tx), ty(gd.ty), xi(gd.xi), eta(gd.eta)
+Cell::Cell (GeometryData g)
+        : area(g.area), tx(g.tx), ty(g.ty), xi(g.xi), eta(g.eta),
+          l1(g.l1), l2(g.l2), l3(g.l3), l4(g.l4)
 {
   w = 0;
   rezi = 0;
@@ -69,7 +75,10 @@ std::vector<Cell> Cell::createCells (const std::vector<Point> & points, const Me
 
 void Cell::toString () const
 {
-  std::cout << "Cell" << ": area = " << area << ", T = [" << tx << ";" << ty << "], W = ";
+  std::cout << "Cell: "
+            << "area = " << area << ", "
+            << "T = [" << tx << ";" << ty << "], "
+            << "W = ";
   w.toString();
 }
 

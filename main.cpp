@@ -39,8 +39,13 @@ int main ()
     std::cout << "running in debug mode." << std::endl;
   #endif
 
-  std::filesystem::path fullInputPath = "/mnt/c/cpp/BP/GAMM/files";
-  std::filesystem::path fullOutputPath = "/mnt/c/cpp/BP/GAMM_results";
+  // windows paths
+  std::filesystem::path fullInputPath = "C:/cpp/BP/GAMM/files/";
+  std::filesystem::path fullOutputPath = "C:/cpp/BP/GAMM_results/";
+
+  // linux paths
+//  std::filesystem::path fullInputPath = "/mnt/c/cpp/BP/GAMM/files";
+//  std::filesystem::path fullOutputPath = "/mnt/c/cpp/BP/GAMM_results";
 
   // BOUNDARY CONDITIONS
   // set conditions by rho, p_in, alpha, p_out

@@ -10,6 +10,7 @@
 #include "../structures/Vector.h"
 #include "../structures/Conservative.h"
 #include "Point.h"
+#include "Line.h"
 
 struct GeometryData
 {
@@ -17,6 +18,7 @@ struct GeometryData
   double tx = 0;
   double ty = 0;
   Vector xi{}, eta{};
+  Line l1, l2, l3, l4;
 };
 
 class Cell
@@ -28,15 +30,21 @@ public:
   const double tx, ty;
   const Vector xi{}, eta{};
 
+  // const attributes for viscous terms
+  const Line l1, l2, l3, l4;
+
   // variable attributes
   Conservative w;
   Conservative rezi;
   double dt;
 
+  // variable attributes for viscous terms
+  
+
   // Constructor
   Cell (const Point & a, const Point & b, const Point & c, const Point & d);
 
-  explicit Cell (GeometryData gd);
+  explicit Cell (GeometryData g);
 
   static std::vector<Cell> createCells (const std::vector<Point> & points, const MeshParams & mp);
 
