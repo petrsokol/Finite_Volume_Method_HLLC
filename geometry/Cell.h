@@ -15,8 +15,10 @@ class Cell
 {
 
 public:
+  // todo make const attributes truly const
   Conservative w, rezi;
-  double area, tx, ty, dt;
+  double area, tx, ty;
+  double dt;
   Vector xi{}, eta{};
 
   // Constructor
