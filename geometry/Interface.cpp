@@ -50,7 +50,7 @@ Interface Interface::horizontalFace (int k, const Point & a, const Point & b, co
   // compute length of interface
   double lx = b.x - a.x;
   double ly = b.y - a.y;
-  double len = sqrt(lx * lx + ly * ly);
+  double len = hypot(lx, ly);
 
   // normal vector always points towards the RIGHT cell
   double nx = -(ly / len);
@@ -62,7 +62,7 @@ Interface Interface::horizontalFace (int k, const Point & a, const Point & b, co
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-Interface Interface::verticalFace (int k, const Point & a, const Point & c)
+Interface Interface::verticalFace (int k, const Point & a, const Point & d)
 {
   // prepare indices for vertical face (horizontal line of cells)
   int ll = k - 2;
@@ -71,9 +71,9 @@ Interface Interface::verticalFace (int k, const Point & a, const Point & c)
   int rr = k + 1;
 
   // compute length of interface
-  double lx = c.x - a.x;
-  double ly = c.y - a.y;
-  double len = sqrt(lx * lx + ly * ly);
+  double lx = d.x - a.x;
+  double ly = d.y - a.y;
+  double len = hypot(lx, ly);
 
   // normal vector always points towards the RIGHT cell
   double nx = ly / len;

@@ -33,7 +33,7 @@ public:
 private:
   static Interface horizontalFace (int k, const Point & a, const Point & b, const MeshParams & mp);
 
-  static Interface verticalFace (int k, const Point & a, const Point & c);
+  static Interface verticalFace (int k, const Point & a, const Point & d);
 };
 
 
