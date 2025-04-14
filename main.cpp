@@ -8,6 +8,22 @@
 #include "geometry/Mesh.h"
 #include "fluid_dynamics/GAMM.h"
 
+/*
+ * HOW TO RUN WITH POST PROCESSING
+ *
+ * (optional):
+ * /mnt/c/cpp/BP/GAMM/
+ * cmake -B build -S .
+ *
+ * to run the script:
+ * /mnt/c/cpp/BP/GAMM/build
+ * make
+ *
+ * to run the post-processing
+ * /mnt/c/cpp/BP/GAMM_results
+ * ./runPython 2025_04_14_09h36m/ naca
+ */
+
 int main ()
 {
   // parallel testing section
@@ -38,15 +54,15 @@ int main ()
   Mesh naca("naca", fullInputPath / "nacaMesh.dat", nacaMP);
 
   // gamm mesh
-  // MeshParams gammMP(150, 50, GAMM::WALL_START, GAMM::WALL_LENGTH);
-  // Mesh gamm("gamm", fullInputPath / "gammMesh.dat", gammMP);
+   MeshParams gammMP(150, 50, GAMM::WALL_START, GAMM::WALL_LENGTH);
+   Mesh gamm("gamm", fullInputPath / "gammMesh.dat", gammMP);
 
 
   // RUN EXPERIMENT
-  Scheme::runExperiment(naca, Scheme::HLL, NACA::updateBounds, Def::wInitial, -15, 10000, 0.7, false);
+  Scheme::runExperiment(gamm, Scheme::HLL, GAMM::updateBounds, Def::wInitial, -15, 5000, 0.7, false);
 
   // export results
-  naca.exportResults(fullOutputPath.string());
+  gamm.exportResults(fullOutputPath.string());
 
 
   /*------------------------------------------------------------------------------------------------------------------*/
@@ -67,9 +83,9 @@ int main ()
  *   //  Def::setConditions(0.85, 0);
  *
  * todo
- *    better naming system for different cases
- *    save data to folders instead of the current dumpsterfire mess
  *    add boundsIterator as a mesh parameter, since it makes sense
  *    mach 0.8 nesymetricky, 0.5 symm
  *    jeden parametr - struct
+ *    -- better naming system for different cases
+ *    -- save data to folders instead of the current dumpsterfire mess
  */
