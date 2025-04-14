@@ -6,11 +6,9 @@
 #include <iostream>
 #include "Point.h"
 
-const int Point::valueCount = 2;
-
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-Point::Point (double x, double y, int index) : x(x), y(y), values(valueCount, 0), contributors(0)
+Point::Point (double x, double y) : x(x), y(y), values(valueCount, 0), contributors(0)
 {}
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -24,21 +22,21 @@ void Point::toString () const
 
 Point Point::operator+ (Point other) const
 {
-  return {Point::x + other.x, Point::y + other.y, -1};
+  return {Point::x + other.x, Point::y + other.y};
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 Point Point::operator- (Point other) const
 {
-  return {Point::x - other.x, Point::y - other.y, -1};
+  return {Point::x - other.x, Point::y - other.y};
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 Point Point::operator* (double scalar) const
 {
-  return {Point::x * scalar, Point::y * scalar, -1};
+  return {Point::x * scalar, Point::y * scalar};
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -49,7 +47,7 @@ Point Point::operator/ (double scalar) const
     std::cerr << "Error: Division by zero\n";
     exit(EXIT_FAILURE);
   }
-  return {Point::x / scalar, Point::y / scalar, -1};
+  return {Point::x / scalar, Point::y / scalar};
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -67,12 +65,11 @@ std::vector<Point> Point::loadPointsFromFile (const std::string & completeDir, c
   std::ifstream input(completeDir);
   for (int j = 0; j < mp.Y_POINTS; ++j) {
     for (int i = 0; i < mp.X_POINTS; ++i) {
-      int k = i + j * mp.X_POINTS;
       double x;
       double y;
       input >> x;
       input >> y;
-      res.emplace_back(x, y, k);
+      res.emplace_back(x, y);
     }
   }
   std::cout << "Loaded " << res.size() << "points." << std::endl;
@@ -84,9 +81,7 @@ std::vector<Point> Point::loadPointsFromFile (const std::string & completeDir, c
 int Point::pointIndexToCellIndex (int i, int j, const MeshParams & mp)
 {
   int res;
-  if (i == mp.X_POINTS - 1)
-    res = -1;
-  else if (j == mp.Y_POINTS - 1)
+  if (i == mp.X_POINTS - 1 || j == mp.Y_POINTS - 1)
     res = -1;
   else
     res = i + j * mp.X_CELLS;

@@ -14,20 +14,32 @@ class Point
 {
 
 public:
-  static const int valueCount;
-  double x, y;
+  // point coordinates
+  const double x, y;
+
+  // attributes for post-processing
+  static constexpr int valueCount = 2;
   // values[0] -> mach
   // values[1] -> c_p
-  std::vector<double> values;
+  double values[valueCount];
   int contributors;
 
   // Constructor
-  Point (double x, double y, int index);
+  Point (double x, double y);
 
   // Methods
   void toString () const;
 
+  // methods that could be moved elsewhere
   void updateValues(double mach, double cp);
+
+  static std::vector<Point>
+  loadPointsFromFile (const std::string & dir, const std::string & file, const MeshParams & mp);
+
+  static std::vector<Point>
+  loadPointsFromFile (const std::string & completeDir, const MeshParams & mp);
+
+  static int pointIndexToCellIndex (int i, int j, const MeshParams & mp);
 
   // Overloaded operators
   Point operator+ (Point other) const;
@@ -37,14 +49,6 @@ public:
   Point operator* (double scalar) const;
 
   Point operator/ (double scalar) const;
-
-  static std::vector<Point>
-  loadPointsFromFile (const std::string & dir, const std::string & file, const MeshParams & mp);
-
-  static std::vector<Point>
-  loadPointsFromFile (const std::string & completeDir, const MeshParams & mp);
-
-  static int pointIndexToCellIndex (int i, int j, const MeshParams & mp);
 };
 
 
