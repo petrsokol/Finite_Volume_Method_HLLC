@@ -5,14 +5,15 @@
 #include <cmath>
 #include "Line.h"
 
-
+// normal direction behaves like a VERTICAL interface
+// if line points UP, normal vector points RIGHT
 Line::Line (const double ax, const double ay, const double bx, const double by)
-        : len(std::hypot(bx - ax, by - ay)), nx((by - ay) / len), ny((ax - bx) / len)
+        : len(std::hypot(bx - ax, by - ay)), nx((by - ay) / len), ny(-(bx - ax) / len)
 {
 }
 
-Line::Line (const Point & a, const Point & b)
-        : Line(a.x, a.y, b.x, b.y)
+Line::Line (const Point & start, const Point & end)
+        : Line(start.x, start.y, end.x, end.y)
 {
 }
 

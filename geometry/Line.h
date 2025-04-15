@@ -17,7 +17,7 @@ public:
   // constructors
   Line (double len, double nx, double ny);
 
-  Line (const Point & a, const Point & b);
+  Line (const Point & start, const Point & end);
 
   Line (double ax, double ay, double bx, double by);
 };
