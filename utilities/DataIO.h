@@ -22,11 +22,6 @@ public:
   static std::string getTimeStamp ();
 
   static void
-  updatePointValues (const MeshParams & mp, const std::vector<Cell> & cells, std::vector<Point> & points);
-
-  static void resetPointValues (std::vector<Point> & points);
-
-  static void
   exportWallPointsToDat (const MeshParams & mp, std::vector<Point> & points, const std::string & name,
                          const std::filesystem::path & dir = "");
 
@@ -38,9 +33,6 @@ public:
   exportVector (const std::vector<double> & vector, const std::string & name,
                 const std::filesystem::path & dir = "");
 
-  static void updateCorners (const MeshParams & mp, std::vector<Point> & points, int k, const Conservative & cellW);
-
-  static void averagePointValues (std::vector<Point> & points);
 };
 
 

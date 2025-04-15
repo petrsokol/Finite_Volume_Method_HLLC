@@ -258,6 +258,61 @@ double Scheme::computeMach (const Primitive & pv)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
+void Scheme::updatePoints (const MeshParams & mp, const std::vector<Cell> & cells, std::vector<Point> & points)
+{
+  // iterate over inner cells
+  for (int i = 0; i < mp.TOTAL_INNER; ++i) {
+    int k = mp.innerIndex(i);
+
+    // update the vertices of each cell
+    const Conservative & cellW = cells.at(k).w;
+    Scheme::updateCellVertices(mp, points, k, cellW);
+  }
+
+  // averaging values based on number of contributors
+  Scheme::averagePointValues(points);
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+void Scheme::updateCellVertices (const MeshParams & mp, std::vector<Point> & points, int k, const Conservative & cellW)
+{
+  int pointIndex = mp.cellIndexToPointIndex(k);
+
+  // bottom l corner
+  points.at(pointIndex).updateW(cellW);
+
+  // bottom r corner
+  points.at(pointIndex + 1).updateW(cellW);
+
+  // top l corner
+  points.at(pointIndex + mp.X_POINTS).updateW(cellW);
+
+  // top r corner
+  points.at(pointIndex + mp.X_POINTS + 1).updateW(cellW);
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+void Scheme::averagePointValues (std::vector<Point> & points)
+{
+  for (auto & point: points) {
+    if (point.contributors == 0)
+      continue;
+    point.w = point.w / point.contributors;
+  }
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+void Scheme::resetPoints (std::vector<Point> & points)
+{
+  for (auto & point: points)
+    point.resetW();
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 /*
    if (test && Def::isNaca) {
     for (int i = 0; i < NACA::WALL_LENGTH; ++i) {

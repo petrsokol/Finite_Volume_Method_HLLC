@@ -24,6 +24,10 @@ public:
 
   static void updateCells (const MeshParams & mp, std::vector<Cell> & cells);
 
+  static void updatePoints (const MeshParams & mp, const std::vector<Cell> & cells, std::vector<Point> & points);
+
+  static void resetPoints (std::vector<Point> & points);
+
   static double computeRezi (const MeshParams & mp, const std::vector<Cell> & cells);
 
   static double computeCP (const Primitive & pv);
@@ -32,15 +36,31 @@ public:
 
   static void setInitialCondition (std::vector<Cell> & cells, const Conservative & wInitial);
 
-  // numerical schemes
   static Conservative HLL (const Interface & f, Conservative & wl, Conservative & wr);
 
   static Conservative HLLC (const Interface & f, Conservative & wl, Conservative & wr);
 
-  // second order
   static Conservative minmod (Conservative a, Conservative b);
 
   static double minmod (double a, double b);
+
+private:
+  static Conservative flux (Interface face, Conservative w, double q, double p);
+
+  static Conservative fluxStar (Interface face, Conservative w, double q, double S, double SM, double p, double p_star);
+
+  static double bar (double rho_l, double rho_r, double vl, double vr);
+
+  static double centroidDistance (const Cell & c1, const Cell & c2);
+
+  static void computeW (Conservative & wl, Conservative & wr,
+                        const Cell & cll, const Cell & cl, const Cell & cr, const Cell & crr);
+
+  static void updateCellVertices (const MeshParams & mp, std::vector<Point> & points, int k, const Conservative & cellW);
+
+  static void averagePointValues (std::vector<Point> & points);
+
+public:
 
   /*------------------------------------------------------------------------------------------------------------------*/
 
@@ -116,6 +136,7 @@ public:
       mesh.reziVec.push_back(rezi);
       Scheme::updateCells(mesh.mp, mesh.cells);
 
+
       // timer 6
       auto t6 = std::chrono::high_resolution_clock::now();
 
@@ -139,24 +160,12 @@ public:
      */
 
     // update points
-    DataIO::updatePointValues(mesh.mp, mesh.cells, mesh.points);
+    Scheme::updatePointValues(mesh.mp, mesh.cells, mesh.points);
   }
 
   /*------------------------------------------------------------------------------------------------------------------*/
 
 
-private:
-  // support methods
-  static Conservative flux (Interface face, Conservative w, double q, double p);
-
-  static Conservative fluxStar (Interface face, Conservative w, double q, double S, double SM, double p, double p_star);
-
-  static double bar (double rho_l, double rho_r, double vl, double vr);
-
-  static double centroidDistance (const Cell & c1, const Cell & c2);
-
-  static void computeW (Conservative & wl, Conservative & wr,
-                        const Cell & cll, const Cell & cl, const Cell & cr, const Cell & crr);
 
   /*------------------------------------------------------------------------------------------------------------------*/
 
