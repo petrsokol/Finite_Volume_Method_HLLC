@@ -8,8 +8,8 @@
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-Interface::Interface (double len, double nx, double ny, int ll, int l, int r, int rr)
-        : line(len, nx, ny), ll(ll), l(l), r(r), rr(rr)
+Interface::Interface (double len, double nx, double ny, int ll, int l, int r, int rr, const Point & p1, const Point & p2)
+        : line(len, nx, ny), ll(ll), l(l), r(r), rr(rr), p1(p1), p2(p2)
 {
 }
 
@@ -27,9 +27,10 @@ std::vector<Interface> Interface::createFaces (const std::vector<Point> & points
       // vertical goes first - advantages in iteration over inner faces
       const Point & a = points.at(k);
       const Point & b = points.at(k + 1);
-      const Point & c = points.at(k + mp.X_POINTS);
+      const Point & d = points.at(k + mp.X_POINTS);
+
       int faceIndex = i + j * mp.X_CELLS;
-      res.emplace_back(verticalFace(faceIndex, a, c));
+      res.emplace_back(verticalFace(faceIndex, a, d));
       res.emplace_back(horizontalFace(faceIndex, a, b, mp));
     }
   }
@@ -57,7 +58,7 @@ Interface Interface::horizontalFace (int k, const Point & a, const Point & b, co
   double ny = (lx / len);
 
   // construct result
-  return {len, nx, ny, ll, l, r, rr};
+  return {len, nx, ny, ll, l, r, rr, a, b};
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -80,7 +81,7 @@ Interface Interface::verticalFace (int k, const Point & a, const Point & d)
   double ny = -(lx / len);
 
   // construct result
-  return {len, nx, ny, ll, l, r, rr};
+  return {len, nx, ny, ll, l, r, rr, a, d};
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

@@ -17,8 +17,12 @@ public:
   const Line line;
   const int ll, l, r, rr;
 
+  // attributes for viscous terms
+  const Point & p1; // left / bottom point
+  const Point & p2; // right / top point
+
   // Constructors
-  Interface (double len, double nx, double ny, int ll, int l, int r, int rr);
+  Interface (double len, double nx, double ny, int ll, int l, int r, int rr, const Point & p1, const Point & p2);
 
   // methods
   static std::vector<Interface> createFaces (const std::vector<Point> & points, const MeshParams & mp);
@@ -26,9 +30,11 @@ public:
   void toString () const;
 
   // forwarders
-  [[nodiscard]] const double & len() const;
-  [[nodiscard]] const double & nx() const;
-  [[nodiscard]] const double & ny() const;
+  [[nodiscard]] const double & len () const;
+
+  [[nodiscard]] const double & nx () const;
+
+  [[nodiscard]] const double & ny () const;
 
 private:
   static Interface horizontalFace (int k, const Point & a, const Point & b, const MeshParams & mp);
