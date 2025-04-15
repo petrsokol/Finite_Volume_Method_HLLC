@@ -7,6 +7,12 @@
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
+/*
+ * point distribution:
+ * D --- C
+ * |  T  |
+ * A --- B
+ */
 GeometryData Cell::computeGeometry (const Point & A, const Point & B, const Point & C, const Point & D)
 {
   Point T = Point::centroidQuadrilateral(A, B, C, D);

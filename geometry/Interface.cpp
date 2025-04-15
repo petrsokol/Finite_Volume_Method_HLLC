@@ -61,7 +61,7 @@ std::vector<Interface> Interface::createFaces (const std::vector<Point> & points
         res.emplace_back(constructVertical(faceIndex, C, T));
         res.emplace_back(constructHorizontal(faceIndex, C, R, mp));
       }
-      // proper interface
+        // proper interface
       else {
         const Point & LT = points.at(k + mp.X_POINTS - 1);
         const Point & T = points.at(k + mp.X_POINTS);
@@ -72,7 +72,7 @@ std::vector<Interface> Interface::createFaces (const std::vector<Point> & points
         const Point & B = points.at(k - mp.X_POINTS);
         const Point & RB = points.at(k - mp.X_POINTS + 1);
 
-        res.emplace_back(constructVerticalFromSixPoints(faceIndex, mp, L, C, R, LT, T, RT));
+        res.emplace_back(constructVerticalFromSixPoints(faceIndex, mp, L, C, R, RT, T, LT));
         res.emplace_back(constructHorizontalFromSixPoints(faceIndex, mp, B, RB, R, RT, T, C));
       }
     }
@@ -163,29 +163,29 @@ void Interface::toString () const
 
 /* point distribution:
  * E ... D
- * :  H  :
+ * :  R  :
  * F --- C
  * :  L  :
  * A ... B
  */
 Interface Interface::constructHorizontalFromSixPoints (int k, const MeshParams & mp,
-                                                       const Point & A, const Point B, const Point & C,
-                                                       const Point & D, const Point E, const Point & F)
+                                                       const Point & A, const Point & B, const Point & C,
+                                                       const Point & D, const Point & E, const Point & F)
 {
   // reversed order for correct normals
   Line line(C, F);
 
-  Point H = Point::centroidQuadrilateral(E, F, C, D);
+  Point R = Point::centroidQuadrilateral(E, F, C, D);
   Point L = Point::centroidQuadrilateral(A, B, C, F);
 
-  double area = Point::areaQuadrilateral(F, L, C, H);
+  double dualArea = Point::areaQuadrilateral(F, L, C, R);
 
   int ll = k - 2 * mp.X_CELLS;
   int l = k - mp.X_CELLS;
   int r = k;
   int rr = k + mp.X_CELLS;
 
-  return {line, ll, l, r, rr, F, C, area};
+  return {line, ll, l, r, rr, F, C, dualArea};
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -196,22 +196,22 @@ Interface Interface::constructHorizontalFromSixPoints (int k, const MeshParams &
  * A --- B --- C
  */
 Interface Interface::constructVerticalFromSixPoints (int k, const MeshParams & mp,
-                                                     const Point & A, const Point B, const Point & C,
-                                                     const Point & D, const Point E, const Point & F)
+                                                     const Point & A, const Point & B, const Point & C,
+                                                     const Point & D, const Point & E, const Point & F)
 {
   Line line(B, E);
 
   Point L = Point::centroidQuadrilateral(A, B, E, F);
   Point R = Point::centroidQuadrilateral(B, C, D, E);
 
-  double area = Point::areaQuadrilateral(B, R, E, L);
+  double dualArea = Point::areaQuadrilateral(L, B, R, E);
 
   int ll = k - 2;
   int l = k - 1;
   int r = k;
   int rr = k + 1;
 
-  return {line, ll, l, r, rr, B, E, area};
+  return {line, ll, l, r, rr, B, E, dualArea};
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

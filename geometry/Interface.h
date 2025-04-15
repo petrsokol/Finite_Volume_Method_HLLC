@@ -42,17 +42,17 @@ public:
   [[nodiscard]] const double & ny () const;
 
 private:
-  static Interface constructHorizontal (int k, const Point & a, const Point & b, const MeshParams & mp);
+  static Interface constructHorizontal (int k, const Point & A, const Point & B, const MeshParams & mp);
 
   static Interface constructHorizontalFromSixPoints (int k, const MeshParams & mp,
-                                                     const Point & A, const Point B, const Point & C,
-                                                     const Point & D, const Point E, const Point & F);
+                                                     const Point & A, const Point & B, const Point & C,
+                                                     const Point & D, const Point & E, const Point & F);
 
-  static Interface constructVertical (int k, const Point & a, const Point & d);
+  static Interface constructVertical (int k, const Point & A, const Point & d);
 
   static Interface constructVerticalFromSixPoints (int k, const MeshParams & mp,
-                                                   const Point & a, const Point b, const Point & c,
-                                                   const Point & d, const Point e, const Point & f);
+                                                   const Point & A, const Point & B, const Point & C,
+                                                   const Point & D, const Point & E, const Point & F);
 };
 
 
