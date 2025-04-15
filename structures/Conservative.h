@@ -32,7 +32,7 @@ public:
   /*------------------------------------------------------------------------------------------------------------------*/
 
   // Overload the + operator for vector addition
-  Conservative operator+ (const Conservative & other) const
+  Conservative operator + (const Conservative & other) const
   {
     return Conservative(r1 + other.r1, r2 + other.r2, r3 + other.r3, r4 + other.r4);
   }
@@ -40,7 +40,7 @@ public:
   /*------------------------------------------------------------------------------------------------------------------*/
 
   // Overload the - operator for vector subtraction
-  Conservative operator- (const Conservative & other) const
+  Conservative operator - (const Conservative & other) const
   {
     return Conservative(r1 - other.r1, r2 - other.r2, r3 - other.r3, r4 - other.r4);
   }
@@ -48,7 +48,7 @@ public:
   /*------------------------------------------------------------------------------------------------------------------*/
 
   // Overload the = operator for whatever
-  Conservative operator= (double scalar)
+  Conservative operator = (double scalar)
   {
     return Conservative(r1 = scalar, r2 = scalar, r3 = scalar, r4 = scalar);
   }
@@ -56,7 +56,7 @@ public:
   /*------------------------------------------------------------------------------------------------------------------*/
 
   // Overload the += operator
-  Conservative & operator+= (const Conservative & other)
+  Conservative & operator += (const Conservative & other)
   {
     // Perform the addition for each member
     r1 += other.r1;
@@ -71,7 +71,7 @@ public:
   /*------------------------------------------------------------------------------------------------------------------*/
 
   // Overload the -= operator
-  Conservative & operator-= (const Conservative & other)
+  Conservative & operator -= (const Conservative & other)
   {
     // Perform the addition for each member
     r1 -= other.r1;
@@ -86,7 +86,7 @@ public:
   /*------------------------------------------------------------------------------------------------------------------*/
 
   // Overload the * operator for scalar multiplication
-  Conservative operator* (double scalar) const
+  Conservative operator * (double scalar) const
   {
     return Conservative(r1 * scalar, r2 * scalar, r3 * scalar, r4 * scalar);
   }
@@ -94,7 +94,7 @@ public:
   /*------------------------------------------------------------------------------------------------------------------*/
 
   // Overload the / operator for scalar division
-  Conservative operator/ (double scalar) const
+  Conservative operator / (double scalar) const
   {
     // Check for division by zero
     if (scalar == 0.0) {
@@ -109,7 +109,9 @@ public:
 
 };
 
-Conservative operator* (double scalar, const Conservative & vec);
+Conservative operator * (double scalar, const Conservative & vec);
+
+std::ostream & operator << (std::ostream & os, const Conservative & obj);
 
 
 #endif //GAMM_CONSERVATIVE_H
