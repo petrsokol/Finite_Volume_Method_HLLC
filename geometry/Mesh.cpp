@@ -8,6 +8,8 @@
 #include "Mesh.h"
 #include "../utilities/DataIO.h"
 #include "../utilities/Timer.h"
+#include "../structures/Primitive.h"
+#include "../fluid_dynamics/Scheme.h"
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
@@ -30,23 +32,27 @@ void Mesh::centroidsToVertices ()
 
 void Mesh::exportPoints (const std::string & fileName, const std::filesystem::path & dir)
 {
-    // Create the full file path
-    std::filesystem::path filePath = dir / fileName;
-    std::ofstream stream(filePath);
+  // Open the file stream
+  std::filesystem::path filePath = dir / fileName;
+  std::ofstream stream(filePath);
 
-    // Write the header
-    stream << DataIO::CSV_HEADER;
+  // Write the header
+  stream << DataIO::CSV_HEADER;
 
-    // Write the data
-    for (int i = 0; i < mp.TOTAL_INNER_POINTS; ++i) {
-      int k = mp.innerPointIndex(i);
+  // Write the data
+  for (int i = 0; i < mp.TOTAL_INNER_POINTS; ++i) {
+    int k = mp.innerPointIndex(i);
 
-      stream << points[k].x << ", " << points[k].y << ", " << "1" << ", "
-             << points[k].values[0] << ", " << points[k].values[1] << '\n';
-    }
+    const Primitive & pointPV = Primitive(points.at(k).w);
+    double mach = Scheme::computeMach(pointPV);
+    double c_p = Scheme::computeCP(pointPV);
 
-    stream.close();
-    std::cout << "Exported CSV to: " << filePath << "\n";
+    stream << points[k].x << ", " << points[k].y << ", " << "1" << ", "
+           << mach << ", " << c_p << '\n';
+  }
+
+  stream.close();
+  std::cout << "Exported CSV to: " << filePath << "\n";
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

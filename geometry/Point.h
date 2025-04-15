@@ -10,6 +10,7 @@
 #include <string>
 #include <filesystem>
 #include "MeshParams.h"
+#include "../structures/Conservative.h"
 
 class Point
 {
@@ -25,31 +26,35 @@ public:
   double values[valueCount];
   int contributors;
 
+  // attributes for viscous terms
+  Conservative w;
+
   // Constructor
   Point (double x, double y);
 
   // Methods
   void toString () const;
 
-  // methods that could be moved elsewhere
-  void updateValues(double mach, double cp);
+  static int pointIndexToCellIndex (int i, int j, const MeshParams & mp);
 
-  static std::vector<Point>
-  loadPointsFromFile (const std::filesystem::path & path, const std::string & fileName, const MeshParams & mp);
+  // methods that could be moved elsewhere
+  void updateValues (double mach, double cp);
+
+  void updateW (const Conservative & cellW);
+
+  void resetW ();
 
   static std::vector<Point>
   loadPointsFromFile (const std::filesystem::path & path, const MeshParams & mp);
 
-  static int pointIndexToCellIndex (int i, int j, const MeshParams & mp);
-
   // Overloaded operators
-  Point operator+ (Point other) const;
+  Point operator + (Point other) const;
 
-  Point operator- (Point other) const;
+  Point operator - (Point other) const;
 
-  Point operator* (double scalar) const;
+  Point operator * (double scalar) const;
 
-  Point operator/ (double scalar) const;
+  Point operator / (double scalar) const;
 };
 
 

@@ -83,6 +83,7 @@ int main ()
  * ctrl + shift + V - historie vkládání
  * ctrl + p - nápověda parametrů funkce
  * ctrl + w - označování větší a větší části kódu
+ * ctrl + alt + t - wrap selection with
  *
  *   // set conditions by mach number and angle of attack
  *   //  Def::setConditions(0.85, 0);

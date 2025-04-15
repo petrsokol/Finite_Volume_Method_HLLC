@@ -66,32 +66,8 @@ std::string DataIO::getTimeStamp ()
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void DataIO::exportPointsToCSV (const MeshParams & mp, std::vector<Point> & updatedPoints, const std::string & name,
-                                const std::filesystem::path & dir)
-{
-    // Open the file stream
-    std::filesystem::path filePath = dir / name;
-    std::ofstream stream(filePath);
-
-    // Write the header
-    stream << DataIO::CSV_HEADER;
-
-    // Write the data
-    for (int i = 0; i < mp.TOTAL_INNER_POINTS; ++i) {
-      int k = mp.innerPointIndex(i);
-
-      stream << updatedPoints[k].x << ", " << updatedPoints[k].y << ", " << "1" << ", "
-             << updatedPoints[k].values[0] << ", " << updatedPoints[k].values[1] << '\n';
-    }
-
-    stream.close();
-    std::cout << "Exported CSV to: " << filePath << "\n";
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-
 void
-DataIO::exportMachWallToDat (std::vector<Point> & updatedPoints, const std::string & name, int bottomStart,
+DataIO::exportMachWallToDat (std::vector<Point> & points, const std::string & name, int bottomStart,
                              int topStart, int len, const std::filesystem::path & dir)
 {
   // open the stream
@@ -115,8 +91,10 @@ DataIO::exportMachWallToDat (std::vector<Point> & updatedPoints, const std::stri
   stream << "(" << std::endl;
 
   // pass data
-  for (int i = bottomStart; i < bottomStart + len; ++i)
-    stream << updatedPoints[i].values[0] << std::endl;
+  for (int k = bottomStart; k < bottomStart + len; ++k) {
+    double mach = Scheme::computeMach(Primitive(points.at(k).w));
+    stream << mach << std::endl;
+  }
 
   // pass footer
   stream << ")\n"
@@ -142,8 +120,10 @@ DataIO::exportMachWallToDat (std::vector<Point> & updatedPoints, const std::stri
   stream << "(" << std::endl;
 
   // pass data
-  for (int i = topStart; i < topStart + len; ++i)
-    stream << updatedPoints[i].values[0] << std::endl;
+  for (int k = topStart; k < topStart + len; ++k) {
+    double mach = Scheme::computeMach(Primitive(points.at(k).w));
+    stream << mach << std::endl;
+  }
 
   // pass footer
   stream << ")\n"
@@ -160,21 +140,27 @@ DataIO::exportMachWallToDat (std::vector<Point> & updatedPoints, const std::stri
 /**
  * Used to input mach number and pressure coefficient along the aerodynamic profile (NACA) or bottom wall (GAMM)
  * @param cells
- * @param updatedPoints
+ * @param points
  * @param dir
  * @param name
  */
 void
-DataIO::exportWallPointsToDat (const MeshParams & mp, std::vector<Point> & updatedPoints, const std::string & name,
+DataIO::exportWallPointsToDat (const MeshParams & mp, std::vector<Point> & points, const std::string & name,
                                const std::filesystem::path & dir)
 {
   // open the stream
   std::filesystem::path filePath = dir / name;
   std::ofstream stream(filePath);
 
-  for (int i = mp.WALL_START; i < mp.WALL_START + mp.WALL_LENGTH; ++i)
-    stream << updatedPoints[i].x << " " << updatedPoints[i].y << " " << "1" << " "
-           << updatedPoints[i].values[0] << " " << updatedPoints[i].values[1] << std::endl;
+  for (int k = mp.WALL_START; k < mp.WALL_START + mp.WALL_LENGTH; ++k) {
+    const Primitive & pointPV = Primitive(points.at(k).w);
+    double mach = Scheme::computeMach(pointPV);
+    double c_p = Scheme::computeCP(pointPV);
+
+    // do not use commas as separators
+    stream << points.at(k).x << " " << points.at(k).y << " " << "1" << " "
+           << mach << " " << c_p << '\n';
+  }
 
   // close stream
   stream.close();
@@ -185,20 +171,18 @@ DataIO::exportWallPointsToDat (const MeshParams & mp, std::vector<Point> & updat
 void DataIO::exportVector (const std::vector<double> & vector, const std::string & name,
                            const std::filesystem::path & dir)
 {
-    // Open the file stream
-    std::filesystem::path filePath = dir / name;
-    std::ofstream stream(filePath);
+  // Open the file stream
+  std::filesystem::path filePath = dir / name;
+  std::ofstream stream(filePath);
 
-    size_t len = vector.size();
-    for (size_t i = 0; i < len; ++i) {
-      stream << i << " " << vector[i] << std::endl;
-    }
-    stream.close();
+  size_t len = vector.size();
+  for (size_t i = 0; i < len; ++i) {
+    stream << i << " " << vector[i] << std::endl;
+  }
+  stream.close();
 
-    std::cout << "DataIO::exportVector - Exported dat files to: " << filePath << "\n";
+  std::cout << "DataIO::exportVector - Exported dat files to: " << filePath << "\n";
 }
-
-/*--------------------------------------------------------------------------------------------------------------------*/
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
@@ -209,54 +193,54 @@ DataIO::updatePointValues (const MeshParams & mp, const std::vector<Cell> & cell
   for (int i = 0; i < mp.TOTAL_INNER; ++i) {
     int k = mp.innerIndex(i);
 
-    // compute mach number and cp
-    Primitive pv(cells.at(k).w);
-    double mach = Scheme::computeMach(pv);
-    double cp = Scheme::computeCP(pv);
-
-    // update cell's corners
-    updateCorners(mp, points, k, mach, cp);
+    // update the vertices of each cell
+    const Conservative & cellW = cells.at(k).w;
+    updateCorners(mp, points, k, cellW);
   }
 
   // averaging values based on number of contributors
   averagePointValues(points);
 }
 
-
-
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-/*--------------------------------------------------------------------------------------------------------------------*/
-
-void DataIO::averagePointValues (std::vector<Point> & points)
+void DataIO::resetPointValues (std::vector<Point> & points)
 {
-  // average Mach number and pressure coefficient based on the number of neighbouring cells
   for (auto & point: points) {
-    if (point.contributors == 0)
-      continue;
-    for (auto & value: point.values) {
-      value = value / point.contributors;
-    }
+    point.resetW();
   }
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void DataIO::updateCorners (const MeshParams & mp, std::vector<Point> & points, int l, double mach, double cp)
+void DataIO::averagePointValues (std::vector<Point> & points)
 {
-  int pointIndex = mp.cellIndexToPointIndex(l);
+  for (auto & point: points) {
+    int c = point.contributors;
+    if (c == 0)
+      continue;
+
+    point.w = point.w / c;
+  }
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+void DataIO::updateCorners (const MeshParams & mp, std::vector<Point> & points, int k, const Conservative & cellW)
+{
+  int pointIndex = mp.cellIndexToPointIndex(k);
 
   // bottom l corner
-  points.at(pointIndex).updateValues(mach, cp);
+  points.at(pointIndex).updateW(cellW);
 
   // bottom r corner
-  points.at(pointIndex + 1).updateValues(mach, cp);
+  points.at(pointIndex + 1).updateW(cellW);
 
   // top l corner
-  points.at(pointIndex + mp.X_POINTS).updateValues(mach, cp);
+  points.at(pointIndex + mp.X_POINTS).updateW(cellW);
 
   // top r corner
-  points.at(pointIndex + mp.X_POINTS + 1).updateValues(mach, cp);
+  points.at(pointIndex + mp.X_POINTS + 1).updateW(cellW);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

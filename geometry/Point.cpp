@@ -54,13 +54,6 @@ Point Point::operator/ (double scalar) const
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-std::vector<Point> Point::loadPointsFromFile (const std::filesystem::path & path, const std::string & fileName, const MeshParams & mp)
-{
-  return loadPointsFromFile(path / fileName, mp);
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-
 std::vector<Point> Point::loadPointsFromFile (const std::filesystem::path & path, const MeshParams & mp)
 {
   std::vector<Point> res;
@@ -98,6 +91,23 @@ void Point::updateValues (double mach, double cp)
   values[0] += mach;
   values[1] += cp;
   contributors++;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+void Point::updateW (const Conservative & cellW)
+{
+  w += cellW;
+  contributors++;
+  //std::cout << "Point::updateW value updated, current w = " << w << ", contributors = " << contributors << std::endl;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+void Point::resetW ()
+{
+  w = 0;
+  contributors = 0;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

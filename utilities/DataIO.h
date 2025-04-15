@@ -24,23 +24,21 @@ public:
   static void
   updatePointValues (const MeshParams & mp, const std::vector<Cell> & cells, std::vector<Point> & points);
 
-  static void
-  exportPointsToCSV (const MeshParams & mp, std::vector<Point> & updatedPoints, const std::string & name,
-                     const std::filesystem::path & dir = "");
+  static void resetPointValues (std::vector<Point> & points);
 
   static void
-  exportWallPointsToDat (const MeshParams & mp, std::vector<Point> & updatedPoints, const std::string & name,
+  exportWallPointsToDat (const MeshParams & mp, std::vector<Point> & points, const std::string & name,
                          const std::filesystem::path & dir = "");
 
   static void
-  exportMachWallToDat (std::vector<Point> & updatedPoints, const std::string & name, int bottomStart,
+  exportMachWallToDat (std::vector<Point> & points, const std::string & name, int bottomStart,
                        int topStart, int len, const std::filesystem::path & dir = "");
 
   static void
   exportVector (const std::vector<double> & vector, const std::string & name,
                 const std::filesystem::path & dir = "");
 
-  static void updateCorners (const MeshParams & mp, std::vector<Point> & points, int l, double mach, double cp);
+  static void updateCorners (const MeshParams & mp, std::vector<Point> & points, int k, const Conservative & cellW);
 
   static void averagePointValues (std::vector<Point> & points);
 };
