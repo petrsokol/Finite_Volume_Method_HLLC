@@ -4,6 +4,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <filesystem>
 #include "Point.h"
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -53,17 +54,17 @@ Point Point::operator/ (double scalar) const
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-std::vector<Point> Point::loadPointsFromFile (const std::string & dir, const std::string & file, const MeshParams & mp)
+std::vector<Point> Point::loadPointsFromFile (const std::filesystem::path & path, const std::string & fileName, const MeshParams & mp)
 {
-  return loadPointsFromFile(dir + "/" + file, mp);
+  return loadPointsFromFile(path / fileName, mp);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-std::vector<Point> Point::loadPointsFromFile (const std::string & completeDir, const MeshParams & mp)
+std::vector<Point> Point::loadPointsFromFile (const std::filesystem::path & path, const MeshParams & mp)
 {
   std::vector<Point> res;
-  std::ifstream input(completeDir);
+  std::ifstream input(path);
   for (int j = 0; j < mp.Y_POINTS; ++j) {
     for (int i = 0; i < mp.X_POINTS; ++i) {
       double x;

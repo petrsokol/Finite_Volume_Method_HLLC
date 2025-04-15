@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <string>
+#include <filesystem>
 #include "MeshParams.h"
 
 class Point
@@ -34,10 +35,10 @@ public:
   void updateValues(double mach, double cp);
 
   static std::vector<Point>
-  loadPointsFromFile (const std::string & dir, const std::string & file, const MeshParams & mp);
+  loadPointsFromFile (const std::filesystem::path & path, const std::string & fileName, const MeshParams & mp);
 
   static std::vector<Point>
-  loadPointsFromFile (const std::string & completeDir, const MeshParams & mp);
+  loadPointsFromFile (const std::filesystem::path & path, const MeshParams & mp);
 
   static int pointIndexToCellIndex (int i, int j, const MeshParams & mp);
 
