@@ -11,41 +11,12 @@
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-Mesh::Mesh (const std::string & pointMeshDir, const std::string & pointMeshFileName, int X_INNER, int Y_INNER,
-            int GHOST_LAYERS, int WALL_START, int WALL_LENGTH) :
-        mp(X_INNER, Y_INNER, GHOST_LAYERS, WALL_START, WALL_LENGTH)
-{
-  // points
-  Mesh::points = Point::loadPointsFromFile(pointMeshDir, pointMeshFileName, mp);
-
-  // cells
-  Mesh::cells = Cell::createCells(points, mp);
-
-  // faces
-  Mesh::faces = Interface::createFaces(points, mp);
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-
-Mesh::Mesh (std::string  name, const std::string & completeDir, const MeshParams & mp) :
-        name(std::move(name)), mp(mp)
-{
-  Mesh::points = Point::loadPointsFromFile(completeDir, mp);
-  Mesh::cells = Cell::createCells(points, mp);
-  Mesh::faces = Interface::createFaces(points, mp);
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-
 Mesh::Mesh (const std::string & name, const std::filesystem::path & path, const MeshParams & mp)
- : Mesh(name, path.string(), mp)
+ : name(name), mp(mp)
 {
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-
-Mesh::Mesh (const std::string & completeDir, const MeshParams & mp) : Mesh("unnamedMesh", completeDir, mp)
-{
+  Mesh::points = Point::loadPointsFromFile(path, mp);
+  Mesh::cells = Cell::createCells(points, mp);
+  Mesh::faces = Interface::createFaces(points, mp);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -80,8 +51,11 @@ void Mesh::exportPoints (const std::string & fileName, const std::filesystem::pa
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void Mesh::exportResults (const std::string & parentDir, const std::string & childDir)
+void Mesh::exportResults (const std::filesystem::path & parentDir)
 {
+  // create subdirectory name
+  std::string childDir = DataIO::getTimeStamp();
+
   // get the path this program is running in
   auto programPath = std::filesystem::current_path();
 
@@ -122,14 +96,6 @@ void Mesh::exportResults (const std::string & parentDir, const std::string & chi
   int topWallStart = mp.WALL_START + mp.X_POINTS * (mp.Y_INNER_POINTS - 1);
   DataIO::exportMachWallToDat(points, "GAMM_bot_wall.dat",
                               mp.WALL_START, topWallStart, mp.WALL_LENGTH);
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-
-void Mesh::exportResults (const std::string & parentDir)
-{
-  std::string timeStamp = DataIO::getTimeStamp();
-  exportResults(parentDir, timeStamp);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

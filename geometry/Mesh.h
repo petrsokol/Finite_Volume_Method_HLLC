@@ -25,19 +25,10 @@ public:
   std::vector<double> reziVec;
 
   // constructors
-  Mesh (const std::string & pointMeshDir, const std::string & pointMeshFileName, int X_INNER, int Y_INNER,
-        int GHOST_LAYERS, int WALL_START, int WALL_LENGTH);
-
-  Mesh (const std::string & completeDir, const MeshParams & mp);
-
-  Mesh (std::string name, const std::string & completeDir, const MeshParams & mp);
-
   Mesh (const std::string & name, const std::filesystem::path & path, const MeshParams & mp);
 
   // methods
-  void exportResults (const std::string & parentDir);
-
-  void exportResults (const std::string & parentDir, const std::string & childDir);
+  void exportResults (const std::filesystem::path & parentDir);
 
   void produceParaViewPictures(const std::string & dir, const std::string & name);
 
