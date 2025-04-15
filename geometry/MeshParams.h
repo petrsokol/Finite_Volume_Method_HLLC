@@ -15,10 +15,12 @@ public:
   MeshParams (int X_INNER, int Y_INNER, int WALL_START, int WALL_LEN);
 
   // how many inner cells there are
-  const int X_INNER, Y_INNER, TOTAL_INNER;
+  const int X_INNER, Y_INNER;
 
   // how many ghost cell layers there are
   const int GHOST_LAYERS;
+
+  const int TOTAL_INNER;
 
   // how many cells there are in total (including ghost cells)
   const int X_CELLS, Y_CELLS, TOTAL_CELLS;
@@ -33,7 +35,7 @@ public:
   const int FIRST_INNER, FIRST_INNER_POINT;
 
   // start index and wall len
-  const int WALL_LENGTH, WALL_START;
+  const int WALL_START, WALL_LENGTH;
 
   // functions for index conversion between points and cells
   int innerIndex (int i) const;

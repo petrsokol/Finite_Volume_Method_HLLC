@@ -7,11 +7,8 @@
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 MeshParams::MeshParams (int X_INNER, int Y_INNER, int GHOST_LAYERS, int WALL_START, int WALL_LENGTH) :
-// initialize ghost layers
-        GHOST_LAYERS(GHOST_LAYERS),
-
         // initialize cells
-        X_INNER(X_INNER), Y_INNER(Y_INNER), TOTAL_INNER(X_INNER * Y_INNER),
+        X_INNER(X_INNER), Y_INNER(Y_INNER), GHOST_LAYERS(GHOST_LAYERS), TOTAL_INNER(X_INNER * Y_INNER),
         X_CELLS(X_INNER + 2 * GHOST_LAYERS), Y_CELLS(Y_INNER + 2 * GHOST_LAYERS), TOTAL_CELLS(X_CELLS * Y_CELLS),
 
         // initialize points
