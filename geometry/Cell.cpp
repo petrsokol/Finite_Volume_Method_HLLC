@@ -7,36 +7,27 @@
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-GeometryData Cell::computeGeometry (const Point & a, const Point & b, const Point & c, const Point & d)
+GeometryData Cell::computeGeometry (const Point & A, const Point & B, const Point & C, const Point & D)
 {
-  double x1 = 1.0 / 3 * (a.x + b.x + c.x);
-  double y1 = 1.0 / 3 * (a.y + b.y + c.y);
-  double A1 = 0.5 * fabs(a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y));
+  Point T = Point::centroidQuadrilateral(A, B, C, D);
+  double area = Point::areaQuadrilateral(A, B, C, D);
 
-  double x2 = 1.0 / 3 * (a.x + c.x + d.x);
-  double y2 = 1.0 / 3 * (a.y + c.y + d.y);
-  double A2 = 0.5 * fabs(a.x * (c.y - d.y) + c.x * (d.y - a.y) + d.x * (a.y - c.y));
+  Vector xi = Vector((A + D) / 2, (B + C) / 2);
+  Vector eta = Vector((C + D) / 2, (A + B) / 2);
 
-  double area = A1 + A2;
-  double tx = (A1 * x1 + A2 * x2) / (A1 + A2);
-  double ty = (A1 * y1 + A2 * y2) / (A1 + A2); //ChatGPT
+  Line l1(A.x, A.y, T.x, T.y);
+  Line l2(B.x, B.y, T.x, T.y);
+  Line l3(T.x, T.y, C.x, C.y);
+  Line l4(T.x, T.y, D.x, D.y);
 
-  Vector xi = Vector((a + d) / 2, (b + c) / 2);
-  Vector eta = Vector((c + d) / 2, (a + b) / 2);
-
-  Line l1(a.x, a.y, tx, ty);
-  Line l2(b.x, b.y, tx, ty);
-  Line l3(tx, ty, c.x, c.y);
-  Line l4(tx, ty, d.x, d.y);
-
-  return {area, tx, ty, xi, eta, l1, l2, l3, l4};
+  return {area, T.x, T.y, xi, eta, l1, l2, l3, l4};
   // struct created according to chatgpt recommendation
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-Cell::Cell (const Point & a, const Point & b, const Point & c, const Point & d)
-        : Cell(computeGeometry(a, b, c, d))
+Cell::Cell (const Point & A, const Point & B, const Point & C, const Point & D)
+        : Cell(computeGeometry(A, B, C, D))
 {
 }
 
@@ -58,12 +49,12 @@ std::vector<Cell> Cell::createCells (const std::vector<Point> & points, const Me
   std::vector<Cell> res;
   for (int j = 0; j < mp.Y_CELLS; ++j) {
     for (int i = 0; i < mp.X_CELLS; ++i) {
-      const Point & a = points.at(j * (mp.X_POINTS) + i);
-      const Point & b = points.at(j * (mp.X_POINTS) + i + 1);
-      const Point & c = points.at((j + 1) * (mp.X_POINTS) + i + 1);
-      const Point & d = points.at((j + 1) * (mp.X_POINTS) + i);
+      const Point & A = points.at(j * (mp.X_POINTS) + i);
+      const Point & B = points.at(j * (mp.X_POINTS) + i + 1);
+      const Point & C = points.at((j + 1) * (mp.X_POINTS) + i + 1);
+      const Point & D = points.at((j + 1) * (mp.X_POINTS) + i);
 
-      Cell curr = Cell(a, b, c, d);
+      Cell curr = Cell(A, B, C, D);
       res.push_back(curr);
     }
   }

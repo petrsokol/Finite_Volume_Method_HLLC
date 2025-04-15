@@ -6,7 +6,6 @@
 #define GAMM_CELL_H
 
 
-#include <unordered_map>
 #include "../structures/Vector.h"
 #include "../structures/Conservative.h"
 #include "Point.h"
@@ -51,7 +50,7 @@ public:
   void toString () const;
 
 private:
-  static GeometryData computeGeometry(const Point & a, const Point & b, const Point & c, const Point & d);
+  static GeometryData computeGeometry(const Point & A, const Point & B, const Point & C, const Point & D);
 };
 
 
