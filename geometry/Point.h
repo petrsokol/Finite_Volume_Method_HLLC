@@ -18,12 +18,6 @@ class Point
 public:
   // point coordinates
   const double x, y;
-
-  // attributes for post-processing
-  static constexpr int valueCount = 2;
-  // values[0] -> mach
-  // values[1] -> c_p
-  double values[valueCount];
   int contributors;
 
   // attributes for viscous terms
@@ -36,9 +30,6 @@ public:
   void toString () const;
 
   static int pointIndexToCellIndex (int i, int j, const MeshParams & mp);
-
-  // methods that could be moved elsewhere
-  void updateValues (double mach, double cp);
 
   void updateW (const Conservative & cellW);
 

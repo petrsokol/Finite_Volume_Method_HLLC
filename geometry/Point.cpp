@@ -10,7 +10,7 @@
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-Point::Point (double x, double y) : x(x), y(y), values(0, 0), contributors(0), w(0, 0, 0, 0)
+Point::Point (double x, double y) : x(x), y(y), w(0, 0, 0, 0)
 {
 }
 
@@ -44,15 +44,6 @@ int Point::pointIndexToCellIndex (int i, int j, const MeshParams & mp)
     res = i + j * mp.X_CELLS;
 //  printf("for point [%d, %d] index = %d\n", i, j, res);
   return res;
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-
-void Point::updateValues (double mach, double cp)
-{
-  values[0] += mach;
-  values[1] += cp;
-  contributors++;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
