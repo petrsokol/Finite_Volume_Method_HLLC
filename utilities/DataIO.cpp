@@ -218,34 +218,6 @@ DataIO::updatePointValues (const MeshParams & mp, const std::vector<Cell> & cell
     updateCorners(mp, points, k, mach, cp);
   }
 
-  if (Def::isNaca && false) {
-    // taken from NACA::updatePeriodicity(...)
-    // periodicity - start
-    for (int i = 0; i < NACA::WALL_START; ++i) {
-      //o řadu níž, poslední index - jede v protisměru // l viz BP, p. 13
-      int l = mp.FIRST_INNER_POINT - mp.X_POINTS + mp.X_INNER - 1 - i;
-
-      Primitive pv(cells.at(l).w);
-      double mach = Scheme::computeMach(pv);
-      double cp = Scheme::computeCP(pv);
-
-      // update cell's corners
-      updateCorners(mp, points, l, mach, cp);
-    }
-
-    // periodicity - finish
-    for (int i = 0; i < NACA::WALL_START; ++i) {
-      int l = mp.FIRST_INNER_POINT - mp.X_POINTS + NACA::WALL_START - 1 - i; // -1 = těsně před koncem
-
-      Primitive pv(cells.at(l).w);
-      double mach = Scheme::computeMach(pv);
-      double cp = Scheme::computeCP(pv);
-
-      // update cell's corners
-      updateCorners(mp, points, l, mach, cp);
-    }
-  }
-
   // averaging values based on number of contributors
   averagePointValues(points);
 }
