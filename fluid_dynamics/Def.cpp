@@ -9,8 +9,8 @@ bool Def::isNaca = true;
 bool Def::isHLLC = true;
 bool Def::isSecOrd = false;
 bool Def::isSetByMach = false;
+bool Def::useEuler = true;
 
-const double Def::KAPPA = 1.4;
 
 double Def::p_inlet = 1;
 double Def::p_outlet = 0.656;

@@ -17,8 +17,11 @@ public:
   static bool isHLLC;
   static bool isSecOrd;
   static bool isSetByMach;
+  static bool useEuler;
 
-  static const double KAPPA;
+  static constexpr double KAPPA = 1.4;
+  static constexpr double Re = 500;
+  static constexpr double mu = 1e-3;
 
   static double p_inlet;
   static double p_outlet;

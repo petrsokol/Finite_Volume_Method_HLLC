@@ -15,6 +15,7 @@
 #include "../geometry/Mesh.h"
 #include "../structures/Primitive.h"
 #include "../utilities/Timer.h"
+#include "Def.h"
 
 class Scheme
 {
@@ -51,14 +52,21 @@ private:
 
   static double bar (double rho_l, double rho_r, double vl, double vr);
 
+  // todo move to cell.h
   static double centroidDistance (const Cell & c1, const Cell & c2);
 
   static void computeW (Conservative & wl, Conservative & wr,
                         const Cell & cll, const Cell & cl, const Cell & cr, const Cell & crr);
 
-  static void updateCellVertices (const MeshParams & mp, std::vector<Point> & points, int k, const Conservative & cellW);
+  static void
+  updateCellVertices (const MeshParams & mp, std::vector<Point> & points, int k, const Conservative & cellW);
 
   static void averagePointValues (std::vector<Point> & points);
+
+  static Conservative eulerIncrement (const Cell & c, const Interface & f, const Conservative & flux);
+
+  static Conservative viscousTerms (const Cell & c, const Interface & f,
+                                    const Conservative & R, const Conservative & S);
 
 public:
 
@@ -170,24 +178,36 @@ public:
   /*------------------------------------------------------------------------------------------------------------------*/
 
   template <typename NumericalScheme>
-  static void updateInterface (std::vector<Cell> & cells, const Interface & face, NumericalScheme scheme)
+  static void updateInterface (std::vector<Cell> & cells, const Interface & f, NumericalScheme scheme)
   {
     // extract participating cells for code clarity
-    Cell & cl = cells.at(face.l);
-    Cell & cr = cells.at(face.r);
-    const Cell & cll = cells.at(face.ll);
-    const Cell & crr = cells.at(face.rr);
+    Cell & cl = cells.at(f.l);
+    Cell & cr = cells.at(f.r);
+    const Cell & cll = cells.at(f.ll);
+    const Cell & crr = cells.at(f.rr);
 
     // compute conservative variables wl and wr
     Conservative wl, wr;
     computeW(wl, wr, cll, cl, cr, crr);
 
     // compute flux between two cells sharing the interface
-    Conservative flux = scheme(face, wl, wr);
+    Conservative flux = scheme(f, wl, wr);
 
     // add flux to cells neighboring the interface
-    cl.rezi -= cl.dt / cl.area * flux * face.len();
-    cr.rezi += cr.dt / cr.area * flux * face.len();
+    if (Def::useEuler) {
+
+      // EULER EQUATIONS
+      cl.rezi -= eulerIncrement(cl, f, flux);
+      cr.rezi += eulerIncrement(cr, f, flux);
+
+    } else {
+
+      // NAVIER-STOKES EQUATIONS
+      Conservative R, S;
+      // todo ZNAMÉNKO před viscous terms???
+      cl.rezi -= eulerIncrement(cl, f, flux) + viscousTerms(cl, f, R, S);
+      cr.rezi -= eulerIncrement(cr, f, flux) - viscousTerms(cr, f, R, S);
+    }
   }
 
   /*------------------------------------------------------------------------------------------------------------------*/

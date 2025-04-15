@@ -313,6 +313,22 @@ void Scheme::resetPoints (std::vector<Point> & points)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
+// (dt / area) * flux * face.len
+Conservative Scheme::eulerIncrement (const Cell & c, const Interface & f, const Conservative & flux)
+{
+  return c.dt / c.area * flux * f.len();
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+// dt / (area * Re) * (R * n_x + S * n_y) * f.len
+Conservative Scheme::viscousTerms (const Cell & c, const Interface & f, const Conservative & R, const Conservative & S)
+{
+  return c.dt / (Def::Re * c.area) * (R * f.nx() + S * f.ny()) * f.len();
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 /*
    if (test && Def::isNaca) {
     for (int i = 0; i < NACA::WALL_LENGTH; ++i) {
