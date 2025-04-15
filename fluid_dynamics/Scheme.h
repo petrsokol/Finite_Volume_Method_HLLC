@@ -160,7 +160,7 @@ public:
      */
 
     // update points
-    Scheme::updatePointValues(mesh.mp, mesh.cells, mesh.points);
+    Scheme::updatePoints(mesh.mp, mesh.cells, mesh.points);
   }
 
   /*------------------------------------------------------------------------------------------------------------------*/
