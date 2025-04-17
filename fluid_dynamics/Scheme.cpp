@@ -141,10 +141,10 @@ Conservative Scheme::HLLC (const Interface & f, Conservative & wl, Conservative 
   double ql = pvl.u * f.nx() + pvl.v * f.ny(); // normálová rychlost
   double qr = pvr.u * f.nx() + pvr.v * f.ny(); // DP - \tilde u
 
-  double q_bar = Scheme::bar(pvl.rho, pvr.rho, ql, qr); // viz Toro
-  double h_bar = Scheme::bar(pvl.rho, pvr.rho, pvl.h, pvr.h);
-  double u_bar = Scheme::bar(pvl.rho, pvr.rho, pvl.u, pvr.u);
-  double v_bar = Scheme::bar(pvl.rho, pvr.rho, pvl.v, pvr.v);
+  double q_bar = bar(pvl.rho, pvr.rho, ql, qr); // viz Toro
+  double h_bar = bar(pvl.rho, pvr.rho, pvl.h, pvr.h);
+  double u_bar = bar(pvl.rho, pvr.rho, pvl.u, pvr.u);
+  double v_bar = bar(pvl.rho, pvr.rho, pvl.v, pvr.v);
   double U_bar_sq = pow(u_bar, 2) + pow(v_bar, 2); // certified J. Holman verze
   double c_bar = sqrt((Def::KAPPA - 1) * (h_bar - 0.5 * U_bar_sq));
 
@@ -160,17 +160,17 @@ Conservative Scheme::HLLC (const Interface & f, Conservative & wl, Conservative 
 
   double p_star = pvl.rho * (ql - SL) * (ql - SM) + pvl.p;
 
-  Conservative wlStar = 1 / (SL - SM) * Scheme::fluxStar(f, wl, ql, SL, SM, pvl.p, p_star);
-  Conservative wrStar = 1 / (SR - SM) * Scheme::fluxStar(f, wr, qr, SR, SM, pvr.p, p_star);
+  Conservative wlStar = 1 / (SL - SM) * fluxStar(f, wl, ql, SL, SM, pvl.p, p_star);
+  Conservative wrStar = 1 / (SR - SM) * fluxStar(f, wr, qr, SR, SM, pvr.p, p_star);
 
   if (SL > 0) {
-    return Scheme::flux(f, wl, ql, pvl.p);
+    return flux(f, wl, ql, pvl.p);
   } else if (SL <= 0 && 0 < SM) {
-    return Scheme::flux(f, wlStar, SM, p_star);
+    return flux(f, wlStar, SM, p_star);
   } else if (SM <= 0 && 0 <= SR) {
-    return Scheme::flux(f, wrStar, SM, p_star);
+    return flux(f, wrStar, SM, p_star);
   } else {
-    return Scheme::flux(f, wr, qr, pvr.p);
+    return flux(f, wr, qr, pvr.p);
   }
 }
 
@@ -184,6 +184,7 @@ Conservative Scheme::flux (Interface face, Conservative w, double q, double p)
   res.r2 = w.r2 * q + p * face.nx();
   res.r3 = w.r3 * q + p * face.ny();
   res.r4 = (w.r4 + p) * q;
+
   return res;
 }
 
@@ -197,6 +198,7 @@ Conservative Scheme::fluxStar (Interface face, Conservative w, double q, double 
   res.r2 = w.r2 * (S - q) + (p_star - p) * face.nx();
   res.r3 = w.r3 * (S - q) + (p_star - p) * face.ny();
   res.r4 = w.r4 * (S - q) + p_star * SM - p * q;
+
   return res;
 }
 
@@ -228,9 +230,11 @@ double Scheme::minmod (double a, double b)
 Conservative Scheme::minmod (Conservative a, Conservative b)
 {
   Conservative res;
+
   res.r1 = minmod(a.r1, b.r1);
   res.r2 = minmod(a.r2, b.r2);
   res.r3 = minmod(a.r3, b.r3);
+
   return res;
 }
 
@@ -313,7 +317,7 @@ void Scheme::resetPoints (std::vector<Point> & points)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-// (dt / area) * flux * face.len
+// (dt / dualArea) * flux * face.len
 Conservative Scheme::eulerIncrement (const Cell & c, const Interface & f, const Conservative & flux)
 {
   return c.dt / c.area * flux * f.len();
@@ -321,10 +325,104 @@ Conservative Scheme::eulerIncrement (const Cell & c, const Interface & f, const 
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-// dt / (area * Re) * (R * n_x + S * n_y) * f.len
-Conservative Scheme::viscousTerms (const Cell & c, const Interface & f, const Conservative & R, const Conservative & S)
+// dt / (dualArea * Re) * (R * n_x + S * n_y) * f.len
+// dt / (dualArea * Re) * rHat * f.len
+Conservative Scheme::viscousTerms (const Cell & c, const Interface & f, const Conservative & rHat)
 {
-  return c.dt / (Def::Re * c.area) * (R * f.nx() + S * f.ny()) * f.len();
+  return c.dt / (Def::Re * c.area) * rHat * f.len();
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+// returns rHat
+Conservative Scheme::computeViscousFlux (const Interface & f, const Cell & cl, const Cell & cr)
+{
+  const double & mu = Def::mu;
+  const double & Pr = Def::Pr;
+  const double & KAPPA = Def::KAPPA;
+
+  Primitive pvl(cl.w);
+  Primitive pvr(cr.w);
+
+  double u = 0.5 * (pvl.u + pvr.u);
+  double v = 0.5 * (pvl.v + pvr.v);
+
+  Primitive d_phi_dx = getDerivativesX(cl, cr, f);
+  Primitive d_phi_dy = getDerivativesY(cl, cr, f);
+
+  double du_dx = d_phi_dx.u;
+  double du_dy = d_phi_dy.u;
+  double dv_dx = d_phi_dx.v;
+  double dv_dy = d_phi_dy.v;
+
+  double tau_xx = mu * (4.0 / 3 * du_dx - 2.0 / 3 * dv_dy);
+  double tau_xy = mu * (du_dy + dv_dx);
+  double tau_yy = mu * (4.0 / 3 * dv_dy - 2.0 / 3 * du_dx);
+
+  double d_p_rho_dx = d_phi_dx.p / d_phi_dx.rho;
+  double d_p_rho_dy = d_phi_dy.p / d_phi_dy.rho;
+
+  double q_x = -KAPPA / (KAPPA - 1) * mu / Pr * d_p_rho_dx;
+  double q_y = -KAPPA / (KAPPA - 1) * mu / Pr * d_p_rho_dy;
+
+  Conservative rHat;
+
+  rHat.r1 = 0;
+  rHat.r2 = tau_xx * f.nx() + tau_xy * f.ny();
+  rHat.r3 = tau_xy * f.nx() + tau_yy * f.ny();
+  rHat.r4 = u * rHat.r2 + v * rHat.r3 - (q_x * f.nx() + q_y * f.ny());
+
+  return rHat;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+Primitive Scheme::getDerivativesX (const Cell & cl, const Cell & cr, const Interface & f)
+{
+  Primitive pvb(f.p1.w);
+  Primitive pvt(f.p2.w);
+  Primitive pvl(cl.w);
+  Primitive pvr(cr.w);
+
+  Primitive pv_br = 0.5 * (pvb + pvr);
+  Primitive pv_rt = 0.5 * (pvr + pvt);
+  Primitive pv_tl = 0.5 * (pvt + pvl);
+  Primitive pv_lb = 0.5 * (pvl + pvb);
+
+  Primitive pv_dx = 1 / f.dualArea *
+                    (
+                            pv_br * f.BR.len * f.BR.nx
+                            + pv_rt * f.RT.len * f.RT.nx
+                            + pv_tl * f.TL.len * f.TL.nx
+                            + pv_lb * f.LB.len * f.LB.nx
+                    );
+
+  return pv_dx;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+Primitive Scheme::getDerivativesY (const Cell & cl, const Cell & cr, const Interface & f)
+{
+  Primitive pvb(f.p1.w);
+  Primitive pvt(f.p2.w);
+  Primitive pvl(cl.w);
+  Primitive pvr(cr.w);
+
+  Primitive pv_br = 0.5 * (pvb + pvr);
+  Primitive pv_rt = 0.5 * (pvr + pvt);
+  Primitive pv_tl = 0.5 * (pvt + pvl);
+  Primitive pv_lb = 0.5 * (pvl + pvb);
+
+  Primitive pv_dx = 1 / f.dualArea *
+                    (
+                            pv_br * f.BR.len * f.BR.ny
+                            + pv_rt * f.RT.len * f.RT.ny
+                            + pv_tl * f.TL.len * f.TL.ny
+                            + pv_lb * f.LB.len * f.LB.ny
+                    );
+
+  return pv_dx;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

@@ -65,8 +65,7 @@ private:
 
   static Conservative eulerIncrement (const Cell & c, const Interface & f, const Conservative & flux);
 
-  static Conservative viscousTerms (const Cell & c, const Interface & f,
-                                    const Conservative & R, const Conservative & S);
+  static Conservative viscousTerms (const Cell & c, const Interface & f, const Conservative & rHat);
 
 public:
 
@@ -175,7 +174,9 @@ public:
 
 
 
-  /*------------------------------------------------------------------------------------------------------------------*/
+  static Conservative computeViscousFlux (const Interface & f, const Cell & cl, const Cell & cr);
+
+/*------------------------------------------------------------------------------------------------------------------*/
 
   template <typename NumericalScheme>
   static void updateInterface (std::vector<Cell> & cells, const Interface & f, NumericalScheme scheme)
@@ -203,14 +204,18 @@ public:
     } else {
 
       // NAVIER-STOKES EQUATIONS
-      Conservative R, S;
-      // todo ZNAMÉNKO před viscous terms???
-      cl.rezi -= eulerIncrement(cl, f, flux) + viscousTerms(cl, f, R, S);
-      cr.rezi -= eulerIncrement(cr, f, flux) - viscousTerms(cr, f, R, S);
+      Conservative rHat = computeViscousFlux(f, cl, cr);
+      cl.rezi -= eulerIncrement(cl, f, flux) + viscousTerms(cl, f, rHat);
+      cr.rezi += eulerIncrement(cr, f, flux) - viscousTerms(cr, f, rHat);
+
     }
   }
 
   /*------------------------------------------------------------------------------------------------------------------*/
+
+  static Primitive getDerivativesX (const Cell & cl, const Cell & cr, const Interface & f);
+
+  static Primitive getDerivativesY (const Cell & cl, const Cell & cr, const Interface & f);
 };
 
 
