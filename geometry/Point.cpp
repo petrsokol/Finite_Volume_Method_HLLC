@@ -65,6 +65,7 @@ void Point::resetW ()
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
+// points to be input counter-clockwise
 double Point::areaQuadrilateral (const Point & A, const Point & B, const Point & C, const Point & D)
 {
   return areaTriangle(A, B, C) + areaTriangle(A, C, D);
@@ -72,6 +73,7 @@ double Point::areaQuadrilateral (const Point & A, const Point & B, const Point &
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
+// points to be input counter-clockwise
 double Point::areaTriangle (const Point & A, const Point & B, const Point & C)
 {
   return 0.5 * fabs(A.x * (B.y - C.y) + B.x * (C.y - A.y) + C.x * (A.y - B.y));
@@ -79,6 +81,7 @@ double Point::areaTriangle (const Point & A, const Point & B, const Point & C)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
+// points to be input counter-clockwise
 Point Point::centroidQuadrilateral (const Point & A, const Point & B, const Point & C, const Point & D)
 {
   double x1 = 1.0 / 3 * (A.x + B.x + C.x);
