@@ -6,25 +6,21 @@
 #include <cmath>
 #include <iostream>
 
+
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-Interface::Interface (double len, double nx, double ny, int ll, int l, int r, int rr, const Point & p1,
-                      const Point & p2)
-        : line(len, nx, ny), ll(ll), l(l), r(r), rr(rr), p1(p1), p2(p2), area(0)
+Interface::Interface (Line line, int ll, int l, int r, int rr, const Point & p1, const Point & p2, double area,
+                      Line BR, Line RT, Line TL, Line LB)
+        : line(line), ll(ll), l(l), r(r), rr(rr), p1(p1), p2(p2), dualArea(area),
+          BR(BR), RT(RT), TL(TL), LB(LB)
 {
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-Interface::Interface (Line line, int ll, int l, int r, int rr, const Point & p1, const Point & p2, double area)
-        : line(line), ll(ll), l(l), r(r), rr(rr), p1(p1), p2(p2), area(area)
-{
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-
+// used for dummy interfaces outside the computational domain - a workaround
 Interface::Interface (Line line, int ll, int l, int r, int rr, const Point & p1, const Point & p2)
-        : Interface(line, ll, l, r, rr, p1, p2, 0)
+        : Interface(line, ll, l, r, rr, p1, p2, 0, line, line, line, line)
 {
 }
 
@@ -49,10 +45,10 @@ std::vector<Interface> Interface::createFaces (const std::vector<Point> & points
 
       /* the algorithm first attempts to create an interface using all six points,
        * but interfaces near the edge do not have these neighboring points;
-       * in this case it will default to create an interface with an area of 0
+       * in this case it will default to create an interface with an dualArea of 0
        */
 
-      // zero-area interface
+      // zero-dualArea interface
       if (k - mp.X_POINTS < 0 || i == 0) {
         const Point & T = points.at(k + mp.X_POINTS);
         const Point & C = points.at(k);
@@ -185,7 +181,12 @@ Interface Interface::constructHorizontalFromSixPoints (int k, const MeshParams &
   int r = k;
   int rr = k + mp.X_CELLS;
 
-  return {line, ll, l, r, rr, F, C, dualArea};
+  Line BR(F, L);
+  Line RT(L, C);
+  Line TL(C, R);
+  Line LB(R, F);
+
+  return {line, ll, l, r, rr, F, C, dualArea, BR, RT, TL, LB};
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -211,7 +212,12 @@ Interface Interface::constructVerticalFromSixPoints (int k, const MeshParams & m
   int r = k;
   int rr = k + 1;
 
-  return {line, ll, l, r, rr, B, E, dualArea};
+  Line BR(B, R);
+  Line RT(R, E);
+  Line TL(E, L);
+  Line LB(L, B);
+
+  return {line, ll, l, r, rr, B, E, dualArea, BR, RT, TL, LB};
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

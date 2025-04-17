@@ -18,14 +18,14 @@ public:
   const int ll, l, r, rr;
 
   // attributes for viscous terms
-  const Point & p1; // left / bottom point
-  const Point & p2; // right / top point
-  const double area; // area of the dual cell
+  const Point & p1;           // left / bottom point
+  const Point & p2;           // right / top point
+  const double dualArea;      // dualArea of the dual cell
+  const Line BR, RT, TL, LB;  // sides of the dual cell
 
   // Constructors
-  Interface (double len, double nx, double ny, int ll, int l, int r, int rr, const Point & p1, const Point & p2);
-
-  Interface (Line line, int ll, int l, int r, int rr, const Point & p1, const Point & p2, double area);
+  Interface (Line line, int ll, int l, int r, int rr, const Point & p1, const Point & p2, double area,
+             Line BR, Line RT, Line TL, Line LB);
 
   Interface (Line line, int ll, int l, int r, int rr, const Point & p1, const Point & p2);
 
