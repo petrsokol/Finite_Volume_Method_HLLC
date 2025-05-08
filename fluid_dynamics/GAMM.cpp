@@ -5,8 +5,8 @@
 #include "../geometry/Cell.h"
 #include "../geometry/Interface.h"
 #include "GAMM.h"
-#include "Def.h"
 #include "Bound.h"
+
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 const int GAMM::WALL_START = 0;
