@@ -15,9 +15,7 @@
 class Bound
 {
 
-public:
-  static double p_infty, rho_infty, u_infty, v_infty;
-
+private:
   static Conservative updateInletCell (const Conservative & innerW);
 
   static Conservative updateOutletCell (const Conservative & innerW);
@@ -26,7 +24,9 @@ public:
 
   static Conservative updateWallCell (const Conservative & innerW);
 
-private:
+public:
+  static double p_infty, rho_infty, u_infty, v_infty;
+
   static void inlet2ndOrder (const Conservative & inner1, Conservative & outer1, Conservative & outer2);
 
   static void outlet2ndOrder (const Conservative & inner1, Conservative & outer1, Conservative & outer2);
