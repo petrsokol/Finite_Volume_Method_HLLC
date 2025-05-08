@@ -8,5 +8,5 @@
 /dataSources.local.xml
 
 # ignore build files and such
-/cmake-build-debug
-/build
+/cmake-build-debug/
+/build/
