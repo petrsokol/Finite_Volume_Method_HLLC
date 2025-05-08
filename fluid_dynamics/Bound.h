@@ -34,7 +34,7 @@ public:
   static void symmetry2ndOrder (const Interface & f, const Conservative & inner2, const Conservative & inner1,
                                 Conservative & outer1, Conservative & outer2);
 
-  static void wall2ndOrder (const Conservative & inner1, const Conservative & inner2,
+  static void wall2ndOrder (const Conservative & inner2, const Conservative & inner1,
                             Conservative & outer1, Conservative & outer2);
 
 };
