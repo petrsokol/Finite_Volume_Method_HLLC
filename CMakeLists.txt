@@ -41,6 +41,8 @@ add_executable(GAMM main.cpp
         utilities/Timer.h
         geometry/Line.h
         geometry/Line.cpp
+        fluid_dynamics/BLASIUS.cpp
+        fluid_dynamics/BLASIUS.h
 )
 
 set(TARGETS
