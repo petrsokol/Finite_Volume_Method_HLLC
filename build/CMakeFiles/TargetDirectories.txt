@@ -1,3 +1,0 @@
-/mnt/c/cpp/BP/GAMM/build/CMakeFiles/GAMM.dir
-/mnt/c/cpp/BP/GAMM/build/CMakeFiles/edit_cache.dir
-/mnt/c/cpp/BP/GAMM/build/CMakeFiles/rebuild_cache.dir
