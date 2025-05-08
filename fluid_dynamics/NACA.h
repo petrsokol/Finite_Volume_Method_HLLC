@@ -22,7 +22,7 @@ public:
 
   static void updateOutlet (const MeshParams & mp, std::vector<Cell> & cells);
 
-  static void updateWalls (const MeshParams & mp, std::vector<Cell> & cells, const std::vector<Interface> & faces);
+  static void updateSymmetry (const MeshParams & mp, std::vector<Cell> & cells, const std::vector<Interface> & faces);
 
   static void updatePeriodicity (const MeshParams & mp, std::vector<Cell> & cells);
 

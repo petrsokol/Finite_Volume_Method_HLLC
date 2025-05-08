@@ -73,7 +73,7 @@ Conservative Bound::updateOutletCell (const Conservative & innerW)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-Conservative Bound::updateWallCell (const Conservative & innerW, const Interface & face)
+Conservative Bound::updateSymmetryCell (const Conservative & innerW, const Interface & face)
 {
   double uInner = innerW.r2 / innerW.r1;
   double vInner = innerW.r3 / innerW.r1;
@@ -91,11 +91,11 @@ Conservative Bound::updateWallCell (const Conservative & innerW, const Interface
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void Bound::wall2ndOrder (const Interface & f, const Conservative & inner2, const Conservative & inner1,
-                          Conservative & outer1, Conservative & outer2)
+void Bound::symmetry2ndOrder (const Interface & f, const Conservative & inner2, const Conservative & inner1,
+                              Conservative & outer1, Conservative & outer2)
 {
-  outer1 = updateWallCell(inner1, f);
-  outer2 = updateWallCell(inner2, f);
+  outer1 = updateSymmetryCell(inner1, f);
+  outer2 = updateSymmetryCell(inner2, f);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

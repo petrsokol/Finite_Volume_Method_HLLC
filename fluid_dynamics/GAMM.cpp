@@ -44,7 +44,7 @@ void GAMM::updateOutlet (const MeshParams & mp, std::vector<Cell> & cells)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void GAMM::updateWalls (const MeshParams & mp, std::vector<Cell> & cells, const std::vector<Interface> & faces)
+void GAMM::updateSymmetry (const MeshParams & mp, std::vector<Cell> & cells, const std::vector<Interface> & faces)
 {
   // bottom wall
   for (int i = 0; i < mp.X_INNER; ++i) {
@@ -58,7 +58,7 @@ void GAMM::updateWalls (const MeshParams & mp, std::vector<Cell> & cells, const 
     const Cell & inner1 = cells.at(face.r);
     const Cell & inner2 = cells.at(face.rr);
 
-    Bound::wall2ndOrder(face, inner2.w, inner1.w, outer1.w, outer2.w);
+    Bound::symmetry2ndOrder(face, inner2.w, inner1.w, outer1.w, outer2.w);
   }
 
   // top wall
@@ -73,7 +73,7 @@ void GAMM::updateWalls (const MeshParams & mp, std::vector<Cell> & cells, const 
     const Cell & inner1 = cells.at(face.l);
     const Cell & inner2 = cells.at(face.ll);
 
-    Bound::wall2ndOrder(face, inner2.w, inner1.w, outer1.w, outer2.w);
+    Bound::symmetry2ndOrder(face, inner2.w, inner1.w, outer1.w, outer2.w);
   }
 }
 
@@ -83,7 +83,7 @@ void GAMM::updateBounds (const MeshParams & mp, std::vector<Cell> & cells, const
 {
   updateInlet(mp, cells);
   updateOutlet(mp, cells);
-  updateWalls(mp, cells, faces);
+  updateSymmetry(mp, cells, faces);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

@@ -56,7 +56,7 @@ void NACA::updateOutlet (const MeshParams & mp, std::vector<Cell> & cells)
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 // part of bottom row of cells
-void NACA::updateWalls (const MeshParams & mp, std::vector<Cell> & cells, const std::vector<Interface> & faces)
+void NACA::updateSymmetry (const MeshParams & mp, std::vector<Cell> & cells, const std::vector<Interface> & faces)
 {
   for (int i = 0; i < NACA::WALL_LENGTH; ++i) {
     int k = mp.FIRST_INNER + NACA::WALL_START + i;
@@ -68,7 +68,7 @@ void NACA::updateWalls (const MeshParams & mp, std::vector<Cell> & cells, const 
     Cell & outer1 = cells.at(face.l);
     Cell & outer2 = cells.at(face.ll);
 
-    Bound::wall2ndOrder(face, inner2.w, inner1.w, outer1.w, outer2.w);
+    Bound::symmetry2ndOrder(face, inner2.w, inner1.w, outer1.w, outer2.w);
   }
 }
 
@@ -108,7 +108,7 @@ void NACA::updateBounds (const MeshParams & mp, std::vector<Cell> & cells, const
 {
   NACA::updateInlet(mp, cells);
   NACA::updateOutlet(mp, cells);
-  NACA::updateWalls(mp, cells, faces);
+  NACA::updateSymmetry(mp, cells, faces);
   NACA::updatePeriodicity(mp, cells);
 }
 

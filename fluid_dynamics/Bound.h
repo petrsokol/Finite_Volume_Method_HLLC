@@ -22,7 +22,7 @@ public:
 
   static Conservative updateOutletCell (const Conservative & innerW);
 
-  static Conservative updateWallCell (const Conservative & innerW, const Interface & face);
+  static Conservative updateSymmetryCell (const Conservative & innerW, const Interface & face);
 
   static void subsonicInlet2ndOrder (Conservative & outer2, Conservative & outer1,
                                      const Conservative & inner1, const Conservative inner2);
@@ -36,8 +36,8 @@ public:
   static void supersonicOutlet2ndOrder (Conservative & outer2, Conservative & outer1,
                                         const Conservative & inner1, const Conservative & inner2);
 
-  static void wall2ndOrder (const Interface & f, const Conservative & inner2, const Conservative & inner1,
-                            Conservative & outer1, Conservative & outer2);
+  static void symmetry2ndOrder (const Interface & f, const Conservative & inner2, const Conservative & inner1,
+                                Conservative & outer1, Conservative & outer2);
 
   static void inlet2ndOrder (const Conservative & inner1, Conservative & outer1, Conservative & outer2);
 
