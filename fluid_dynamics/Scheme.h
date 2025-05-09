@@ -112,6 +112,9 @@ public:
     // set initial condition
     Scheme::setInitialCondition(mesh.cells, wInitial);
 
+    // set initial condition for point values as well!
+    Scheme::updatePoints(mesh.mp, mesh.cells, mesh.points);
+
     while (rezi > epsilon && reps < repsMax) {
       reps++;
 
@@ -141,7 +144,9 @@ public:
       auto t5 = std::chrono::high_resolution_clock::now();
 
       mesh.reziVec.push_back(rezi);
+      // update cell values and point values at every iteration
       Scheme::updateCells(mesh.mp, mesh.cells);
+      Scheme::updatePoints(mesh.mp, mesh.cells, mesh.points);
 
 
       // timer 6
