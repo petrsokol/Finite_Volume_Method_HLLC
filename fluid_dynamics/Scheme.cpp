@@ -359,8 +359,15 @@ Conservative Scheme::computeViscousFlux (const Interface & f, const Cell & cl, c
   double tau_xy = mu * (du_dy + dv_dx);
   double tau_yy = mu * (4.0 / 3 * dv_dy - 2.0 / 3 * du_dx);
 
-  double d_p_rho_dx = d_phi_dx.p / d_phi_dx.rho;
-  double d_p_rho_dy = d_phi_dy.p / d_phi_dy.rho;
+  // derivative of division: d/dx (f/g) = (f'g - fg') / g^2
+  // d/dx p/rho = (p'rho - p*rho') / rho^2
+  double p = 0.5 * (pvl.p + pvr.p);
+  double rho = 0.5 * (pvl.rho + pvr.rho);
+
+//  double d_p_rho_dx = d_phi_dx.p / d_phi_dx.rho;
+//  double d_p_rho_dy = d_phi_dy.p / d_phi_dy.rho;
+  double d_p_rho_dx = (d_phi_dx.p * rho - p * d_phi_dx.rho) / (rho * rho);
+  double d_p_rho_dy = (d_phi_dy.p * rho - p * d_phi_dy.rho) / (rho * rho);
 
   double q_x = -KAPPA / (KAPPA - 1) * mu / Pr * d_p_rho_dx;
   double q_y = -KAPPA / (KAPPA - 1) * mu / Pr * d_p_rho_dy;
