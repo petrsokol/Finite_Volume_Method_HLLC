@@ -45,8 +45,8 @@ void BLASIUS::updateOutlet (const MeshParams & mp, std::vector<Cell> & cells)
 void BLASIUS::updateWalls (const MeshParams & mp, std::vector<Cell> & cells, const std::vector<Interface> & faces)
 {
   // bottom wall
-  for (int i = 0; i < mp.WALL_LENGTH; ++i) {
-    int k = mp.FIRST_INNER + mp.WALL_START + i;
+  for (int i = 0; i < BLASIUS::WALL_LENGTH; ++i) {
+    int k = mp.FIRST_INNER + BLASIUS::WALL_START + i;
 
     // there are two faces for every cell - horizontal indices are odd
     Interface face = faces.at(2 * k + 1);
@@ -64,7 +64,7 @@ void BLASIUS::updateWalls (const MeshParams & mp, std::vector<Cell> & cells, con
 
 void BLASIUS::updateSymmetry (const MeshParams & mp, std::vector<Cell> & cells, const std::vector<Interface> & faces)
 {
-  // top wall
+  // top border
   for (int i = 0; i < mp.X_INNER; ++i) {
     int k = mp.FIRST_INNER + mp.Y_INNER * mp.X_CELLS + i;
 
@@ -79,8 +79,8 @@ void BLASIUS::updateSymmetry (const MeshParams & mp, std::vector<Cell> & cells, 
     Bound::symmetry2ndOrder(face, inner2.w, inner1.w, outer1.w, outer2.w);
   }
 
-  // bottom wall
-  for (int i = 0; i < mp.WALL_LENGTH; ++i) {
+  // bottom border
+  for (int i = 0; i < BLASIUS::WALL_START; ++i) {
     int k = mp.FIRST_INNER + i;
 
     // there are two faces for every cell - horizontal indices are odd
