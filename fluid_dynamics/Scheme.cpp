@@ -414,7 +414,7 @@ Primitive Scheme::getDerivativesY (const Cell & cl, const Cell & cr, const Inter
   Primitive pv_tl = 0.5 * (pvt + pvl);
   Primitive pv_lb = 0.5 * (pvl + pvb);
 
-  Primitive pv_dx = 1 / f.dualArea *
+  Primitive pv_dy = 1 / f.dualArea *
                     (
                             pv_br * f.BR.len * f.BR.ny
                             + pv_rt * f.RT.len * f.RT.ny
@@ -422,7 +422,7 @@ Primitive Scheme::getDerivativesY (const Cell & cl, const Cell & cr, const Inter
                             + pv_lb * f.LB.len * f.LB.ny
                     );
 
-  return pv_dx;
+  return pv_dy;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
