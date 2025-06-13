@@ -329,7 +329,10 @@ Conservative Scheme::eulerIncrement (const Cell & c, const Interface & f, const 
 // dt / (dualArea * Re) * rHat * f.len
 Conservative Scheme::viscousTerms (const Cell & c, const Interface & f, const Conservative & rHat)
 {
-  return c.dt / (Def::Re * c.area) * rHat * f.len();
+  Conservative res = c.dt / (Def::Re * c.area) * rHat * f.len();
+//  if (res.r1 > 1e-8 || res.r2 > 1e-8 || res.r3 > 1e-8)
+//    std::cout << "viscous term! " << std::endl;
+  return res;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
