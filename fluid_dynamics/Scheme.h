@@ -118,8 +118,6 @@ public:
     while (rezi > epsilon && reps < repsMax) {
       reps++;
 
-      // advance by one timestep in the simulation
-
       // timer 1
       auto t1 = std::chrono::high_resolution_clock::now();
 
@@ -144,6 +142,7 @@ public:
       auto t5 = std::chrono::high_resolution_clock::now();
 
       mesh.reziVec.push_back(rezi);
+
       // update cell values and point values at every iteration
       Scheme::updateCells(mesh.mp, mesh.cells);
       Scheme::updatePoints(mesh.mp, mesh.cells, mesh.points);
@@ -210,9 +209,8 @@ public:
 
       // NAVIER-STOKES EQUATIONS
       Conservative rHat = computeViscousFlux(f, cl, cr);
-      cl.rezi -= eulerIncrement(cl, f, flux) + viscousTerms(cl, f, rHat);
-      cr.rezi += eulerIncrement(cr, f, flux) - viscousTerms(cr, f, rHat);
-
+      cl.rezi -= (eulerIncrement(cl, f, flux) - viscousTerms(cl, f, rHat));
+      cr.rezi += (eulerIncrement(cr, f, flux) - viscousTerms(cr, f, rHat));
     }
   }
 
