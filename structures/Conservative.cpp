@@ -4,11 +4,13 @@
 
 #include "Conservative.h"
 
-Conservative operator*(double scalar, const Conservative& vec) {
-    return vec * scalar;
+Conservative operator * (double scalar, const Conservative & vec)
+{
+  return vec * scalar;
 }
 
-std::ostream& operator<<(std::ostream& os, const Conservative& obj)
+// returns "[1.13, 2.24, 4.43, 8.12]"
+std::ostream & operator << (std::ostream & os, const Conservative & obj)
 {
   os << "[" << obj.r1 << ", " << obj.r2 << ", " << obj.r3 << ", " << obj.r4 << "]";
   return os;

@@ -109,34 +109,43 @@ void Point::toString () const
 // OPERATOR OVERLOADING
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-Point Point::operator+ (Point other) const
+Point Point::operator + (Point other) const
 {
   return {Point::x + other.x, Point::y + other.y};
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-Point Point::operator- (Point other) const
+Point Point::operator - (Point other) const
 {
   return {Point::x - other.x, Point::y - other.y};
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-Point Point::operator* (double scalar) const
+Point Point::operator * (double scalar) const
 {
   return {Point::x * scalar, Point::y * scalar};
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-Point Point::operator/ (double scalar) const
+Point Point::operator / (double scalar) const
 {
   if (scalar == 0.0) {
     std::cerr << "Error: Division by zero\n";
     exit(EXIT_FAILURE);
   }
   return {Point::x / scalar, Point::y / scalar};
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+// returns "( 3.14; 2.71)=[1.13, 2.24, 4.43, 8.12]
+std::ostream & operator << (std::ostream & os, const Point & p)
+{
+  os << "( " << p.x << "; " << p.y << ")=" << p.w;
+  return os;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

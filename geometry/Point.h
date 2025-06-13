@@ -54,5 +54,6 @@ public:
   Point operator / (double scalar) const;
 };
 
+std::ostream & operator << (std::ostream & os, const Point & p);
 
 #endif //GAMM_POINT_H
