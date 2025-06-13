@@ -107,8 +107,6 @@ public:
     int reps = 0;
     double rezi = 1;
 
-    auto start = std::chrono::high_resolution_clock::now();
-
     // set initial condition
     Scheme::setInitialCondition(mesh.cells, wInitial);
 
@@ -118,60 +116,30 @@ public:
     while (rezi > epsilon && reps < repsMax) {
       reps++;
 
-      // timer 1
-      auto t1 = std::chrono::high_resolution_clock::now();
-
+      // compute time step size
       Scheme::updateCellDT(mesh.cells, CFL, useGlobalTimeStep);
 
-      // timer 2
-      auto t2 = std::chrono::high_resolution_clock::now();
-
+      // update boundary conditions
       boundsIterator(mesh.mp, mesh.cells, mesh.faces);
 
-      // timer 3
-      auto t3 = std::chrono::high_resolution_clock::now();
-
+      // compute fluxes across inner faces
       Scheme::computeScheme(mesh.mp, mesh.cells, mesh.faces, scheme);
 
-      // timer 4
-      auto t4 = std::chrono::high_resolution_clock::now();
-
-      rezi = Scheme::computeRezi(mesh.mp, mesh.cells);
-
-      // timer 5
-      auto t5 = std::chrono::high_resolution_clock::now();
-
-      mesh.reziVec.push_back(rezi);
+      // compute density residuum
+      mesh.reziVec.push_back(rezi = Scheme::computeRezi(mesh.mp, mesh.cells));
 
       // update cell values and point values at every iteration
       Scheme::updateCells(mesh.mp, mesh.cells);
       Scheme::updatePoints(mesh.mp, mesh.cells, mesh.points);
 
-
-      // timer 6
-      auto t6 = std::chrono::high_resolution_clock::now();
-
-      // mark time steps
-      Timer::cellDtTimer.push_back(std::chrono::duration<double, std::milli>(t2 - t1).count());
-      Timer::boundsIteratorTimer.push_back(std::chrono::duration<double, std::milli>(t3 - t2).count());
-      Timer::computeSchemeTimer.push_back(std::chrono::duration<double, std::milli>(t4 - t3).count());
-      Timer::reziTimer.push_back(std::chrono::duration<double, std::milli>(t5 - t4).count());
-      Timer::updateCellsTimer.push_back(std::chrono::duration<double, std::milli>(t6 - t5).count());
-
-      if (reps % 200 == 0) std::cout << "reps: " << std::setw(5) << reps << ", rezi: " << rezi << std::endl;
+      // report progress
+      if (reps % 200 == 0) printf("reps: %5d, rezi: %f\n", reps, rezi);
     }
-
-    auto end = std::chrono::high_resolution_clock::now();
-    double totalTime = std::chrono::duration<double, std::milli>(end - start).count() / 1000.0;
-    std::cout << "total time passed: " << totalTime << " s." << std::endl;
 
     /*
      * todo
      *  nepředávej tolik parametrů
      */
-
-    // update points
-    Scheme::updatePoints(mesh.mp, mesh.cells, mesh.points);
   }
 
   /*------------------------------------------------------------------------------------------------------------------*/
