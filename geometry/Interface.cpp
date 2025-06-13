@@ -221,3 +221,12 @@ Interface Interface::constructVerticalFromSixPoints (int k, const MeshParams & m
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
+
+std::ostream & operator << (std::ostream & os, const Interface & f)
+{
+  // interface between two points (list of neighbours),
+  os << "(" << f.p1 << "---" << f.p2 << ")";
+  return os;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/

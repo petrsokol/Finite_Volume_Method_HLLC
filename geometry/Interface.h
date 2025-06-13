@@ -18,8 +18,8 @@ public:
   const int ll, l, r, rr;
 
   // attributes for viscous terms
-  const Point & p1;           // left / bottom point
-  const Point & p2;           // right / top point
+  const Point & p1;           // left / bottom point at end of interface
+  const Point & p2;           // right / top point at end of interface
   const double dualArea;      // dualArea of the dual cell
   const Line BR, RT, TL, LB;  // sides of the dual cell
 
@@ -55,5 +55,6 @@ private:
                                                    const Point & D, const Point & E, const Point & F);
 };
 
+std::ostream & operator << (std::ostream & os, const Interface & f);
 
 #endif //GAMM_INTERFACE_H
