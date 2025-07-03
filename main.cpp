@@ -36,16 +36,16 @@ int main ()
   }
 
   #if DEBUG_MODE
-    std::cout << "running in debug mode." << std::endl;
+  std::cout << "running in debug mode." << std::endl;
   #endif
 
   // windows paths
-  std::filesystem::path fullInputPath = "C:/cpp/BP/GAMM/files/";
-  std::filesystem::path fullOutputPath = "C:/cpp/BP/GAMM_results/";
+  // std::filesystem::path fullInputPath = "C:/cpp/BP/GAMM/files/";
+  // std::filesystem::path fullOutputPath = "C:/cpp/BP/GAMM_results/";
 
   // linux paths
-//  std::filesystem::path fullInputPath = "/mnt/c/cpp/BP/GAMM/files";
-//  std::filesystem::path fullOutputPath = "/mnt/c/cpp/BP/GAMM_results";
+  std::filesystem::path fullInputPath = "/mnt/c/cpp/BP/GAMM/files";
+  std::filesystem::path fullOutputPath = "/mnt/c/cpp/BP/GAMM_results";
 
   // BOUNDARY CONDITIONS
   // set conditions by rho, p_in, alpha, p_out
@@ -54,17 +54,13 @@ int main ()
   // INITIAL CONDITIONS
   Def::setInitialCondition(Def::wInitialSubsonic);
 
-  // naca mesh
-  MeshParams nacaMP(260, 60, NACA::WALL_START, NACA::WALL_LENGTH);
-  Mesh naca("naca", fullInputPath / "nacaMesh.dat", nacaMP);
-
   // gamm mesh
-   MeshParams gammMP(150, 50, GAMM::WALL_START, GAMM::WALL_LENGTH);
-   Mesh gamm("gamm", fullInputPath / "gammMesh.dat", gammMP);
-
+  const int meshCoarseness = 10;
+  MeshParams gammMP(3 * meshCoarseness, meshCoarseness, 0, 3 * meshCoarseness);
+  Mesh gamm("gamm", fullInputPath / "gammPoints2GL.dat", gammMP);
 
   // RUN EXPERIMENT
-  Scheme::runExperiment(gamm, Scheme::HLL, GAMM::updateBounds, Def::wInitial, -15, 5000, 0.7, false);
+  Scheme::runExperiment(gamm, Scheme::HLL, GAMM::updateBounds, Def::wInitial, -15, 1, 0.7, false);
 
   // export results
   gamm.exportResults(fullOutputPath.string());
