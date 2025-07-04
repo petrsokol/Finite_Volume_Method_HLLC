@@ -16,7 +16,7 @@ class Mesh
 {
 public:
 
-// attributes
+  // attributes
   const std::string name;
   const MeshParams mp;
   std::vector<Point> points;
@@ -28,13 +28,19 @@ public:
   Mesh (const std::string & name, const std::filesystem::path & path, const MeshParams & mp);
 
   // methods
+  void setInitialCondition (const Conservative & wInitial);
+
   void exportResults (const std::filesystem::path & parentDir);
 
-  void produceParaViewPictures(const std::string & dir, const std::string & name);
+  void updateCellVertices (int k, const Conservative & cellW);
 
-  void produceWallChart();
+  void averagePointValues ();
 
-  void produceReziChart();
+  void updateCells ();
+
+  void updatePoints ();
+
+  void resetPoints ();
 
 private:
   // attributes regarding mesh dimensions
@@ -45,11 +51,11 @@ private:
 
   /*------------------------------------------------------------------------------------------------------------------*/
 
-  void centroidsToVerticesNaca();
+  void centroidsToVerticesNaca ();
 
-  void centroidsToVerticesGamm();
+  void centroidsToVerticesGamm ();
 
-  void centroidsToVertices();
+  void centroidsToVertices ();
 
   void exportPoints (const std::string & fileName, const std::filesystem::path & dir = "");
 };

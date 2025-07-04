@@ -49,6 +49,8 @@ public:
 
   void toString () const;
 
+  static double centroidDistance (const Cell & c1, const Cell & c2);
+
 private:
   static GeometryData computeGeometry(const Point & A, const Point & B, const Point & C, const Point & D);
 };

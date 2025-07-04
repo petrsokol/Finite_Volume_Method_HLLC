@@ -23,19 +23,11 @@ class Scheme
 public:
   static void updateCellDT (std::vector<Cell> & cells, double CFL, bool useGlobalTimeStep);
 
-  static void updateCells (const MeshParams & mp, std::vector<Cell> & cells);
-
-  static void updatePoints (const MeshParams & mp, const std::vector<Cell> & cells, std::vector<Point> & points);
-
-  static void resetPoints (std::vector<Point> & points);
-
   static double computeRezi (const MeshParams & mp, const std::vector<Cell> & cells);
 
   static double computeCP (const Primitive & pv);
 
   static double computeMach (const Primitive & pv);
-
-  static void setInitialCondition (std::vector<Cell> & cells, const Conservative & wInitial);
 
   static Conservative HLL (const Interface & f, Conservative & wl, Conservative & wr);
 
@@ -52,16 +44,9 @@ private:
 
   static double bar (double rho_l, double rho_r, double vl, double vr);
 
-  // todo move to cell.h
-  static double centroidDistance (const Cell & c1, const Cell & c2);
-
   static void computeW (Conservative & wl, Conservative & wr,
                         const Cell & cll, const Cell & cl, const Cell & cr, const Cell & crr);
 
-  static void
-  updateCellVertices (const MeshParams & mp, std::vector<Point> & points, int k, const Conservative & cellW);
-
-  static void averagePointValues (std::vector<Point> & points);
 
   static Conservative eulerIncrement (const Cell & c, const Interface & f, const Conservative & flux);
 
@@ -108,10 +93,10 @@ public:
     double rezi = 1;
 
     // set initial condition
-    Scheme::setInitialCondition(mesh.cells, wInitial);
+    mesh.setInitialCondition(wInitial);
 
     // set initial condition for point values as well!
-    Scheme::updatePoints(mesh.mp, mesh.cells, mesh.points);
+    mesh.updatePoints();
 
     while (rezi > epsilon && reps < repsMax) {
       reps++;
@@ -128,12 +113,19 @@ public:
       // compute density residuum
       mesh.reziVec.push_back(rezi = Scheme::computeRezi(mesh.mp, mesh.cells));
 
+      /*
+      for (const auto & cell: mesh.cells) {
+        printf("cell at [%f, %f] has a rezi value of [%f, %f, %f, %f]\n",
+               cell.tx, cell.ty, cell.rezi.r1, cell.rezi.r2, cell.rezi.r3, cell.rezi.r4);
+      }
+       */
+
       // update cell values and point values at every iteration
-      Scheme::updateCells(mesh.mp, mesh.cells);
-      Scheme::updatePoints(mesh.mp, mesh.cells, mesh.points);
+      mesh.updateCells();
+      mesh.updatePoints();
 
       // report progress
-      if (reps % 200 == 0) printf("reps: %5d, rezi: %f\n", reps, rezi);
+      if (reps % 100 == 0) printf("reps: %5d, rezi: %f\n", reps, rezi);
     }
 
     /*
@@ -165,6 +157,7 @@ public:
 
     // compute flux between two cells sharing the interface
     Conservative flux = scheme(f, wl, wr);
+    // printf("receiver cell at [%f, %f] has a flux value of [%f, %f, %f, %f]\n", cl.tx, cl.ty, flux.r1, flux.r2, flux.r3, flux.r4);
 
     // add flux to cells neighboring the interface
     if (Def::useEuler) {

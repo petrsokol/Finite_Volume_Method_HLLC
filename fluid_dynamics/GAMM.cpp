@@ -24,6 +24,13 @@ void GAMM::updateInlet (const MeshParams & mp, std::vector<Cell> & cells)
     Conservative & outerW2 = cells.at(k - 2).w;
 
     Bound::inlet2ndOrder(innerW1, outerW1, outerW2);
+
+    /*
+    const Cell & c = cells.at(k - 1);
+    printf("INLET cell at [%.2f, %.2f] has Conservative values of [%.4f, %.4f, %.4f, %.4f]\n",
+           c.tx, c.ty,
+           c.w.r1, c.w.r2, c.w.r3, c.w.r4);
+    */
   }
 }
 
@@ -39,6 +46,13 @@ void GAMM::updateOutlet (const MeshParams & mp, std::vector<Cell> & cells)
     Conservative & outerW2 = cells.at(k + 2).w;
 
     Bound::outlet2ndOrder(innerW1, outerW1, outerW2);
+
+    /*
+    const Cell & c = cells.at(k + 1);
+    printf("OUTLET cell at [%.2f, %.2f] has Conservative values of [%.4f, %.4f, %.4f, %.4f]\n",
+           c.tx, c.ty,
+           c.w.r1, c.w.r2, c.w.r3, c.w.r4);
+    */
   }
 }
 
@@ -59,6 +73,13 @@ void GAMM::updateSymmetry (const MeshParams & mp, std::vector<Cell> & cells, con
     const Cell & inner2 = cells.at(face.rr);
 
     Bound::symmetry2ndOrder(face, inner2.w, inner1.w, outer1.w, outer2.w);
+
+    /*
+    const Cell & c = outer1;
+    printf("WALL cell at [%.2f, %.2f] has Conservative values of [%.4f, %.4f, %.4f, %.4f]\n",
+           c.tx, c.ty,
+           c.w.r1, c.w.r2, c.w.r3, c.w.r4);
+    */
   }
 
   // top wall
@@ -74,6 +95,13 @@ void GAMM::updateSymmetry (const MeshParams & mp, std::vector<Cell> & cells, con
     const Cell & inner2 = cells.at(face.ll);
 
     Bound::symmetry2ndOrder(face, inner2.w, inner1.w, outer1.w, outer2.w);
+
+    /*
+    const Cell & c = outer1;
+    printf("WALL cell at [%.2f, %.2f] has Conservative values of [%.4f, %.4f, %.4f, %.4f]\n",
+           c.tx, c.ty,
+           c.w.r1, c.w.r2, c.w.r3, c.w.r4);
+           */
   }
 }
 

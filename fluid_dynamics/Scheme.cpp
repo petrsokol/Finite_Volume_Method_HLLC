@@ -76,7 +76,7 @@ void Scheme::computeW (Conservative & wl, Conservative & wr,
                        const Cell & cr, const Cell & crr)
 {
   if (Def::isSecOrd) {
-    double centroidDist = centroidDistance(cr, cl);
+    double centroidDist = Cell::centroidDistance(cr, cl);
 
     const Conservative sigma_l_forward = (cr.w - cl.w) / centroidDist;
     const Conservative sigma_l_backward = (cl.w - cll.w) / centroidDist;
@@ -104,23 +104,23 @@ double Scheme::computeRezi (const MeshParams & mp, const std::vector<Cell> & cel
   for (int j = 0; j < mp.Y_INNER; ++j) {
     for (int i = 0; i < mp.X_INNER; ++i) {
       int k = mp.FIRST_INNER + i + j * mp.X_CELLS;
+
+      const double & cellArea = cells.at(k).area;
+      const double & cellDT = cells.at(k).dt;
+      const double & rho_old = cells.at(k).w.r1;
+      const double & rho_new = rho_old + cells.at(k).rezi.r1;
+      const double cellRezi = sqrt(cellArea * pow((rho_new - rho_old) / cellDT, 2));
+
+      const double & tx = cells.at(k).tx;
+      const double & ty = cells.at(k).ty;
+
+      // printf("Scheme::computeRezi: calculating rezi for cell %d [%.2f, %.2f]:\n area = %.4f,\n dt = %.4f,\n rho_old = %.5f,\n rho_new = %.5f,\n > cellRezi = %f\n", k, tx, ty, cellArea, cellDT, rho_old, rho_new, cellRezi);
+
       res += pow(cells.at(k).rezi.r1 / cells.at(k).dt, 2) * cells.at(k).area;
     }
   }
 
   return log(sqrt(res));
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-
-void Scheme::updateCells (const MeshParams & mp, std::vector<Cell> & cells)
-{
-  #pragma omp parallel for default(none) shared (mp, cells)
-  for (int i = 0; i < mp.TOTAL_INNER; ++i) {
-    int k = mp.innerIndex(i);
-    cells.at(k).w += cells.at(k).rezi;
-    cells.at(k).rezi = 0;
-  }
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -240,79 +240,9 @@ Conservative Scheme::minmod (Conservative a, Conservative b)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-double Scheme::centroidDistance (const Cell & c1, const Cell & c2)
-{
-  return hypot((c2.tx - c1.tx), (c2.ty - c1.ty));
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-
-void Scheme::setInitialCondition (std::vector<Cell> & cells, const Conservative & wInitial)
-{
-  for (auto & cell: cells)
-    cell.w = wInitial;
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-
 double Scheme::computeMach (const Primitive & pv)
 {
   return pv.U / pv.c;
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-
-void Scheme::updatePoints (const MeshParams & mp, const std::vector<Cell> & cells, std::vector<Point> & points)
-{
-  // iterate over inner cells
-  for (int i = 0; i < mp.TOTAL_INNER; ++i) {
-    int k = mp.innerIndex(i);
-
-    // update the vertices of each cell
-    const Conservative & cellW = cells.at(k).w;
-    Scheme::updateCellVertices(mp, points, k, cellW);
-  }
-
-  // averaging values based on number of contributors
-  Scheme::averagePointValues(points);
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-
-void Scheme::updateCellVertices (const MeshParams & mp, std::vector<Point> & points, int k, const Conservative & cellW)
-{
-  int pointIndex = mp.cellIndexToPointIndex(k);
-
-  // bottom l corner
-  points.at(pointIndex).updateW(cellW);
-
-  // bottom r corner
-  points.at(pointIndex + 1).updateW(cellW);
-
-  // top l corner
-  points.at(pointIndex + mp.X_POINTS).updateW(cellW);
-
-  // top r corner
-  points.at(pointIndex + mp.X_POINTS + 1).updateW(cellW);
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-
-void Scheme::averagePointValues (std::vector<Point> & points)
-{
-  for (auto & point: points) {
-    if (point.contributors == 0)
-      continue;
-    point.w = point.w / point.contributors;
-  }
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-
-void Scheme::resetPoints (std::vector<Point> & points)
-{
-  for (auto & point: points)
-    point.resetW();
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

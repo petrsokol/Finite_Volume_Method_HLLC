@@ -52,7 +52,7 @@ int main ()
   Def::setConditions(1, 1, 0, 0.737);
 
   // INITIAL CONDITIONS
-  Def::setInitialCondition(Def::wInitialSubsonic);
+  Def::setInitialCondition(Conservative(1, 1, 0, 2));
 
   // gamm mesh
   const int meshCoarseness = 10;
@@ -60,7 +60,7 @@ int main ()
   Mesh gamm("gamm", fullInputPath / "gammPoints2GL.dat", gammMP);
 
   // RUN EXPERIMENT
-  Scheme::runExperiment(gamm, Scheme::HLL, GAMM::updateBounds, Def::wInitial, -15, 1, 0.7, false);
+  Scheme::runExperiment(gamm, Scheme::HLL, GAMM::updateBounds, Def::wInitial, -15, 30000, 0.7, false);
 
   // export results
   gamm.exportResults(fullOutputPath.string());
