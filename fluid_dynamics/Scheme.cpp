@@ -10,38 +10,6 @@
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void Scheme::updateCellDT (std::vector<Cell> & cells, double CFL, bool useGlobalTimeStep)
-{
-
-  double globalDT = 1e9;
-
-  #pragma omp parallel for default(none) shared(cells, CFL, useGlobalTimeStep, globalDT)
-  for (auto & cell: cells) {
-    Primitive pv(cell.w);
-
-    double u_xi = fabs(pv.u * cell.xi.ux + pv.v * cell.xi.uy);
-    double u_eta = fabs(pv.u * cell.eta.ux + pv.v * cell.eta.uy);
-
-    double d_xi = (u_xi + pv.c) / cell.xi.len;
-    double d_eta = (u_eta + pv.c) / cell.eta.len;
-
-    double res = CFL / (d_xi + d_eta);
-
-    if (useGlobalTimeStep) {
-      globalDT = fmin(globalDT, res);
-    } else {
-      cell.dt = res;
-    }
-  }
-
-  // global time step is assigned to every cell
-  if (useGlobalTimeStep)
-    for (auto & cell: cells)
-      cell.dt = globalDT;
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-
 Conservative Scheme::HLL (const Interface & f, Conservative & wl, Conservative & wr)
 {
   Conservative res{};
@@ -92,35 +60,6 @@ void Scheme::computeW (Conservative & wl, Conservative & wr,
     wl = cl.w;
     wr = cr.w;
   }
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-
-double Scheme::computeRezi (const MeshParams & mp, const std::vector<Cell> & cells)
-{
-  double res = 0;
-
-  #pragma omp parallel for reduction(+:res) collapse(2) default(none) shared(mp, cells)
-  for (int j = 0; j < mp.Y_INNER; ++j) {
-    for (int i = 0; i < mp.X_INNER; ++i) {
-      int k = mp.FIRST_INNER + i + j * mp.X_CELLS;
-
-      const double & cellArea = cells.at(k).area;
-      const double & cellDT = cells.at(k).dt;
-      const double & rho_old = cells.at(k).w.r1;
-      const double & rho_new = rho_old + cells.at(k).rezi.r1;
-      const double cellRezi = sqrt(cellArea * pow((rho_new - rho_old) / cellDT, 2));
-
-      const double & tx = cells.at(k).tx;
-      const double & ty = cells.at(k).ty;
-
-      // printf("Scheme::computeRezi: calculating rezi for cell %d [%.2f, %.2f]:\n area = %.4f,\n dt = %.4f,\n rho_old = %.5f,\n rho_new = %.5f,\n > cellRezi = %f\n", k, tx, ty, cellArea, cellDT, rho_old, rho_new, cellRezi);
-
-      res += pow(cells.at(k).rezi.r1 / cells.at(k).dt, 2) * cells.at(k).area;
-    }
-  }
-
-  return log(sqrt(res));
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

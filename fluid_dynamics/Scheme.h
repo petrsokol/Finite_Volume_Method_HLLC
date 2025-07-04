@@ -19,12 +19,7 @@
 
 class Scheme
 {
-
 public:
-  static void updateCellDT (std::vector<Cell> & cells, double CFL, bool useGlobalTimeStep);
-
-  static double computeRezi (const MeshParams & mp, const std::vector<Cell> & cells);
-
   static double computeCP (const Primitive & pv);
 
   static double computeMach (const Primitive & pv);
@@ -36,6 +31,12 @@ public:
   static Conservative minmod (Conservative a, Conservative b);
 
   static double minmod (double a, double b);
+
+  static Primitive getDerivativesX (const Cell & cl, const Cell & cr, const Interface & f);
+
+  static Primitive getDerivativesY (const Cell & cl, const Cell & cr, const Interface & f);
+
+  static Conservative computeViscousFlux (const Interface & f, const Cell & cl, const Cell & cr);
 
 private:
   static Conservative flux (Interface face, Conservative w, double q, double p);
@@ -102,7 +103,7 @@ public:
       reps++;
 
       // compute time step size
-      Scheme::updateCellDT(mesh.cells, CFL, useGlobalTimeStep);
+      mesh.updateCellDT(CFL, useGlobalTimeStep);
 
       // update boundary conditions
       boundsIterator(mesh.mp, mesh.cells, mesh.faces);
@@ -111,7 +112,7 @@ public:
       Scheme::computeScheme(mesh.mp, mesh.cells, mesh.faces, scheme);
 
       // compute density residuum
-      mesh.reziVec.push_back(rezi = Scheme::computeRezi(mesh.mp, mesh.cells));
+      mesh.reziVec.push_back(rezi = mesh.computeRezi());
 
       /*
       for (const auto & cell: mesh.cells) {
@@ -127,20 +128,9 @@ public:
       // report progress
       if (reps % 100 == 0) printf("reps: %5d, rezi: %f\n", reps, rezi);
     }
-
-    /*
-     * todo
-     *  nepředávej tolik parametrů
-     */
   }
 
   /*------------------------------------------------------------------------------------------------------------------*/
-
-
-
-  static Conservative computeViscousFlux (const Interface & f, const Cell & cl, const Cell & cr);
-
-/*------------------------------------------------------------------------------------------------------------------*/
 
   template <typename NumericalScheme>
   static void updateInterface (std::vector<Cell> & cells, const Interface & f, NumericalScheme scheme)
@@ -176,10 +166,6 @@ public:
   }
 
   /*------------------------------------------------------------------------------------------------------------------*/
-
-  static Primitive getDerivativesX (const Cell & cl, const Cell & cr, const Interface & f);
-
-  static Primitive getDerivativesY (const Cell & cl, const Cell & cr, const Interface & f);
 };
 
 

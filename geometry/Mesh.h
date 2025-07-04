@@ -30,9 +30,11 @@ public:
   // methods
   void setInitialCondition (const Conservative & wInitial);
 
-  void exportResults (const std::filesystem::path & parentDir);
-
   void updateCellVertices (int k, const Conservative & cellW);
+
+  void updateCellDT (double CFL, bool useGlobalTimeStep);
+
+  double computeRezi ();
 
   void averagePointValues ();
 
@@ -42,14 +44,10 @@ public:
 
   void resetPoints ();
 
+  void exportResults (const std::filesystem::path & parentDir);
+
 private:
   // attributes regarding mesh dimensions
-
-  /*------------------------------------------------------------------------------------------------------------------*/
-
-
-
-  /*------------------------------------------------------------------------------------------------------------------*/
 
   void centroidsToVerticesNaca ();
 
