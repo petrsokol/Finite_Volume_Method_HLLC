@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include "Conservative.h"
+#include "../fluid_dynamics/Constants.h"
 
 class Primitive
 {

@@ -4,6 +4,7 @@
 
 #include <cmath>
 #include "Def.h"
+#include "Constants.h"
 
 bool Def::isNaca = true;
 bool Def::isHLLC = true;
@@ -60,8 +61,8 @@ void Def::setConditions (double mach_infinity, double alphaInletDegrees)
   Def::rho_inlet = 1;
   Def::alpha_inlet = degreesToRadians(alphaInletDegrees);
   Def::mach_infty = mach_infinity;
-  double p_2 = Def::p_inlet * pow(1 + (Def::KAPPA - 1) /
-                                      2 * pow(Def::mach_infty, 2), -1 * (Def::KAPPA / (Def::KAPPA - 1)));
+  double p_2 = Def::p_inlet * pow(1 + (KAPPA - 1) /
+                                      2 * pow(Def::mach_infty, 2), -1 * (KAPPA / (KAPPA - 1)));
   std::cout << "vystupni tlak p_2 = " << p_2 << std::endl;
 }
 

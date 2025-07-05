@@ -8,7 +8,6 @@
 
 #include "../geometry/Cell.h"
 #include "../geometry/Interface.h"
-#include "Constants.h"
 #include "../structures/Primitive.h"
 
 /*--------------------------------------------------------------------------------------------------------------------*/

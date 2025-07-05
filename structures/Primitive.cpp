@@ -17,7 +17,7 @@ Primitive::Primitive(Conservative w)
   u = w.r2 / w.r1;
   v = w.r3 / w.r1;
   U = sqrt(u * u + v * v);
-  p = (Def::KAPPA - 1) * (rhoE - 0.5 * rho * U * U);
-  c = sqrt((Def::KAPPA * p) / rho);
-  h = (Def::KAPPA * p) / (rho * (Def::KAPPA - 1));
+  p = (KAPPA - 1) * (rhoE - 0.5 * rho * U * U);
+  c = sqrt((KAPPA * p) / rho);
+  h = (KAPPA * p) / (rho * (KAPPA - 1));
 }

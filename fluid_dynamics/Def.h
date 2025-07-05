@@ -19,7 +19,6 @@ public:
   static bool isSetByMach;
   static bool useEuler;
 
-  static constexpr double KAPPA = 1.4;
   static constexpr double Re = 500;
   static constexpr double Pr = 0.72;
   static constexpr double mu = 1.983e-5;

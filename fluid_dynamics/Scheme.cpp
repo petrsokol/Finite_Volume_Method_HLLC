@@ -4,8 +4,9 @@
 
 #include <cmath>
 #include <omp.h>
-#include "Scheme.h"
+
 #include "Def.h"
+#include "Scheme.h"
 #include "Bound.h"
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -77,7 +78,7 @@ Conservative Scheme::HLLC (const Interface & f, Conservative & wl, Conservative 
   double u_bar = bar(pvl.rho, pvr.rho, pvl.u, pvr.u);
   double v_bar = bar(pvl.rho, pvr.rho, pvl.v, pvr.v);
   double U_bar_sq = pow(u_bar, 2) + pow(v_bar, 2); // certified J. Holman verze
-  double c_bar = sqrt((Def::KAPPA - 1) * (h_bar - 0.5 * U_bar_sq));
+  double c_bar = sqrt((KAPPA - 1) * (h_bar - 0.5 * U_bar_sq));
 
   double lambda_1 = ql - pvl.c;
   double lambda_m = qr + pvr.c;
@@ -203,7 +204,6 @@ Conservative Scheme::computeViscousFlux (const Interface & f, const Cell & cl, c
 {
   const double & mu = Def::mu;
   const double & Pr = Def::Pr;
-  const double & KAPPA = Def::KAPPA;
 
   Primitive pvl(cl.w);
   Primitive pvr(cr.w);
