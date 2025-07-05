@@ -50,7 +50,7 @@ int main ()
 
   // BOUNDARY CONDITIONS
   // set conditions by rho, p_in, alpha, p_out
-  Bound::setSubsonicCondition(1, 1, 0, 0.737);
+  Bound::setSubsonicCondition(1, 1, 0, 0.843019);
 
   // INITIAL CONDITIONS
   Def::setInitialCondition(Conservative(1, 1, 0, 2));
@@ -60,11 +60,15 @@ int main ()
   MeshParams gammMP(3 * meshCoarseness, meshCoarseness, 0, 3 * meshCoarseness);
   Mesh gamm("gamm", fullInputPath / "gammMesh.dat", gammMP);
 
+  // naca mesh
+  MeshParams nacaMP(260, 60, NACA::WALL_START, NACA::WALL_LENGTH);
+  Mesh naca("naca", fullInputPath / "nacaMesh.dat", nacaMP);
+
   // RUN EXPERIMENT
-  Scheme::runExperiment(gamm, Scheme::HLL, GAMM::updateBounds, Def::wInitial, -15, 30000, 0.7, false);
+  Scheme::runExperiment(naca, Scheme::HLL, NACA::updateBounds, Def::wInitial, -15, 30000, 0.7, false);
 
   // export results
-  gamm.exportResults(fullOutputPath.string());
+  naca.exportResults(fullOutputPath.string());
 
 
   /*------------------------------------------------------------------------------------------------------------------*/
