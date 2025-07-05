@@ -7,6 +7,7 @@
 #include "utilities/DataIO.h"
 #include "geometry/Mesh.h"
 #include "fluid_dynamics/GAMM.h"
+#include "fluid_dynamics/Bound.h"
 
 /*
  * HOW TO RUN WITH POST PROCESSING
@@ -49,15 +50,15 @@ int main ()
 
   // BOUNDARY CONDITIONS
   // set conditions by rho, p_in, alpha, p_out
-  Def::setConditions(1, 1, 0, 0.737);
+  Bound::setSubsonicCondition(1, 1, 0, 0.737);
 
   // INITIAL CONDITIONS
   Def::setInitialCondition(Conservative(1, 1, 0, 2));
 
   // gamm mesh
-  const int meshCoarseness = 10;
+  const int meshCoarseness = 50;
   MeshParams gammMP(3 * meshCoarseness, meshCoarseness, 0, 3 * meshCoarseness);
-  Mesh gamm("gamm", fullInputPath / "gammPoints2GL.dat", gammMP);
+  Mesh gamm("gamm", fullInputPath / "gammMesh.dat", gammMP);
 
   // RUN EXPERIMENT
   Scheme::runExperiment(gamm, Scheme::HLL, GAMM::updateBounds, Def::wInitial, -15, 30000, 0.7, false);

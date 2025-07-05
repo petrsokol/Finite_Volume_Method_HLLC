@@ -43,6 +43,7 @@ add_executable(GAMM main.cpp
         geometry/Line.cpp
         fluid_dynamics/BLASIUS.cpp
         fluid_dynamics/BLASIUS.h
+        fluid_dynamics/Constants.h
 )
 
 set(TARGETS

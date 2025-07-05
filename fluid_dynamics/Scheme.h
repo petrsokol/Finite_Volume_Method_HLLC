@@ -20,7 +20,7 @@
 class Scheme
 {
 public:
-  static double computeCP (const Primitive & pv);
+  static double computeCP (const Primitive & pv, const double p_1);
 
   static double computeMach (const Primitive & pv);
 

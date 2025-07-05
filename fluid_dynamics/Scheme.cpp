@@ -64,14 +64,6 @@ void Scheme::computeW (Conservative & wl, Conservative & wr,
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-double Scheme::computeCP (const Primitive & pv)
-{
-  return (pv.p - Bound::p_infty) /
-         (0.5 * Bound::rho_infty * (Bound::u_infty * Bound::u_infty + Bound::v_infty * Bound::v_infty));
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-
 Conservative Scheme::HLLC (const Interface & f, Conservative & wl, Conservative & wr)
 {
   Primitive pvl(wl);

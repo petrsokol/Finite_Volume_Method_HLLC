@@ -11,6 +11,7 @@
 #include "../utilities/Timer.h"
 #include "../structures/Primitive.h"
 #include "../fluid_dynamics/Scheme.h"
+#include "../fluid_dynamics/Bound.h"
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
@@ -41,12 +42,16 @@ void Mesh::exportPoints (const std::string & fileName, const std::filesystem::pa
   stream << DataIO::CSV_HEADER;
 
   // Write the data
+
+  // fixme -> this could be wrong
+  const double p_1 = Primitive(cells.at(mp.FIRST_INNER).w).p;
+
   for (int i = 0; i < mp.TOTAL_INNER_POINTS; ++i) {
     int k = mp.innerPointIndex(i);
 
     const Primitive & pointPV = Primitive(points.at(k).w);
     double mach = Scheme::computeMach(pointPV);
-    double c_p = Scheme::computeCP(pointPV);
+    double c_p = Bound::computeCP(pointPV, p_1);
 
     stream << points[k].x << ", " << points[k].y << ", " << "1" << ", "
            << mach << ", " << c_p << '\n';

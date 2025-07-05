@@ -10,6 +10,7 @@
 #include "../structures/Primitive.h"
 #include "../fluid_dynamics/NACA.h"
 #include "../fluid_dynamics/Scheme.h"
+#include "../fluid_dynamics/Bound.h"
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
@@ -152,10 +153,13 @@ DataIO::exportWallPointsToDat (const MeshParams & mp, std::vector<Point> & point
   std::filesystem::path filePath = dir / name;
   std::ofstream stream(filePath);
 
+  // fixme
+  const double p_1 = Primitive(points.at(mp.FIRST_INNER_POINT).w).p;
+
   for (int k = mp.WALL_START; k < mp.WALL_START + mp.WALL_LENGTH; ++k) {
     const Primitive & pointPV = Primitive(points.at(k).w);
     double mach = Scheme::computeMach(pointPV);
-    double c_p = Scheme::computeCP(pointPV);
+    double c_p = Bound::computeCP(pointPV, p_1);
 
     // do not use commas as separators
     stream << points.at(k).x << " " << points.at(k).y << " " << "1" << " "
